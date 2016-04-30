@@ -2,9 +2,11 @@
 
 import os
 
-WWW = os.path.join("..","www")
-CONFIG = os.path.join("config")
-DATA = os.path.join("..", "data")
+PATH = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
+WWW = os.path.join(PATH, "..","www")
+CONFIG = os.path.join(PATH, "config")
+DATA = os.path.join(os.path.expanduser("~"), ".ttbp", "entries")
+#DATA = os.path.join("..", "data")
 
 MONTHS = {
         "01":"january",
@@ -32,7 +34,7 @@ for file in os.listdir(DATA):
         FILES.append(file)
 
 FILES.reverse()
-print FILES
+print("found: "+str(FILES))
 
 def write(outurl="default.html"):
     outfile = open(os.path.join(WWW, outurl), "w")
@@ -51,6 +53,8 @@ def write(outurl="default.html"):
         outfile.write(line)
 
     outfile.close()
+
+    return os.path.join(WWW, outurl)
 
 def write_entry(file):
     # dump given file into entry format, return as list of strings
