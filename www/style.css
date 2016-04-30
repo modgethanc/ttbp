@@ -1,0 +1,42 @@
+body {
+  background-color: #E0B0FF;
+  font-family: courier
+}
+
+#meta {
+  top: -.5em;
+  position: fixed;
+  height: 3.5em;
+  float: left;
+  text-align: left;
+  width: 100%;
+  background-color: #e0b0ff;
+}
+
+#tlogs {
+  margin-top: 5em;
+  width: 80%;
+}
+
+.entry {
+  border: 1px dotted white;
+  padding: .4em;
+  margin-bottom:-4em;
+}
+
+.entry p {
+  padding: 1em;
+}
+
+.entry h5 {
+  text-align: right;
+  margin-top: .2em;
+}
+
+blockquote {
+  background-color: black;
+  color: #e0b0ff;
+  font-size: 90%;
+  border: 1px dotted white;
+  padding: 4px;
+}
