@@ -6,6 +6,21 @@ WWW = os.path.join("..","www")
 CONFIG = os.path.join("config")
 DATA = os.path.join("..", "data")
 
+MONTHS = {
+        "01":"january",
+        "02":"february",
+        "03":"march",
+        "04":"april",
+        "05":"may",
+        "06":"june",
+        "07":"july",
+        "08":"august",
+        "09":"september",
+        "10":"october",
+        "11":"november",
+        "12":"december"
+    }
+
 HEADER = open(os.path.join(CONFIG, "header.txt")).read()
 FOOTER = open(os.path.join(CONFIG, "footer.txt")).read()
 
@@ -44,7 +59,7 @@ def write_entry(file):
     entry = [
         "\t\t<p><a name=\""+date[0]+date[1]+date[2]+"\"></a><br /><br /></p>\n",
         "\t\t<div class=\"entry\">\n",
-        "\t\t\t<h5><a href=\"#"+date[0]+date[1]+date[2]+"\">"+date[2]+"</a> month "+date[0]+"</h5>\n",
+        "\t\t\t<h5><a href=\"#"+date[0]+date[1]+date[2]+"\">"+date[2]+"</a> "+MONTHS[date[1]]+" "+date[0]+"</h5>\n",
         "\t\t\t<P>"
     ]
 
