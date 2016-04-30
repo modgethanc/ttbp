@@ -31,6 +31,7 @@ for file in os.listdir(DATA):
     if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
         FILES.append(file)
 
+FILES.reverse()
 print FILES
 
 def write(outurl="default.html"):
@@ -69,8 +70,6 @@ def write_entry(file):
     for line in rawfile:
         raw.append(line)
     rawfile.close()
-
-    print raw
 
     for line in raw:
         entry.append(line+"\t\t\t")
