@@ -2,10 +2,14 @@
 
 import os
 
-PATH = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
-WWW = os.path.join(PATH, "..","www")
+SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
+USER = os.path.basename(os.path.expanduser("~"))
+PATH = os.path.join("/home", USER, ".ttbp")
+
+LIVE = "http://tilde.town/~"
+WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
-DATA = os.path.join(os.path.expanduser("~"), ".ttbp", "entries")
+DATA = os.path.join(PATH, "entries")
 #DATA = os.path.join("..", "data")
 
 MONTHS = {
@@ -32,7 +36,9 @@ for file in os.listdir(DATA):
     filename = os.path.join(DATA, file)
     if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
         FILES.append(file)
+        print(file)
 
+FILES.sort()
 FILES.reverse()
 print("found: "+str(FILES))
 
@@ -54,7 +60,7 @@ def write(outurl="default.html"):
 
     outfile.close()
 
-    return os.path.join(WWW, outurl)
+    return os.path.join(LIVE+USER,os.path.basename(os.path.realpath(WWW)),outurl)
 
 def write_entry(file):
     # dump given file into entry format, return as list of strings
