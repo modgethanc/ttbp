@@ -39,10 +39,12 @@ def write(outurl="default.html"):
 def write_entry(file):
     # dump given file into entry format, return as list of strings
 
+    date = parse_date(file)
+
     entry = [
-        "\t\t<p><a name=\"$today\"></a><br /><br /></p>\n",
+        "\t\t<p><a name=\""+date[0]+date[1]+date[2]+"\"></a><br /><br /></p>\n",
         "\t\t<div class=\"entry\">\n",
-        "\t\t\t<h5><a href=\"$today\">DD</a> month YYYY</h5>\n",
+        "\t\t\t<h5><a href=\"#"+date[0]+date[1]+date[2]+"\">"+date[2]+"</a> month "+date[0]+"</h5>\n",
         "\t\t\t<P>"
     ]
 
@@ -68,4 +70,8 @@ def parse_date(file):
     # assuming a filename of YYYYMMDD.txt, returns a list of
     # ['YYYY', 'MM', 'DD']
 
-    return
+    rawdate = os.path.splitext(os.path.basename(file))[0]
+
+    date = [rawdate[0:4], rawdate[4:6], rawdate[6:]]
+
+    return date
