@@ -1,0 +1,8 @@
+config file things:
+-preferred text editor
+-set www symlink
+-set page title
+
+flair:
+-themes
+-global post announcements

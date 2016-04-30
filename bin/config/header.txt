@@ -9,3 +9,4 @@
       <h1><a href="#">~endorphant</a>@<a href="../">tilde.town</a></h1>
     </div>
 
+    <div id="tlogs">
