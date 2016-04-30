@@ -10,24 +10,44 @@ DATA = os.path.join("..", "data")
 
 BANNER = open(os.path.join(CONFIG, "banner.txt")).read()
 CLOSER = "\n\tsee you later, space cowboy..."
+SPACER = "\n\n\n\n"
 
 def start():
   print(BANNER)
-  print("\n\n\n\n")
+  print(SPACER)
+
+  print(check_init())
+
   try:
     print(main_menu())
   except ValueError or SyntaxError:
-    print("oh no i didn't understand that")
+    print("\n\noh no i didn't understand that")
     print(main_menu())
   except KeyboardInterrupt:
-    print("eject button fired")
+    print("\n\neject button fired")
     print(main_menu())
-  print(CLOSER)
-  
+
+def stop():
+  return CLOSER
+
+def check_init():
+  if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
+    return "welcome back, friend"
+  else:
+    return init()
+
+def init():
+  print(SPACER)
+  return "i don't recognize you, stranger. let's make friends."
+
 def main_menu():
+  print(SPACER)
 
   print("how are you feeling today? ")
 
-  input()
+  ans = raw_input("your feels: ")
 
-  return main_menu()
+  if ans == "none":
+    return stop()
+  else:
+    return main_menu()
