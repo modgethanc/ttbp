@@ -1,12 +1,13 @@
 #!/usr/bin/python
 
-import core
+#import core
 
 import os
 
-WWW = os.path.join("..","www")
-CONFIG = os.path.join("config")
-DATA = os.path.join("..", "data")
+PATH = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
+WWW = os.path.join(PATH, "..","www")
+CONFIG = os.path.join(PATH, "config")
+DATA = os.path.join(PATH, "..", "data")
 
 BANNER = open(os.path.join(CONFIG, "banner.txt")).read()
 CLOSER = "\n\tsee you later, space cowboy..."
@@ -45,9 +46,13 @@ def main_menu():
 
   print("how are you feeling today? ")
 
-  ans = raw_input("your feels: ")
+  ans = raw_input("your feels (enter 'none' to quit): ")
 
   if ans == "none":
     return stop()
   else:
     return main_menu()
+
+#####
+
+start()
