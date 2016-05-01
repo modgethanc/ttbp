@@ -5,6 +5,7 @@ import random
 import tempfile
 import subprocess
 import time
+import json
 
 #import core
 import chatter
@@ -19,6 +20,7 @@ USER = os.path.basename(os.path.expanduser("~"))
 PATH = os.path.join("/home", USER, ".ttbp")
 WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
+TTBPRC = os.path.join(CONFIG, "ttbprc")
 DATA = os.path.join(PATH, "entries")
 SETTINGS = {
         "editor":"vim",
@@ -66,15 +68,16 @@ def stop():
   return "\n\t"+chatter.say("bye")
 
 def check_init():
+  global SETTINGS
   if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
       print("welcome back, "+USER+".")
-      if not os.path.isfile(os.path.join(CONFIG, "ttbprc")):
-          print("\nyour ttbp configuration doesn't look right. let's make you a fresh copy.\n\n")
-          try:
-              setup()
-          except KeyboardInterrupt:
-              print("\n\nsorry, trying again.\n\n")
-              setup()
+      while not os.path.isfile(TTBPRC):
+        setup_handler()
+      try:
+        SETTINGS = json.load(open(TTBPRC))
+      except ValueError:
+        setup_handler()
+
       raw_input("\n\npress enter to explore your feelings.\n\n")
       return ""
   else:
@@ -83,6 +86,14 @@ def check_init():
 def init():
     raw_input("i don't recognize you, stranger. let's make friends someday.\n\npress enter to explore some options.\n\n")
     return ""
+
+def setup_handler():
+    print("\nyour ttbp configuration doesn't look right. let's make you a fresh copy.\n\n")
+    try:
+        setup()
+    except KeyboardInterrupt:
+        print("\n\nsorry, trying again.\n\n")
+        setup()
 
 def setup():
     global SETTINGS
@@ -121,6 +132,11 @@ def setup():
     subprocess.call(["rm", WWW])
     subprocess.call(["ln", "-s", publishing, WWW])
     print("\npublishing to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/\n\n")
+
+    # save settings
+    ttbprc = open(TTBPRC, "w")
+    ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
+    ttbprc.close()
 
     return SETTINGS
 
