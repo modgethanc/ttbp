@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import os
+import chatter
 
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 USER = os.path.basename(os.path.expanduser("~"))
@@ -10,6 +11,10 @@ LIVE = "http://tilde.town/~"
 WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 DATA = os.path.join(PATH, "entries")
+
+HEADER = ""
+FOOTER = ""
+FILES = []
 
 MONTHS = {
         "01":"january",
@@ -26,20 +31,21 @@ MONTHS = {
         "12":"december"
     }
 
-HEADER = open(os.path.join(CONFIG, "header.txt")).read()
-FOOTER = open(os.path.join(CONFIG, "footer.txt")).read()
+def load():
+    global FILES
+    global HEADER
+    global FOOTER
 
-FILES = []
+    HEADER = open(os.path.join(CONFIG, "header.txt")).read()
+    FOOTER = open(os.path.join(CONFIG, "footer.txt")).read()
 
-for file in os.listdir(DATA):
-    filename = os.path.join(DATA, file)
-    if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
-        FILES.append(file)
-        #print(file)
+    for file in os.listdir(DATA):
+        filename = os.path.join(DATA, file)
+        if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
+            FILES.append(file)
 
-FILES.sort()
-FILES.reverse()
-#print("found: "+str(FILES))
+    FILES.sort()
+    FILES.reverse()
 
 def write(outurl="default.html"):
     outfile = open(os.path.join(WWW, outurl), "w")
