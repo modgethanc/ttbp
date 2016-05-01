@@ -10,7 +10,6 @@ LIVE = "http://tilde.town/~"
 WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 DATA = os.path.join(PATH, "entries")
-#DATA = os.path.join("..", "data")
 
 MONTHS = {
         "01":"january",
@@ -36,11 +35,11 @@ for file in os.listdir(DATA):
     filename = os.path.join(DATA, file)
     if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
         FILES.append(file)
-        print(file)
+        #print(file)
 
 FILES.sort()
 FILES.reverse()
-print("found: "+str(FILES))
+#print("found: "+str(FILES))
 
 def write(outurl="default.html"):
     outfile = open(os.path.join(WWW, outurl), "w")

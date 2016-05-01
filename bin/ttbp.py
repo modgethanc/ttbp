@@ -3,18 +3,25 @@
 #import core
 
 import os
+import core
+import chatter
 
-PATH = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
-WWW = os.path.join(PATH, "..","www")
+SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
+USER = os.path.basename(os.path.expanduser("~"))
+PATH = os.path.join("/home", USER, ".ttbp")
+
+LIVE = "http://tilde.town/~"
+WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
-DATA = os.path.join(PATH, "..", "data")
+DATA = os.path.join(PATH, "entries")
 
 BANNER = open(os.path.join(CONFIG, "banner.txt")).read()
-CLOSER = "\n\tsee you later, space cowboy..."
+#CLOSER = "\n\tsee you later, space cowboy..."
 SPACER = "\n\n\n\n"
 
 def start():
   print(BANNER)
+  print(chatter.say("greet")+", "+chatter.say("friend"))
   print(SPACER)
 
   print(check_init())
@@ -29,17 +36,17 @@ def start():
     print(main_menu())
 
 def stop():
-  return CLOSER
+  return "\n\t"+chatter.say("bye")
 
 def check_init():
   if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
-    return "welcome back, friend"
+      return "welcome back, "+USER
   else:
     return init()
 
 def init():
   print(SPACER)
-  return "i don't recognize you, stranger. let's make friends."
+  return "i don't recognize you, stranger. let's make friends. you're "+USER+", right?"
 
 def main_menu():
   print(SPACER)
