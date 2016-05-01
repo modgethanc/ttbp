@@ -6,19 +6,19 @@
     "good morning",
     "good afternoon",
     "good day",
-    "good evening"
+    "good evening",
+    "welcome back"
       ],
   "bye":[
-    "see you later",
-    "bye",
-    "later"
+    "see you later, space cowboy",
+    "bye, townie",
+    "until next time, friend"
       ],
   "friend":[
     "friend",
     "pal",
     "buddy",
-    "townie",
-    "fellow"
+    "townie"
     ],
   "months":{
     "01":"january",

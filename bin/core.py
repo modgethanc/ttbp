@@ -32,13 +32,18 @@ MONTHS = {
     }
 
 def load():
-    global FILES
     global HEADER
     global FOOTER
 
     HEADER = open(os.path.join(CONFIG, "header.txt")).read()
     FOOTER = open(os.path.join(CONFIG, "footer.txt")).read()
 
+    load_files()
+
+def load_files():
+    global FILES
+
+    FILES = []
     for file in os.listdir(DATA):
         filename = os.path.join(DATA, file)
         if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":

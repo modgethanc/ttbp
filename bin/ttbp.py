@@ -7,13 +7,14 @@ import subprocess
 import time
 import json
 
-#import core
+import core
 import chatter
 
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
+USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
 
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
@@ -51,7 +52,7 @@ def start():
   redraw()
   #print(chatter.say("greet")+", "+chatter.say("friend"))
   #print("(remember, you can always press ctrl-c to come home)\n")
-  print("if you don't want to be here at any point, press ctrl-d and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
+  print("if you don't want to be here at any point, press <ctrl-d> and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
   print(check_init())
 
   try:
@@ -69,8 +70,9 @@ def stop():
 
 def check_init():
   global SETTINGS
+  print("\n\n")
   if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
-      print("welcome back, "+USER+".")
+      print(chatter.say("greet")+", "+USER+".")
       while not os.path.isfile(TTBPRC):
         setup_handler()
       try:
@@ -78,13 +80,31 @@ def check_init():
       except ValueError:
         setup_handler()
 
-      raw_input("\n\npress enter to explore your feelings.\n\n")
+      raw_input("\n\npress <enter> to explore your feelings.\n\n")
+      core.load()
       return ""
   else:
     return init()
 
 def init():
-    raw_input("i don't recognize you, stranger. let's make friends someday.\n\npress enter to explore some options.\n\n")
+    try:
+        raw_input("i don't recognize you, stranger. let's make friends.\n\npress <enter> to begin, or <ctrl-c> to get out of here. \n\n")
+    except KeyboardInterrupt:
+        print("\n\nthanks for checking in! i'll always be here.\n\n")
+        quit() 
+
+    users = open(USERFILE, 'a')
+    users.write(USER+"\n")
+    users.close()
+    subprocess.call(["mkdir", PATH])
+    subprocess.call(["mkdir", CONFIG])
+    subprocess.call(["mkdir", DATA])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "header.txt"), CONFIG])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), CONFIG])
+
+    setup()
+    core.load()
     return ""
 
 def setup_handler():
@@ -129,7 +149,8 @@ def setup():
         index = open(os.path.join(publishing, "index.html"), "w")
         index.write("<h1>ttbp blog placeholder</h1>")
         index.close()
-    subprocess.call(["rm", WWW])
+    if os.path.exists(WWW):
+        subprocess.call(["rm", WWW])
     subprocess.call(["ln", "-s", publishing, WWW])
     print("\npublishing to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/\n\n")
 
@@ -137,6 +158,8 @@ def setup():
     ttbprc = open(TTBPRC, "w")
     ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
     ttbprc.close()
+
+    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.")
 
     return SETTINGS
 
@@ -164,7 +187,7 @@ def main_menu():
             "send feedback",
             "see credits"]
     #print(SPACER)
-    print("you're at ttbp home now. remember, you can always press ctrl-c to come back here.\n\n")
+    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
     print_menu(menuOptions)
     #print("how are you feeling today? ")
 
@@ -175,7 +198,9 @@ def main_menu():
         return main_menu()
 
     if choice == '0':
-        redraw(DUST)
+        redraw()
+        today = time.strftime("%Y%m%d")
+        write_entry(os.path.join(DATA, today+".txt"))
     elif choice == '1':
         redraw(DUST)
     elif choice == '2':
@@ -213,8 +238,12 @@ def feedback_menu():
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
+    raw_input("\nfeelings will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feelings for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feelings.\n\n") 
     subprocess.call([SETTINGS["editor"], entry])
-    return "wrote to "+entry
+    core.load_files()
+    core.write("index.html")
+    redraw("new entry posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feelings!")
+    return
 
 def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+str(int(time.time()))+".msg")):
 

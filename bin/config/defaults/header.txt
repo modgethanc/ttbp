@@ -1,12 +1,12 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <html>
   <head>
-    <title>~endorphant</title>
+    <title>$USER on TTBP</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div id="meta">
-      <h1><a href="#">~endorphant</a>@<a href="../">tilde.town</a></h1>
+      <h1><a href="#">~$USER</a>@<a href="~endorphant/ttbp">TTBP</a></h1>
     </div>
 
     <div id="tlogs">
