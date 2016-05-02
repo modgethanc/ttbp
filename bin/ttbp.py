@@ -119,16 +119,16 @@ def gen_header():
     header = []
 
     header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
-    header.append("<html>")
-    header.append("\t<head>")
-    header.append("\t\t<title>~"+USER+"on TTBP</title>")
-    header.append("\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
-    header.append("\t</head>")
-    header.append("\t<body>")
-    header.append("\t\t<div id=\"meta\">")
-    header.append("\t\t\t<h1><a href=\"#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
-    header.append("\t\t</div>\n")
-    header.append("\t\t<div id=\"tlogs\">")
+    header.append("\n<html>")
+    header.append("\n\t<head>")
+    header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
+    header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
+    header.append("\n\t</head>")
+    header.append("\n\t<body>")
+    header.append("\n\t\t<div id=\"meta\">")
+    header.append("\n\t\t\t<h1><a href=\"#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
+    header.append("\n\t\t</div>\n")
+    header.append("\n\t\t<div id=\"tlogs\">")
     return header
 
 def setup_handler():
