@@ -6,7 +6,7 @@
   </head>
   <body>
     <div id="meta">
-      <h1><a href="#">~$USER</a>@<a href="~endorphant/ttbp">TTBP</a></h1>
+      <h1><a href="#">~$USER</a>@<a href="/~endorphant/ttbp">TTBP</a></h1>
     </div>
 
     <div id="tlogs">

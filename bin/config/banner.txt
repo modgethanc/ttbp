@@ -2,4 +2,4 @@
 | TILDE TOWN |
 |  BLOGGING  |
 |  PLATFORM  |
-==============   ver 0.2 (highly unstable)
+==============   ver 0.2.1 (highly unstable)

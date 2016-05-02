@@ -19,13 +19,14 @@ USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
 PATH = os.path.join("/home", USER, ".ttbp")
+PUBLIC = os.path.join("/home", USER, "public_html")
 WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 TTBPRC = os.path.join(CONFIG, "ttbprc")
 DATA = os.path.join(PATH, "entries")
 SETTINGS = {
-        "editor":"vim",
-        "publish dir":"blog"
+        "editor": "none",
+        "publish dir": False
     }
 
 ## ui globals
@@ -99,13 +100,36 @@ def init():
     subprocess.call(["mkdir", PATH])
     subprocess.call(["mkdir", CONFIG])
     subprocess.call(["mkdir", DATA])
-    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "header.txt"), CONFIG])
+    #subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "header.txt"), CONFIG])
+    header = gen_header()
+    headerfile = open(os.path.join(CONFIG, "header.txt"), 'w')
+    for line in header:
+        headerfile.write(line)
+    headerfile.close()
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
-    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), CONFIG])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
 
     setup()
     core.load()
+
+    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
+
+def gen_header():
+    header = []
+
+    header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
+    header.append("<html>")
+    header.append("\t<head>")
+    header.append("\t\t<title>~"+USER+"on TTBP</title>")
+    header.append("\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
+    header.append("\t</head>")
+    header.append("\t<body>")
+    header.append("\t\t<div id=\"meta\">")
+    header.append("\t\t\t<h1><a href=\"#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
+    header.append("\t\t</div>\n")
+    header.append("\t\t<div id=\"tlogs\">")
+    return header
 
 def setup_handler():
     print("\nyour ttbp configuration doesn't look right. let's make you a fresh copy.\n\n")
@@ -125,23 +149,25 @@ def setup():
         choice = raw_input("\nplease pick a number from the list: ")
 
     SETTINGS["editor"] = EDITORS[int(choice)]
-    print("\ntext editor set to >"+SETTINGS["editor"])
+    redraw("text editor set to: "+SETTINGS["editor"])
 
     # publish directory selection
-    choice = raw_input("\n\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
+    if SETTINGS["publish dir"]:
+        print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
+    choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
     if not choice:
         choice = "blog"
 
-    publishing = os.path.join("/home", USER, "public_html", choice)
+    publishing = os.path.join(PUBLIC, choice)
     while os.path.exists(publishing):
         second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
         if second == "":
             break
         choice = second
-        publishing = os.path.join("/home", USER, "public_html", choice)
+        publishing = os.path.join(PUBLIC, choice)
 
     SETTINGS["publish dir"] = choice
-    
+
     # set up publish directory
     if not os.path.exists(publishing):
         subprocess.call(["mkdir", publishing])
@@ -152,14 +178,12 @@ def setup():
     if os.path.exists(WWW):
         subprocess.call(["rm", WWW])
     subprocess.call(["ln", "-s", publishing, WWW])
-    print("\npublishing to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/\n\n")
+    print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/\n\n")
 
     # save settings
     ttbprc = open(TTBPRC, "w")
     ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
     ttbprc.close()
-
-    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.")
 
     return SETTINGS
 
@@ -181,11 +205,11 @@ def main_menu():
     #print(BANNER)
     #redraw()
     menuOptions = [
-            "record feelings", 
-            "check out neighbors",
+            "record feelings",
+            "(wip) check out neighbors",
             "change settings",
             "send feedback",
-            "see credits"]
+            "(wip) see credits"]
     #print(SPACER)
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
     print_menu(menuOptions)
@@ -204,7 +228,13 @@ def main_menu():
     elif choice == '1':
         redraw(DUST)
     elif choice == '2':
-        redraw(DUST)
+        pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
+        pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
+
+        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.\n\ncurrent settings "+pretty_settings+"\n")
+        setup()
+        raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+        redraw()
     elif choice == '3':
         redraw()
         feedback_menu()
@@ -238,7 +268,7 @@ def feedback_menu():
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
-    raw_input("\nfeelings will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feelings for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feelings.\n\n") 
+    raw_input("\nfeelings will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feelings for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feelings.\n\n")
     subprocess.call([SETTINGS["editor"], entry])
     core.load_files()
     core.write("index.html")
@@ -255,7 +285,8 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+str(in
 
     outfile = open(mailbox, 'w')
     outfile.write("from:\t\t~"+USER+"\n")
-    outfile.write("subject:\t"+subject+"\n\n")
+    outfile.write("subject:\t"+subject+"\n")
+    outfile.write("date:\t"+time.stfrtime("%d %B %y")+"\n")
     outfile.write(mail)
     outfile.close()
 
