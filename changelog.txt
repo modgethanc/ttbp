@@ -1,0 +1,20 @@
+TO-DO:
+	(goals for stable release)
+	-make individual permalink pages
+	-add credits page
+
+------
+
+CHANGELOG:
+
+ver 0.4
+	-added list of all users with a ttbp
+
+ver 0.3
+	-user setup, change settings
+
+ver 0.2
+	-feedback form, post entry
+
+ver 0.1
+	-acknowledges user

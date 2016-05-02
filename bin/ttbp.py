@@ -38,7 +38,7 @@ DUST = "sorry about the dust, but this part is still under construction. check b
 ## ref
 
 EDITORS = ["vim", "vi", "emacs", "pico", "nano"]
-SUBJECTS = ["bug report", "feature suggestion", "general comment"]
+SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ##
 
@@ -92,7 +92,7 @@ def init():
         raw_input("i don't recognize you, stranger. let's make friends.\n\npress <enter> to begin, or <ctrl-c> to get out of here. \n\n")
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
-        quit() 
+        quit()
 
     users = open(USERFILE, 'a')
     users.write(USER+"\n")
@@ -107,9 +107,9 @@ def init():
         headerfile.write(line)
     headerfile.close()
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
-    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
 
     setup()
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
     core.load()
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
@@ -128,7 +128,9 @@ def gen_header():
     header.append("\n\t\t<div id=\"meta\">")
     header.append("\n\t\t\t<h1><a href=\"#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
     header.append("\n\t\t</div>\n")
-    header.append("\n\t\t<div id=\"tlogs\">")
+    header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
+    header.append("\n\t\t<!---don't put anything after this line-->\n")
+    header.append("\n\t\t<div id=\"tlogs\">\n")
     return header
 
 def setup_handler():
@@ -206,7 +208,7 @@ def main_menu():
     #redraw()
     menuOptions = [
             "record feelings",
-            "(wip) check out neighbors",
+            "check out neighbors",
             "change settings",
             "send feedback",
             "(wip) see credits"]
@@ -226,7 +228,8 @@ def main_menu():
         today = time.strftime("%Y%m%d")
         write_entry(os.path.join(DATA, today+".txt"))
     elif choice == '1':
-        redraw(DUST)
+        redraw("the following users are publishing on ttbp:\n\n")
+        view_neighbors()
     elif choice == '2':
         pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
         pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
@@ -256,7 +259,7 @@ def feedback_menu():
     cat = ""
     if choice in ['0', '1', '2']:
         cat = SUBJECTS[int(choice)]
-        raw_input("\ncomposing a "+cat+" to ~endorphant.\n\npress enter to open an external text editor. mail will be sent once you save and quit.\n")
+        raw_input("\ncomposing a "+cat+" to ~endorphant.\n\npress <enter> to open an external text editor. mail will be sent once you save and quit.\n")
         redraw(send_feedback(cat))
         return
     else:
@@ -272,10 +275,10 @@ def write_entry(entry=os.path.join(DATA, "test.txt")):
     subprocess.call([SETTINGS["editor"], entry])
     core.load_files()
     core.write("index.html")
-    redraw("new entry posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feelings!")
+    redraw("posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feelings!")
     return
 
-def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+str(int(time.time()))+".msg")):
+def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.strftime("%Y%m%d-%H%M")+".msg")):
 
     mail = ""
 
@@ -286,12 +289,29 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+str(in
     outfile = open(mailbox, 'w')
     outfile.write("from:\t\t~"+USER+"\n")
     outfile.write("subject:\t"+subject+"\n")
-    outfile.write("date:\t"+time.stfrtime("%d %B %y")+"\n")
+    outfile.write("date:\t"+time.strftime("%d %B %y")+"\n")
     outfile.write(mail)
     outfile.close()
 
     return "mail sent. thanks for writing! i'll try to respond to you soon."
 
+def view_neighbors():
+
+    users = []
+
+    for townie in os.listdir("/home"):
+        if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
+            users.append(townie)
+
+    for user in users:
+        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+        url = LIVE+user+"/"+userRC["publish dir"]
+        print("\t~"+user+"\t at "+url)
+
+    raw_input("\n\npress <enter> to go back home.\n\n")
+    redraw()
+
+    return
 #####
 
 start()
