@@ -307,6 +307,8 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.s
 
 def view_neighbors(users):
 
+    userList = []
+
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
         url = LIVE+user+"/"+userRC["publish dir"]
@@ -320,7 +322,10 @@ def view_neighbors(users):
         user = "~"+user
         if len(user) < 8:
             user += "\t"
-        print("\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")")
+        userList.append("\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")")
+
+    userList.sort()
+    print_menu(userList)
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
