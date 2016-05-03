@@ -9,12 +9,14 @@ import json
 
 import core
 import chatter
+import inflect
 
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
+p = inflect.engine()
 
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
@@ -126,7 +128,7 @@ def gen_header():
     header.append("\n\t</head>")
     header.append("\n\t<body>")
     header.append("\n\t\t<div id=\"meta\">")
-    header.append("\n\t\t\t<h1><a href=\"#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
+    header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
     header.append("\n\t\t</div>\n")
     header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
     header.append("\n\t\t<!---don't put anything after this line-->\n")
@@ -243,6 +245,9 @@ def main_menu():
         feedback_menu()
     elif choice == '4':
         redraw(DUST)
+    elif choice == 'secret':
+        redraw("here are your recorded feelings, listed by date:\n\n")
+        view_entries()
     elif choice == "none":
         return stop()
     else:
@@ -257,7 +262,7 @@ def feedback_menu():
     choice = raw_input("\npick a category for your feedback: ")
 
     cat = ""
-    if choice in ['0', '1', '2']:
+    if choice in ['0', '1', '2', '3']:
         cat = SUBJECTS[int(choice)]
         raw_input("\ncomposing a "+cat+" to ~endorphant.\n\npress <enter> to open an external text editor. mail will be sent once you save and quit.\n")
         redraw(send_feedback(cat))
@@ -296,6 +301,7 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.s
     return "mail sent. thanks for writing! i'll try to respond to you soon."
 
 def view_neighbors():
+    # TODO: rewrite this so you don't have to traverse a second list??
 
     users = []
 
@@ -306,11 +312,26 @@ def view_neighbors():
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
         url = LIVE+user+"/"+userRC["publish dir"]
-        print("\t~"+user+"\t at "+url)
+        count = 0
+        for filename in os.listdir(os.path.join("/home", user, ".ttbp", "entries")):
+            if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
+                count += 1
+        user = "~"+user
+        if len(user) < 8:
+            user += "\t"
+        print("\t"+user+"\t at "+url+"\t("+p.no("entry", count)+")")
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
 
+    return
+
+def view_entries():
+
+    entries = []
+
+    raw_input("\n\npress <ctrl-c> to go back home.\n\n")
+    redraw()
     return
 #####
 

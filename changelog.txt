@@ -1,7 +1,10 @@
 TO-DO:
 	(goals for stable release)
-	-make individual permalink pages
 	-add credits page
+	-browse own entries
+	-show most recent global entries
+	-filename validator (only process entries if they're
+	.  ttbp/entries/YYMMDD.txt")
 
 ------
 
