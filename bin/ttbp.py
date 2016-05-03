@@ -83,7 +83,7 @@ def check_init():
       except ValueError:
         setup_handler()
 
-      raw_input("\n\npress <enter> to explore your feelings.\n\n")
+      raw_input("\n\npress <enter> to explore your feels.\n\n")
       core.load()
       return ""
   else:
@@ -209,10 +209,10 @@ def main_menu():
     #print(BANNER)
     #redraw()
     menuOptions = [
-            "record feelings",
-            "check out neighbors",
-            "change settings",
-            "send feedback",
+            "record your feels",
+            "check out your neighbors",
+            "change your settings",
+            "send some feedback",
             "(wip) see credits"]
     #print(SPACER)
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
@@ -235,7 +235,7 @@ def main_menu():
         for townie in os.listdir("/home"):
             if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
                 users.append(townie)
-        redraw("the following "+p.no("user", len(users))+" are publishing on ttbp:\n\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
         view_neighbors(users)
     elif choice == '2':
         pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
@@ -251,7 +251,7 @@ def main_menu():
     elif choice == '4':
         redraw(DUST)
     elif choice == 'secret':
-        redraw("here are your recorded feelings, listed by date:\n\n")
+        redraw("here are your recorded feels, listed by date:\n\n")
         view_entries()
     elif choice == "none":
         return stop()
@@ -281,11 +281,11 @@ def feedback_menu():
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
-    raw_input("\nfeelings will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feelings for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feelings.\n\n")
+    raw_input("\nfeels will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feels for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feels.\n\n")
     subprocess.call([SETTINGS["editor"], entry])
     core.load_files()
     core.write("index.html")
-    redraw("posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feelings!")
+    redraw("posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feels!")
     return
 
 def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.strftime("%Y%m%d-%H%M")+".msg")):
@@ -315,12 +315,12 @@ def view_neighbors(users):
             if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
                 count += 1
         pad = ""
-        if len(user) < 4:
+        if len(user) < 8:
             pad = "\t"
         user = "~"+user
         if len(user) < 8:
             user += "\t"
-        print("\t"+user+"\t at "+url+pad+"\t("+p.no("entry", count)+")")
+        print("\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")")
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
