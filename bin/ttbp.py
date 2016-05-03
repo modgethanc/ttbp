@@ -230,8 +230,13 @@ def main_menu():
         today = time.strftime("%Y%m%d")
         write_entry(os.path.join(DATA, today+".txt"))
     elif choice == '1':
-        redraw("the following users are publishing on ttbp:\n\n")
-        view_neighbors()
+        users = []
+
+        for townie in os.listdir("/home"):
+            if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
+                users.append(townie)
+        redraw("the following "+p.no("user", len(users))+" are publishing on ttbp:\n\n")
+        view_neighbors(users)
     elif choice == '2':
         pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
         pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
@@ -300,14 +305,7 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.s
 
     return "mail sent. thanks for writing! i'll try to respond to you soon."
 
-def view_neighbors():
-    # TODO: rewrite this so you don't have to traverse a second list??
-
-    users = []
-
-    for townie in os.listdir("/home"):
-        if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
-            users.append(townie)
+def view_neighbors(users):
 
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
@@ -316,10 +314,13 @@ def view_neighbors():
         for filename in os.listdir(os.path.join("/home", user, ".ttbp", "entries")):
             if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
                 count += 1
+        pad = ""
+        if len(user) < 4:
+            pad = "\t"
         user = "~"+user
         if len(user) < 8:
             user += "\t"
-        print("\t"+user+"\t at "+url+"\t("+p.no("entry", count)+")")
+        print("\t"+user+"\t at "+url+pad+"\t("+p.no("entry", count)+")")
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
