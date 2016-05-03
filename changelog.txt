@@ -1,10 +1,18 @@
 TO-DO:
 	(goals for stable release)
+
 	-add credits page
+	-make a cooler banner
+	-filename validator
+		-only count/process entries if filename is
+		.ttbp/entries/YYMMDD.txt"
 	-browse own entries
+		-started this one, call 'secret' from ttbp,
+		function is view_entries() on ttbp.py
+	-browse other blogs
 	-show most recent global entries
-	-filename validator (only process entries if they're
-	.  ttbp/entries/YYMMDD.txt")
+	-stylesheet selector
+		-and make a couple more custom stylesheets
 
 ------
 
