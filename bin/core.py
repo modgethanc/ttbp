@@ -2,6 +2,7 @@
 
 import os
 import time
+import subprocess
 
 import chatter
 
@@ -145,3 +146,36 @@ def parse_date(file):
     date = [rawdate[0:4], rawdate[4:6], rawdate[6:]]
 
     return date
+
+def meta(entries = FILES):
+    # takes a list of filenames and returns:
+    # [0] absolute path
+    # [1] ctime
+    # [2] wc -w
+    # [3] timestamp "DD month YYYY at HH:MM"
+    # [4] entry date YYYY-MM-DD
+    # sorted in reverse date order by [4]
+
+    meta = []
+
+    for filename in FILES:
+      ctime = os.path.getctime(filename)
+      wc = subprocess.check_output(["wc","-w",filename]).split()[0]
+      timestamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(ctime))
+      date = "-".join(parse_date(filename))
+
+      meta.append([filename, ctime, wc, timestamp, date])
+
+    meta.sort(key = lambda filename:filename[4])
+    meta.reverse()
+    return meta
+
+def test():
+    load()
+    #for x in FILES:
+    #  print(x)
+
+    metaTest = meta()
+
+    for x in metaTest:
+      print(x)

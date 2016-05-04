@@ -332,11 +332,17 @@ def view_neighbors(users):
 
     return
 
-def view_entries():
+def view_entries(entryDir=DATA):
 
     entries = []
 
-    raw_input("\n\npress <ctrl-c> to go back home.\n\n")
+    for entry in core.meta():
+        entries.append(entry[4]+" ("+p.no("word", entry[2])+") ")
+
+    print_menu(entries)
+
+    choice = raw_input("\n\npick an entry to read, or press <ctrl-c> to go back home.\n\n")
+
     redraw()
     return
 #####

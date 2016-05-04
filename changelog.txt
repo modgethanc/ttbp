@@ -11,6 +11,9 @@ TO-DO:
 		function is view_entries() on ttbp.py
 	-browse other blogs
 	-show most recent global entries
+
+	(goals for phase two)
+
 	-stylesheet selector
 		-and make a couple more custom stylesheets
 
