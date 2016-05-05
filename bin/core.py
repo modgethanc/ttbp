@@ -162,7 +162,7 @@ def meta(entries = FILES):
     for filename in entries:
       ctime = os.path.getctime(filename)
       wc = subprocess.check_output(["wc","-w",filename]).split()[0]
-      timestamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(ctime))
+      timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(ctime))
       date = "-".join(parse_date(filename))
       author = os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1]
 

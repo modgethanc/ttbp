@@ -6,11 +6,9 @@ TO-DO:
 	-filename validator
 		-only count/process entries if filename is
 		.ttbp/entries/YYMMDD.txt"
-	-browse own entries
-		-started this one, call 'beta' from ttbp to test,
-		function is view_entries() on ttbp.py
-	-browse other blogs
-	-show most recent global entries
+	-show most recent global entries on html
+	-make a nicer entry view wrapper
+		-maybe with a box? and a nicer feed view?
 
 	(goals for phase two)
 

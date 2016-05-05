@@ -391,7 +391,7 @@ def view_feed():
         if len(entry[5]) < 8:
             pad = "\t"
 
-        entries.append("~"+entry[5]+pad+"\ton "+entry[4]+" ("+p.no("word", entry[2])+") ")
+        entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
     #print_menu(entries)
     view_entries(metas, entries, "most recent ten entries: \n\n")
