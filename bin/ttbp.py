@@ -382,12 +382,15 @@ def view_feed():
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
         filenames = os.listdir(entryDir)
         for entry in filenames:
-            feedList.append(os.path.join(entryDir, entry))
-  
+            ### REALLY MAKE A REAL FILENAME VALIDATOR
+            fileSplit = os.path.splitext(entry)
+            if len(fileSplit[0]) == 8 and fileSplit[1] == ".txt":
+                feedList.append(os.path.join(entryDir, entry))
+
     metas = core.meta(feedList)
     metas.sort(key = lambda entry:entry[3])
     metas.reverse()
-   
+
     entries = []
     for entry in metas[0:10]:
         pad = ""
@@ -421,7 +424,10 @@ def list_select(options, prompt):
     invalid = True
 
     while invalid:
-        choice = raw_input("\n\n"+prompt)
+        try:
+            choice = raw_input("\n\n"+prompt)
+        except KeyboardInterrupt:
+            list_select(options, prompt)
 
         try:
             ans = int(choice)
