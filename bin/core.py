@@ -154,17 +154,20 @@ def meta(entries = FILES):
     # [2] wc -w
     # [3] timestamp "DD month YYYY at HH:MM"
     # [4] entry date YYYY-MM-DD
+    # [5] author
     # sorted in reverse date order by [4]
 
     meta = []
 
-    for filename in FILES:
+    for filename in entries:
       ctime = os.path.getctime(filename)
       wc = subprocess.check_output(["wc","-w",filename]).split()[0]
       timestamp = time.strftime("%Y-%m-%d %H:%M", time.localtime(ctime))
       date = "-".join(parse_date(filename))
+      author = os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1]
 
-      meta.append([filename, ctime, wc, timestamp, date])
+
+      meta.append([filename, ctime, wc, timestamp, date, author])
 
     meta.sort(key = lambda filename:filename[4])
     meta.reverse()

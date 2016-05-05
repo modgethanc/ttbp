@@ -7,7 +7,7 @@ TO-DO:
 		-only count/process entries if filename is
 		.ttbp/entries/YYMMDD.txt"
 	-browse own entries
-		-started this one, call 'secret' from ttbp,
+		-started this one, call 'beta' from ttbp to test,
 		function is view_entries() on ttbp.py
 	-browse other blogs
 	-show most recent global entries
@@ -20,6 +20,10 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.5
+	-added reading own entries
+	-added reading 10 most recent global entries
 
 ver 0.4
 	-added list of all users with a ttbp

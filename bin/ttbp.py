@@ -210,7 +210,9 @@ def main_menu():
     #redraw()
     menuOptions = [
             "record your feels",
+            "review your feels",
             "check out your neighbors",
+            "browse global feels",
             "change your settings",
             "send some feedback",
             "(wip) see credits"]
@@ -230,14 +232,16 @@ def main_menu():
         today = time.strftime("%Y%m%d")
         write_entry(os.path.join(DATA, today+".txt"))
     elif choice == '1':
-        users = []
-
-        for townie in os.listdir("/home"):
-            if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
-                users.append(townie)
+        redraw("here are your recorded feels, listed by date:\n\n")
+        view_own()
+    elif choice == '2':
+        users = find_ttbps()
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
         view_neighbors(users)
-    elif choice == '2':
+    elif choice == '3':
+        redraw("now viewing most recent entries\n\n")
+        view_feed()
+    elif choice == '4':
         pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
         pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
 
@@ -245,14 +249,11 @@ def main_menu():
         setup()
         raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
         redraw()
-    elif choice == '3':
+    elif choice == '5':
         redraw()
         feedback_menu()
-    elif choice == '4':
+    elif choice == '6':
         redraw(DUST)
-    elif choice == 'secret':
-        redraw("here are your recorded feels, listed by date:\n\n")
-        view_entries()
     elif choice == "none":
         return stop()
     else:
@@ -332,19 +333,105 @@ def view_neighbors(users):
 
     return
 
-def view_entries(entryDir=DATA):
+def view_own():
+
+    filenames = []
+
+    for entry in os.listdir(DATA):
+        filenames.append(os.path.join(DATA, entry))
+    metas = core.meta(filenames)
 
     entries = []
+    for entry in metas:
+        #print(entry)
+        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
 
-    for entry in core.meta():
-        entries.append(entry[4]+" ("+p.no("word", entry[2])+") ")
+    view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
+    redraw()
+
+    return
+
+def view_entries(metas, entries, prompt):
 
     print_menu(entries)
 
-    choice = raw_input("\n\npick an entry to read, or press <ctrl-c> to go back home.\n\n")
+    choice = list_select(entries, "pick an entry from the list, or <ctrl-c> to go home: ")
+
+    redraw("now reading ~"+metas[choice][5]+"'s feels on "+metas[choice][4]+"\n> press <q> to return to feels list.\n\n")
+
+    show_entry(metas[choice][0])
+    #redraw("here are your recorded feels, listed by date:\n\n")
+    redraw(prompt)
+
+    return view_entries(metas, entries, prompt)
+
+def show_entry(filename):
+
+    subprocess.call(["less", filename])
+
+    return
+
+def view_feed():
+
+    feedList = []
+
+    for townie in find_ttbps():
+        entryDir = os.path.join("/home", townie, ".ttbp", "entries")
+        filenames = os.listdir(entryDir)
+        for entry in filenames:
+            feedList.append(os.path.join(entryDir, entry))
+  
+    metas = core.meta(feedList)
+    metas.sort(key = lambda entry:entry[3])
+    metas.reverse()
+   
+    entries = []
+    for entry in metas[0:10]:
+        pad = ""
+        if len(entry[5]) < 8:
+            pad = "\t"
+
+        entries.append("~"+entry[5]+pad+"\ton "+entry[4]+" ("+p.no("word", entry[2])+") ")
+
+    #print_menu(entries)
+    view_entries(metas, entries, "most recent ten entries: \n\n")
 
     redraw()
+
     return
+#####
+
+def find_ttbps():
+    # looks for users with a valid ttbp config and returns a list of them
+    users = []
+
+    for townie in os.listdir("/home"):
+        if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
+            users.append(townie)
+
+    return users
+
+def list_select(options, prompt):
+    # runs the prompt for the list until a valid index is imputted
+
+    ans = ""
+    invalid = True
+
+    while invalid:
+        choice = raw_input("\n\n"+prompt)
+
+        try:
+            ans = int(choice)
+        except ValueError:
+            choice = raw_input("\n\n"+prompt+"\n\n")
+
+        invalid = False
+
+    if ans >= len(options):
+        return list_select(options, prompt)
+
+    return ans
+
 #####
 
 start()
