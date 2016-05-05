@@ -246,7 +246,10 @@ def main_menu():
         pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
 
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.\n\ncurrent settings "+pretty_settings+"\n")
-        setup()
+        try:
+            setup()
+        except KeyboardInterrupt():
+            redraw("eject button fired! going home now.")
         raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
         redraw()
     elif choice == '5':
