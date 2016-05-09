@@ -1,5 +1,5 @@
 ==============
 | TILDE TOWN |
-|  BLOGGING  |   ver 0.5 (fairly unstable)
+|  BLOGGING  |   ver 0.6 (fairly unstable)
 |  PLATFORM  |   ~endorphant/projects/ttbp/changelog.txt
-==============   
+==============

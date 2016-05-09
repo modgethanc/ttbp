@@ -9,15 +9,25 @@ TO-DO:
 	-show most recent global entries on html
 	-make a nicer entry view wrapper
 		-maybe with a box? and a nicer feed view?
+	-make commenting actually use mail instead of dumping
+		to a file?
+	-command line flags
 
 	(goals for phase two)
 
 	-stylesheet selector
 		-and make a couple more custom stylesheets
+	-replying to entries??
+		-direct mail to author
 
 ------
 
 CHANGELOG:
+
+ver 0.6
+	-improving exit handling
+	-sort neighbor view by most recently updated
+	-capture input from recording feels screen
 
 ver 0.5
 	-added reading own entries

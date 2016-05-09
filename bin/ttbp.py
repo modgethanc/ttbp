@@ -36,6 +36,9 @@ BANNER = open(os.path.join(SOURCE, "config", "banner.txt")).read()
 SPACER = "\n\n\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
+QUITS = ['exit', 'quit', 'q', 'x']
+BACKS = ['back', 'b']
+EJECT = "eject button fired! going home now."
 
 ## ref
 
@@ -57,19 +60,21 @@ def start():
   #print("(remember, you can always press ctrl-c to come home)\n")
   print("if you don't want to be here at any point, press <ctrl-d> and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
   print(check_init())
+  redraw()
 
   try:
-    redraw()
     print(main_menu())
-  except ValueError or SyntaxError:
-    redraw("oh no i didn't understand that. let's go home and start over.")
-    print(main_menu())
+  #except ValueError or SyntaxError:
+  #  redraw("oh no i didn't understand that. let's go home and start over.")
+  #  print(main_menu())
+  except EOFError:
+    print(stop())
   except KeyboardInterrupt:
-    redraw("eject button fired! going home now.")
+    redraw(EJECT)
     print(main_menu())
 
 def stop():
-  return "\n\t"+chatter.say("bye")
+  return "\n\n\t"+chatter.say("bye")+"\n\n"
 
 def check_init():
   global SETTINGS
@@ -221,10 +226,15 @@ def main_menu():
     print_menu(menuOptions)
     #print("how are you feeling today? ")
 
+    #try:
+    #    choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
+    #except KeyboardInterrupt:
+    #    redraw(EJECT)
+    #    return main_menu()
     try:
-        choice = raw_input("\ntell me about your feels (enter 'none' to quit): ")
+        choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
     except KeyboardInterrupt:
-        redraw("eject button fired! going home now.")
+        redraw(EJECT)
         return main_menu()
 
     if choice == '0':
@@ -236,7 +246,7 @@ def main_menu():
         view_own()
     elif choice == '2':
         users = find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp, listed by most recently updated first:\n\n")
         view_neighbors(users)
     elif choice == '3':
         redraw("now viewing most recent entries\n\n")
@@ -249,7 +259,7 @@ def main_menu():
         try:
             setup()
         except KeyboardInterrupt():
-            redraw("eject button fired! going home now.")
+            redraw(EJECT)
         raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
         redraw()
     elif choice == '5':
@@ -257,7 +267,7 @@ def main_menu():
         feedback_menu()
     elif choice == '6':
         redraw(DUST)
-    elif choice == "none":
+    elif choice in QUITS:
         return stop()
     else:
         redraw(INVALID)
@@ -285,7 +295,11 @@ def feedback_menu():
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
-    raw_input("\nfeels will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feels for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feels.\n\n")
+    entered = raw_input("\nfeels will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feels for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feels.\n\n")
+    if entered:
+        entryFile = open(entry, "a")
+        entryFile.write("\n"+entered+"\n")
+        entryFile.close()
     subprocess.call([SETTINGS["editor"], entry])
     core.load_files()
     core.write("index.html")
@@ -317,19 +331,40 @@ def view_neighbors(users):
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
         url = LIVE+user+"/"+userRC["publish dir"]
         count = 0
-        for filename in os.listdir(os.path.join("/home", user, ".ttbp", "entries")):
+        lastfile = ""
+        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        files.sort()
+        #for filename in os.listdir(os.path.join("/home", user, ".ttbp", "entries")).sort():
+        for filename in files:
             if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
                 count += 1
+                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
+
+        date = ""
+        if lastfile:
+            last = os.path.getctime(lastfile)
+            date = time.strftime("%Y%m%d %H%M", time.localtime(last))
+        else:
+            last = 0
+
         pad = ""
         if len(user) < 8:
             pad = "\t"
         user = "~"+user
         if len(user) < 8:
             user += "\t"
-        userList.append("\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")")
 
-    userList.sort()
-    print_menu(userList)
+        userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")", last])
+        #userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+") "+date, last])
+
+    # sort user by most recent entry
+    userList.sort(key = lambda userdata:userdata[1])
+    userList.reverse()
+    sortedUsers = []
+    for user in userList:
+        sortedUsers.append(user[0])
+
+    print_menu(sortedUsers)
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
@@ -349,24 +384,29 @@ def view_own():
         #print(entry)
         entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
 
-    view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
-    redraw()
 
-    return
+    #view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
+    return view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
 
 def view_entries(metas, entries, prompt):
 
     print_menu(entries)
 
-    choice = list_select(entries, "pick an entry from the list, or <ctrl-c> to go home: ")
+    choice = list_select(entries, "pick an entry from the list, or type 'back' to go home: ")
 
-    redraw("now reading ~"+metas[choice][5]+"'s feels on "+metas[choice][4]+"\n> press <q> to return to feels list.\n\n")
+    if choice is not False:
 
-    show_entry(metas[choice][0])
-    #redraw("here are your recorded feels, listed by date:\n\n")
-    redraw(prompt)
+        redraw("now reading ~"+metas[choice][5]+"'s feels on "+metas[choice][4]+"\n> press <q> to return to feels list.\n\n")
 
-    return view_entries(metas, entries, prompt)
+        show_entry(metas[choice][0])
+        #redraw("here are your recorded feels, listed by date:\n\n")
+        redraw(prompt)
+
+        return view_entries(metas, entries, prompt)
+
+    else:
+        redraw()
+        return
 
 def show_entry(filename):
 
@@ -424,10 +464,15 @@ def list_select(options, prompt):
     invalid = True
 
     while invalid:
-        try:
-            choice = raw_input("\n\n"+prompt)
-        except KeyboardInterrupt:
-            list_select(options, prompt)
+        #try:
+        #    choice = raw_input("\n\n"+prompt)
+        #except KeyboardInterrupt:
+        #    redraw()
+        #    main_menu()
+
+        choice = raw_input("\n\n"+prompt)
+        if choice in BACKS:
+            return False
 
         try:
             ans = int(choice)
