@@ -1,5 +1,10 @@
-==============
-| TILDE TOWN |
-|  BLOGGING  |   ver 0.6 (fairly unstable)
-|  PLATFORM  |   ~endorphant/projects/ttbp/changelog.txt
-==============
+ __________________________________________________________
+|                                                          |
+|  the tilde.town                                          |
+|  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
+|  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
+|  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
+|                                                          |
+|                               ver 0.6 (fairly unstable)  |
+|                 ~endorphant/projects/ttbp/changelog.txt  |
+|__________________________________________________________|

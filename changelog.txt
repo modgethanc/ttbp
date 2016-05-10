@@ -2,16 +2,16 @@ TO-DO:
 	(goals for stable release)
 
 	-add credits page
-	-make a cooler banner
 	-filename validator
 		-only count/process entries if filename is
 		.ttbp/entries/YYMMDD.txt"
 	-show most recent global entries on html
-	-make a nicer entry view wrapper
-		-maybe with a box? and a nicer feed view?
 	-make commenting actually use mail instead of dumping
 		to a file?
 	-command line flags
+	-markdown parsing
+	-sort out all this freaking exit problems
+	-neighbor view takes you to individual entry listing
 
 	(goals for phase two)
 
@@ -19,6 +19,10 @@ TO-DO:
 		-and make a couple more custom stylesheets
 	-replying to entries??
 		-direct mail to author
+	-paginate entry list
+	-make a nicer entry view wrapper
+		-maybe with a box? and a nicer feed view?
+
 
 ------
 
