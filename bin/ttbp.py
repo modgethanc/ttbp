@@ -10,6 +10,7 @@ import json
 import core
 import chatter
 import inflect
+import util
 
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
@@ -340,10 +341,12 @@ def view_neighbors(users):
                 count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
-        date = ""
+        ago = "never"
         if lastfile:
             last = os.path.getctime(lastfile)
-            date = time.strftime("%Y%m%d %H%M", time.localtime(last))
+            #date = time.strftime("%Y%m%d %H%M", time.localtime(last))
+            since = time.time()-last
+            ago = util.pretty_time(int(since)) + " ago"
         else:
             last = 0
 
@@ -354,7 +357,8 @@ def view_neighbors(users):
         if len(user) < 8:
             user += "\t"
 
-        userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")", last])
+        userList.append(["\t"+user+"\t"+url+pad+"\t("+ago+")", last])
+        #userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")", last])
         #userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+") "+date, last])
 
     # sort user by most recent entry

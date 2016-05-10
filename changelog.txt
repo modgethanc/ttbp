@@ -28,6 +28,10 @@ TO-DO:
 
 CHANGELOG:
 
+ver 0.6.5
+	-renamed FEELS ENGINE
+	-changed neighbor view to show last update time instead of feels count
+
 ver 0.6
 	-improving exit handling
 	-sort neighbor view by most recently updated
