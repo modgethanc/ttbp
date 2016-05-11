@@ -3,6 +3,7 @@
 import os
 import time
 import subprocess
+import re
 
 import chatter
 
@@ -49,7 +50,8 @@ def load_files():
     FILES = []
     for filename in os.listdir(DATA):
         filename = os.path.join(DATA, filename)
-        if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
+        #if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
+        if os.path.isfile(filename) and valid(filename):
             FILES.append(filename)
 
     FILES.sort()
@@ -62,9 +64,6 @@ def write(outurl="default.html"):
 
     for line in HEADER:
         outfile.write(line)
-
-    #for line in write_placeholder():
-    #    outfile.write(line)
 
     outfile.write("\n")
 
@@ -171,12 +170,31 @@ def meta(entries = FILES):
 
     meta.sort(key = lambda filename:filename[4])
     meta.reverse()
+
     return meta
+
+def valid(filename):
+    # check if the filename is YYYYMMDD.txt
+
+    filesplit = os.path.splitext(os.path.basename(filename))
+    
+    if filesplit[1] != ".txt":
+        return False
+
+    pattern = '^((19|20)\d{2})(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])$'
+
+    if not re.match(pattern, filesplit[0]):
+        return False
+
+    return True
+
+
+#############
+#############
+#############
 
 def test():
     load()
-    #for x in FILES:
-    #  print(x)
 
     metaTest = meta()
 

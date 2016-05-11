@@ -216,9 +216,6 @@ def print_menu(menu):
         i += 1
 
 def main_menu():
-    #os.system("clear")
-    #print(BANNER)
-    #redraw()
     menuOptions = [
             "record your feels",
             "review your feels",
@@ -226,18 +223,11 @@ def main_menu():
             "browse global feels",
             "change your settings",
             "send some feedback",
-            "(wip) see credits"]
-    #print(SPACER)
-    #print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
-    print("you're at ttbp home.\n\n")
+            "see credits"]
+    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
+    #print("you're at ttbp home.\n\n")
     print_menu(menuOptions)
-    #print("how are you feeling today? ")
 
-    #try:
-    #    choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
-    #except KeyboardInterrupt:
-    #    redraw(EJECT)
-    #    return main_menu()
     try:
         choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
     except KeyboardInterrupt:
@@ -313,7 +303,8 @@ def view_neighbors(users):
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
         for filename in files:
-            if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
+            #if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
+            if core.valid(filename):
                 count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
@@ -438,8 +429,9 @@ def view_feed():
         filenames = os.listdir(entryDir)
         for entry in filenames:
             ### REALLY MAKE A REAL FILENAME VALIDATOR
-            fileSplit = os.path.splitext(entry)
-            if len(fileSplit[0]) == 8 and fileSplit[1] == ".txt":
+            #fileSplit = os.path.splitext(entry)
+            #if len(fileSplit[0]) == 8 and fileSplit[1] == ".txt":
+            if core.valid(entry):
                 feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
