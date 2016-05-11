@@ -38,7 +38,7 @@ SPACER = "\n\n\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
 QUITS = ['exit', 'quit', 'q', 'x']
-BACKS = ['back', 'b']
+BACKS = ['back', 'b', 'q']
 EJECT = "eject button fired! going home now."
 
 ## ref
@@ -60,19 +60,24 @@ def start():
   #print(chatter.say("greet")+", "+chatter.say("friend"))
   #print("(remember, you can always press ctrl-c to come home)\n")
   print("if you don't want to be here at any point, press <ctrl-d> and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
-  print(check_init())
+  try:
+    print(check_init())
+  except EOFError:
+      print(stop())
+      return
+
   redraw()
 
-  try:
-    print(main_menu())
-  #except ValueError or SyntaxError:
-  #  redraw("oh no i didn't understand that. let's go home and start over.")
-  #  print(main_menu())
-  except EOFError:
-    print(stop())
-  except KeyboardInterrupt:
-    redraw(EJECT)
-    print(main_menu())
+  while 1:
+    try:
+        print(main_menu())
+    except EOFError:
+        print(stop())
+        break
+    except KeyboardInterrupt:
+        redraw(EJECT)
+    else:
+        break
 
 def stop():
   return "\n\n\t"+chatter.say("bye")+"\n\n"
@@ -223,7 +228,8 @@ def main_menu():
             "send some feedback",
             "(wip) see credits"]
     #print(SPACER)
-    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
+    #print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
+    print("you're at ttbp home.\n\n")
     print_menu(menuOptions)
     #print("how are you feeling today? ")
 
@@ -247,7 +253,7 @@ def main_menu():
         view_own()
     elif choice == '2':
         users = find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp, listed by most recently updated first:\n\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
         view_neighbors(users)
     elif choice == '3':
         redraw("now viewing most recent entries\n\n")
@@ -267,13 +273,16 @@ def main_menu():
         redraw()
         feedback_menu()
     elif choice == '6':
-        redraw(DUST)
+        redraw()
+        show_credits()
     elif choice in QUITS:
         return stop()
     else:
         redraw(INVALID)
 
     return main_menu()
+
+###
 
 def feedback_menu():
     print("you're about to send mail to ~endorphant about ttbp\n\n")
@@ -291,6 +300,77 @@ def feedback_menu():
         redraw(INVALID)
 
     return feedback_menu()
+
+def view_neighbors(users):
+
+    userList = []
+
+    for user in users:
+        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+        url = LIVE+user+"/"+userRC["publish dir"]
+        count = 0
+        lastfile = ""
+        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        files.sort()
+        for filename in files:
+            if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
+                count += 1
+                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
+
+        ago = "never"
+        if lastfile:
+            last = os.path.getctime(lastfile)
+            since = time.time()-last
+            ago = util.pretty_time(int(since)) + " ago"
+        else:
+            last = 0
+
+        pad = ""
+        if len(user) < 8:
+            pad = "\t"
+        user = "~"+user
+        if len(user) < 8:
+            user += "\t"
+
+        userList.append(["\t"+user+"\t"+url+pad+"\t("+ago+")", last])
+
+    # sort user by most recent entry
+    userList.sort(key = lambda userdata:userdata[1])
+    userList.reverse()
+    sortedUsers = []
+    for user in userList:
+        sortedUsers.append(user[0])
+
+    print_menu(sortedUsers)
+
+    raw_input("\n\npress <enter> to go back home.\n\n")
+    redraw()
+
+    return
+
+def view_own():
+
+    filenames = []
+
+    for entry in os.listdir(DATA):
+        filenames.append(os.path.join(DATA, entry))
+    metas = core.meta(filenames)
+
+    entries = []
+    for entry in metas:
+        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
+
+    return view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
+
+def show_credits():
+
+    print("ttbp was written by ~endorphant in python. the codebase is\npublicly available on github at https://github.com/modgethanc/ttbp\n\nif you have ideas for ttbp, you are welcome to fork the repo and \nwork on it. i'm only a baby dev, so i apologize for any \nhorrendously ugly coding habits i have.\n\nthanks to everyone who reads, listens, writes, and feels.")
+
+    raw_input("\n\npress <enter> to go back home.\n\n")
+    redraw()
+
+    return
+
 
 ## handlers
 
@@ -324,74 +404,6 @@ def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.s
 
     return "mail sent. thanks for writing! i'll try to respond to you soon."
 
-def view_neighbors(users):
-
-    userList = []
-
-    for user in users:
-        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-        url = LIVE+user+"/"+userRC["publish dir"]
-        count = 0
-        lastfile = ""
-        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
-        files.sort()
-        #for filename in os.listdir(os.path.join("/home", user, ".ttbp", "entries")).sort():
-        for filename in files:
-            if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
-                count += 1
-                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
-
-        ago = "never"
-        if lastfile:
-            last = os.path.getctime(lastfile)
-            #date = time.strftime("%Y%m%d %H%M", time.localtime(last))
-            since = time.time()-last
-            ago = util.pretty_time(int(since)) + " ago"
-        else:
-            last = 0
-
-        pad = ""
-        if len(user) < 8:
-            pad = "\t"
-        user = "~"+user
-        if len(user) < 8:
-            user += "\t"
-
-        userList.append(["\t"+user+"\t"+url+pad+"\t("+ago+")", last])
-        #userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+")", last])
-        #userList.append(["\t"+user+"\t"+url+pad+"\t("+p.no("feel", count)+") "+date, last])
-
-    # sort user by most recent entry
-    userList.sort(key = lambda userdata:userdata[1])
-    userList.reverse()
-    sortedUsers = []
-    for user in userList:
-        sortedUsers.append(user[0])
-
-    print_menu(sortedUsers)
-
-    raw_input("\n\npress <enter> to go back home.\n\n")
-    redraw()
-
-    return
-
-def view_own():
-
-    filenames = []
-
-    for entry in os.listdir(DATA):
-        filenames.append(os.path.join(DATA, entry))
-    metas = core.meta(filenames)
-
-    entries = []
-    for entry in metas:
-        #print(entry)
-        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
-
-
-    #view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
-    return view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
-
 def view_entries(metas, entries, prompt):
 
     print_menu(entries)
@@ -403,7 +415,6 @@ def view_entries(metas, entries, prompt):
         redraw("now reading ~"+metas[choice][5]+"'s feels on "+metas[choice][4]+"\n> press <q> to return to feels list.\n\n")
 
         show_entry(metas[choice][0])
-        #redraw("here are your recorded feels, listed by date:\n\n")
         redraw(prompt)
 
         return view_entries(metas, entries, prompt)
@@ -481,7 +492,7 @@ def list_select(options, prompt):
         try:
             ans = int(choice)
         except ValueError:
-            choice = raw_input("\n\n"+prompt+"\n\n")
+            return list_select(options, prompt)
 
         invalid = False
 

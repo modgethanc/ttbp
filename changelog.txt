@@ -1,7 +1,6 @@
 TO-DO:
 	(goals for stable release)
 
-	-add credits page
 	-filename validator
 		-only count/process entries if filename is
 		.ttbp/entries/YYMMDD.txt"
@@ -10,7 +9,6 @@ TO-DO:
 		to a file?
 	-command line flags
 	-markdown parsing
-	-sort out all this freaking exit problems
 	-neighbor view takes you to individual entry listing
 
 	(goals for phase two)
@@ -27,6 +25,10 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.7
+	-fixed program crashing? maybe?
+	-added credits
 
 ver 0.6.5
 	-renamed FEELS ENGINE
