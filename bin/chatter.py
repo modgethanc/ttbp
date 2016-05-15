@@ -12,3 +12,6 @@ langfile.close()
 def say(keyword):
 
   return random.choice(LANG.get(keyword))
+
+def month(num):
+  return LANG["months"].get(num)
