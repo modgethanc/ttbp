@@ -567,15 +567,14 @@ def www_neighbors(users):
             if core.valid(filename):
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
-        ago = "never"
         if lastfile:
             last = os.path.getctime(lastfile)
-            since = time.time()-last
-            ago = util.pretty_time(int(since)) + " ago"
+            timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(last))
         else:
+            timestamp = ""
             last = 0
 
-        userList.append(["<a href=\""+url+"\">~"+user+"</a> ("+ago+")", last])
+        userList.append(["<a href=\""+url+"\">~"+user+"</a> "+timestamp, last])
 
     # sort user by most recent entry
     userList.sort(key = lambda userdata:userdata[1])
