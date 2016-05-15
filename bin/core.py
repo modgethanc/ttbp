@@ -4,6 +4,7 @@ import os
 import time
 import subprocess
 import re
+import mistune
 
 import chatter
 
@@ -50,7 +51,6 @@ def load_files():
     FILES = []
     for filename in os.listdir(DATA):
         filename = os.path.join(DATA, filename)
-        #if os.path.isfile(filename) and os.path.splitext(filename)[1] == ".txt":
         if os.path.isfile(filename) and valid(filename):
             FILES.append(filename)
 
@@ -114,8 +114,8 @@ def write_entry(filename):
     entry = [
         "\t\t<p><a name=\""+date[0]+date[1]+date[2]+"\"></a><br /><br /></p>\n",
         "\t\t<div class=\"entry\">\n",
-        "\t\t\t<h5><a href=\"#"+date[0]+date[1]+date[2]+"\">"+date[2]+"</a> "+MONTHS[date[1]]+" "+date[0]+"</h5>\n",
-        "\t\t\t<P>"
+        "\t\t\t<h5><a href=\"#"+date[0]+date[1]+date[2]+"\">"+date[2]+"</a> "+MONTHS[date[1]]+" "+date[0]+"</h5>\n"
+        #"\t\t\t<P>"
     ]
 
     raw = []
@@ -125,12 +125,14 @@ def write_entry(filename):
         raw.append(line)
     rawfile.close()
 
-    for line in raw:
-        entry.append(line+"\t\t\t")
-        if line == "\n":
-            entry.append("</p>\n\t\t\t<p>")
+    entry.append("\t\t\t"+mistune.markdown("".join(raw), escape=False, hard_wrap=False))
 
-    entry.append("</p>\n")
+    #for line in raw:
+        #entry.append(line+"\t\t\t")
+        #if line == "\n":
+        #    entry.append("</p>\n\t\t\t<p>")
+
+    #entry.append("</p>\n")
     entry.append("\t\t\t<p style=\"font-size:.6em; font-color:#808080; text-align: right;\"><a href=\""+"".join(date)+".html\">permalink</a></p>\n")
     entry.append("\n\t\t</div>\n")
 

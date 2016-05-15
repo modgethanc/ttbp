@@ -4,7 +4,6 @@ TO-DO:
 	-show most recent global entries on html
 	-command line flags:
 		-shortcut to most recent feels, writing entry, seeing own entry
-	-markdown parsing
 	-neighbor view takes you to individual entry listing
 
 	(goals for phase two)
@@ -21,6 +20,9 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.8.0
+	-markdown parsing for entries
 
 ver 0.7.5
 	-COLORFUL BANNER

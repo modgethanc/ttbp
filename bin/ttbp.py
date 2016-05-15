@@ -415,6 +415,9 @@ thanks to everyone who reads, listens, writes, and feels.\
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
     entered = raw_input("""
+"""+util.hilight("new feature!")+""" you can now use standard markdown in
+your entry text! raw html is still valid, and you can mix them together.
+
 feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
 
 if you've already started recording feels for this day, you
