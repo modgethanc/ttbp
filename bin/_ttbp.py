@@ -540,13 +540,11 @@ def www_neighbors(users):
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
         url = LIVE+user+"/"+userRC["publish dir"]
-        count = 0
         lastfile = ""
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
         for filename in files:
             if core.valid(filename):
-                count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
         ago = "never"
