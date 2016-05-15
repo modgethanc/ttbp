@@ -36,8 +36,9 @@ regenerate your configuration by deleting your ~/.ttbp directory entirely. **you
 
 * to modify your stylesheet, edit your ~/.ttbp/www/style.css
 * to modify the page header, edit your ~/.ttbp/config/header.txt
+  * you might note that there's a place marked off in the default header where you can safely put custom HTML elements!
 * to modify the page footer, edit your ~/.ttbp/config/footer.txt
 
-### GENERAL TIPS
+### general tips
 
 * add `alias ttbp="~endorphant/bin/ttbp"` to your .bash_aliases for fewer keystrokes

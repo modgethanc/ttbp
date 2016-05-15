@@ -4,6 +4,7 @@ TO-DO:
 	-command line flags:
 		-shortcut to most recent feels, writing entry, seeing own entry
 	-neighbor view takes you to individual entry listing
+	-make ttbp/index.html reference readme.md
 
 	(goals for version two)
 
