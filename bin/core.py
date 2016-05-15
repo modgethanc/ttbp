@@ -16,6 +16,7 @@ LIVE = "http://tilde.town/~"
 WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 DATA = os.path.join(PATH, "entries")
+FEED = os.path.join(SOURCE, "www", "index.html")
 
 HEADER = ""
 FOOTER = ""
@@ -174,6 +175,52 @@ def valid(filename):
         return False
 
     return True
+
+def write_global_feed(blogList):
+    # takes an array of the current global blog status and prints it to
+    # set www
+
+    outfile = open(FEED, "w")
+
+    ## header
+    outfile.write("""\
+<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
+<html>
+    <head>
+        <title>tilde.town global feels engine</title>
+        <link rel=\"stylesheet\" href=\"style.css\" />
+    </head>
+    <body>
+        <h1>tilde.town feels engine</h1>
+
+        <h2><a href="https://github.com/modgethanc/ttbp">github
+        repo</a> | <a
+        href="http://tilde.town/~endorphant/blog/20160510.html">state
+        of the ttbp</a></h2> <div class="box">
+        <p>curious? run <b>~endorphant/bin/ttbp</b> while logged in to tilde.town.</p>
+        <p>it's still a little volatile. let me know if anything breaks.</p>
+        <p>&nbsp;</p>
+
+        <h3>live feels-sharing:</h3>
+        <div class=\"feed\">
+            <ul>
+""")
+
+    ## feed
+    for blog in blogList:
+        outfile.write("""
+                <li>"""+blog+"""</li>\
+                    """)
+
+    ## footer
+    outfile.write("""
+            </ul>
+        </div>
+  </body>
+</html>
+""")
+
+    outfile.close()
 
 
 #############
