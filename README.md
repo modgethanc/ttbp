@@ -1,6 +1,3 @@
-tilde.town blogging platform
-============================
-
 a command-line based blogging platform running on tilde.town
 
 to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
@@ -8,22 +5,39 @@ to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
 you can also try `~endorphant/bin/ttbp-beta` for a more unstable, bleeding-edge
 experience.
 
-ENTRIES
-=======
+### writing entries
 
+entries are recorded as plaintext files in your ~/.ttbp/entries
+directory. you can edit them there directly, or fix old entries, or
+delete entries.
+
+*warning*: changing old entries might cause strange things to
+happen with timestamps. the main program looks at the filename
+first for setting the date, then the last modified time to sort
+recent posts. it expects YYYMMDD.txt as the filename; anything else
+won't show up as a valid entry. yes, this means you can post things out
+of date order by creating files with any date you want.
+
+#### general entry-writing notes
+
+* you can use [markdown](https://daringfireball.net/projects/markdown/syntax)
 * you can use html
 * you can also put things between `<!-- comments -->` to have them show up
 in the feed but not render in a browser (but people can still read
 them with view-source)
 
-PAGE LAYOUT
-===========
 
-* to change stylesheet, edit your ~/.ttbp/www/style.css
-* to change header, edit your ~/.ttbp/config/header.txt
-* to change footer, edit your ~/.ttbp/config/footer.txt
+### changing your page layout
 
-GENERAL TIPS
-============
+you can modify how your blog looks by editing the stylesheet or
+header and footer files. the program sets you up with basic
+default. if you break your page somehow, you can force the program to
+regenerate your configuration by deleting your ~/.ttbp directory entirely. **you might want to back up your ~/.ttbp/entries directory before you do this.**
 
-* add `alias ttbp="~endorphant/bin/ttbp"` to your .bash_aliases
+* to modify your stylesheet, edit your ~/.ttbp/www/style.css
+* to modify the page header, edit your ~/.ttbp/config/header.txt
+* to modify the page footer, edit your ~/.ttbp/config/footer.txt
+
+### GENERAL TIPS
+
+* add `alias ttbp="~endorphant/bin/ttbp"` to your .bash_aliases for fewer keystrokes
