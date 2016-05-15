@@ -35,7 +35,7 @@ SETTINGS = {
     }
 
 ## ui globals
-BANNER = open(os.path.join(SOURCE, "config", "banner.txt")).read()
+BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+util.attach_reset()
 SPACER = "\n\n\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
@@ -61,7 +61,11 @@ def start():
   redraw()
   #print(chatter.say("greet")+", "+chatter.say("friend"))
   #print("(remember, you can always press ctrl-c to come home)\n")
-  print("if you don't want to be here at any point, press <ctrl-d> and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
+  print("""
+if you don't want to be here at any point, press <ctrl-d> and it'll all go away.
+just keep in mind that you might lose anything you've started here.\
+""")
+
   try:
     print(check_init())
   except EOFError:
@@ -104,7 +108,11 @@ def check_init():
 
 def init():
     try:
-        raw_input("i don't recognize you, stranger. let's make friends.\n\npress <enter> to begin, or <ctrl-c> to get out of here. \n\n")
+        raw_input("""
+i don't recognize you, stranger. let's make friends.
+
+press <enter> to begin, or <ctrl-c> to get out of here.
+        """)
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
         quit()
@@ -115,12 +123,13 @@ def init():
     subprocess.call(["mkdir", PATH])
     subprocess.call(["mkdir", CONFIG])
     subprocess.call(["mkdir", DATA])
-    #subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "header.txt"), CONFIG])
+
     header = gen_header()
     headerfile = open(os.path.join(CONFIG, "header.txt"), 'w')
     for line in header:
         headerfile.write(line)
     headerfile.close()
+
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
 
     setup()
@@ -131,21 +140,41 @@ def init():
     return ""
 
 def gen_header():
-    header = []
+    #header = []
 
-    header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
-    header.append("\n<html>")
-    header.append("\n\t<head>")
-    header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
-    header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
-    header.append("\n\t</head>")
-    header.append("\n\t<body>")
-    header.append("\n\t\t<div id=\"meta\">")
-    header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
-    header.append("\n\t\t</div>\n")
-    header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
-    header.append("\n\t\t<!---don't put anything after this line-->\n")
-    header.append("\n\t\t<div id=\"tlogs\">\n")
+    #header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
+    #header.append("\n<html>")
+    #header.append("\n\t<head>")
+    #header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
+    #header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
+    #header.append("\n\t</head>")
+    #header.append("\n\t<body>")
+    #header.append("\n\t\t<div id=\"meta\">")
+    #header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
+    #header.append("\n\t\t</div>\n")
+    #header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
+    #header.append("\n\t\t<!---don't put anything after this line-->\n")
+    #header.append("\n\t\t<div id=\"tlogs\">\n")
+
+    header ="""
+<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
+<html>
+    <head>
+        <title>~"""+USER+""" on TTBP</title>
+        <link rel=\"stylesheet\" href=\"style.css\" />
+    </head>
+    <body>
+        <div id=\"meta\">
+            <h1><a href=\"index.html#\">~"""+USER+"""</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>
+        </div>
+    
+        <!---put your custom html here-->
+
+
+
+        <!---don't put anything after this line-->
+        <div id=\"tlogs\">\
+    """
     return header
 
 def setup_handler():
@@ -285,7 +314,11 @@ def feedback_menu():
     cat = ""
     if choice in ['0', '1', '2', '3']:
         cat = SUBJECTS[int(choice)]
-        entered = raw_input("\ncomposing a "+cat+" to ~endorphant.\n\npress <enter> to open an external text editor. mail will be sent once you save and quit.\n")
+        entered = raw_input("""
+composing a """+cat+""" to ~endorphant.
+
+press <enter> to open an external text editor. mail will be sent once you save and quit.
+        """)
         redraw(send_feedback(entered, cat))
         return
     else:
@@ -379,7 +412,15 @@ thanks to everyone who reads, listens, writes, and feels.\
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
-    entered = raw_input("\nfeels will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feels for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feels.\n\n")
+    entered = raw_input("""
+feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
+
+if you've already started recording feels for this day, you
+can pick up where you left off.
+
+press <enter> to begin recording your feels.
+    """)
+
     if entered:
         entryFile = open(entry, "a")
         entryFile.write("\n"+entered+"\n")
@@ -448,10 +489,8 @@ def view_feed():
     for townie in find_ttbps():
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
         filenames = os.listdir(entryDir)
+
         for entry in filenames:
-            ### REALLY MAKE A REAL FILENAME VALIDATOR
-            #fileSplit = os.path.splitext(entry)
-            #if len(fileSplit[0]) == 8 and fileSplit[1] == ".txt":
             if core.valid(entry):
                 feedList.append(os.path.join(entryDir, entry))
 
@@ -473,6 +512,7 @@ def view_feed():
     redraw()
 
     return
+
 #####
 
 def find_ttbps():
@@ -492,13 +532,8 @@ def list_select(options, prompt):
     invalid = True
 
     while invalid:
-        #try:
-        #    choice = raw_input("\n\n"+prompt)
-        #except KeyboardInterrupt:
-        #    redraw()
-        #    main_menu()
-
         choice = raw_input("\n\n"+prompt)
+
         if choice in BACKS:
             return False
 

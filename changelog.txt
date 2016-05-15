@@ -9,7 +9,6 @@ TO-DO:
 
 	(goals for phase two)
 
-	-make feedback actually use mail instead of dumping to a file
 	-stylesheet selector
 		-and make a couple more custom stylesheets
 	-replying to entries??
@@ -22,6 +21,10 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.7.5
+	-COLORFUL BANNER
+	-backend stuff; feedback uses sendmail, some code cleanup
 
 ver 0.7
 	-fixed program crashing? maybe?

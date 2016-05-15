@@ -3,8 +3,45 @@
 import inflect
 import time
 import random
+import colorama
+
+colorama.init()
+
+textcolors = [ colorama.Fore.RED, colorama.Fore.GREEN, colorama.Fore.YELLOW, colorama.Fore.BLUE, colorama.Fore.MAGENTA, colorama.Fore.WHITE, colorama.Fore.CYAN]
+
+lastcolor = colorama.Fore.RESET
 
 p = inflect.engine()
+
+def set_rainbow():
+    global lastcolor
+
+    color = lastcolor
+    while color == lastcolor:
+        color = random.choice(textcolors)
+
+    lastcolor = color
+
+    print(color)
+
+def reset_color():
+    print(colorama.Fore.RESET)
+
+def attach_rainbow():
+    global lastcolor
+
+    color = lastcolor
+    while color == lastcolor:
+        color = random.choice(textcolors)
+
+    lastcolor = color
+    return color
+
+def attach_reset():
+    return colorama.Style.RESET_ALL
+
+def hilight(text):
+    return colorama.Style.BRIGHT+text+colorama.Style.NORMAL
 
 def pretty_time(time):
     m, s = divmod(time, 60)
