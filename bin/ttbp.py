@@ -6,6 +6,7 @@ import tempfile
 import subprocess
 import time
 import json
+from email.mime.text import MIMEText;
 
 import core
 import chatter
@@ -16,6 +17,7 @@ import util
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
+FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
 p = inflect.engine()
 
@@ -33,7 +35,7 @@ SETTINGS = {
     }
 
 ## ui globals
-BANNER = open(os.path.join(SOURCE, "config", "banner.txt")).read()
+BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+util.attach_reset()
 SPACER = "\n\n\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
@@ -59,7 +61,11 @@ def start():
   redraw()
   #print(chatter.say("greet")+", "+chatter.say("friend"))
   #print("(remember, you can always press ctrl-c to come home)\n")
-  print("if you don't want to be here at any point, press <ctrl-d> and it'll all go away.\njust keep in mind that you might lose anything you've started here.\n")
+  print("""
+if you don't want to be here at any point, press <ctrl-d> and it'll all go away.
+just keep in mind that you might lose anything you've started here.\
+""")
+
   try:
     print(check_init())
   except EOFError:
@@ -102,7 +108,11 @@ def check_init():
 
 def init():
     try:
-        raw_input("i don't recognize you, stranger. let's make friends.\n\npress <enter> to begin, or <ctrl-c> to get out of here. \n\n")
+        raw_input("""
+i don't recognize you, stranger. let's make friends.
+
+press <enter> to begin, or <ctrl-c> to get out of here.
+        """)
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
         quit()
@@ -113,12 +123,13 @@ def init():
     subprocess.call(["mkdir", PATH])
     subprocess.call(["mkdir", CONFIG])
     subprocess.call(["mkdir", DATA])
-    #subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "header.txt"), CONFIG])
+
     header = gen_header()
     headerfile = open(os.path.join(CONFIG, "header.txt"), 'w')
     for line in header:
         headerfile.write(line)
     headerfile.close()
+
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
 
     setup()
@@ -129,21 +140,41 @@ def init():
     return ""
 
 def gen_header():
-    header = []
+    #header = []
 
-    header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
-    header.append("\n<html>")
-    header.append("\n\t<head>")
-    header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
-    header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
-    header.append("\n\t</head>")
-    header.append("\n\t<body>")
-    header.append("\n\t\t<div id=\"meta\">")
-    header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
-    header.append("\n\t\t</div>\n")
-    header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
-    header.append("\n\t\t<!---don't put anything after this line-->\n")
-    header.append("\n\t\t<div id=\"tlogs\">\n")
+    #header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
+    #header.append("\n<html>")
+    #header.append("\n\t<head>")
+    #header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
+    #header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
+    #header.append("\n\t</head>")
+    #header.append("\n\t<body>")
+    #header.append("\n\t\t<div id=\"meta\">")
+    #header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
+    #header.append("\n\t\t</div>\n")
+    #header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
+    #header.append("\n\t\t<!---don't put anything after this line-->\n")
+    #header.append("\n\t\t<div id=\"tlogs\">\n")
+
+    header ="""
+<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
+<html>
+    <head>
+        <title>~"""+USER+""" on TTBP</title>
+        <link rel=\"stylesheet\" href=\"style.css\" />
+    </head>
+    <body>
+        <div id=\"meta\">
+            <h1><a href=\"index.html#\">~"""+USER+"""</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>
+        </div>
+    
+        <!---put your custom html here-->
+
+
+
+        <!---don't put anything after this line-->
+        <div id=\"tlogs\">\
+    """
     return header
 
 def setup_handler():
@@ -283,8 +314,13 @@ def feedback_menu():
     cat = ""
     if choice in ['0', '1', '2', '3']:
         cat = SUBJECTS[int(choice)]
-        raw_input("\ncomposing a "+cat+" to ~endorphant.\n\npress <enter> to open an external text editor. mail will be sent once you save and quit.\n")
-        redraw(send_feedback(cat))
+        entered = raw_input("""
+composing a """+cat+""" to ~endorphant.
+
+press <enter> to open an external text editor. mail will be sent once you save and quit.
+
+""")
+        redraw(send_feedback(entered, cat))
         return
     else:
         redraw(INVALID)
@@ -355,7 +391,17 @@ def view_own():
 
 def show_credits():
 
-    print("ttbp was written by ~endorphant in python. the codebase is\npublicly available on github at https://github.com/modgethanc/ttbp\n\nif you have ideas for ttbp, you are welcome to fork the repo and \nwork on it. i'm only a baby dev, so i apologize for any \nhorrendously ugly coding habits i have.\n\nthanks to everyone who reads, listens, writes, and feels.")
+    print("""
+ttbp was written by ~endorphant in python. the codebase is
+publicly available on github at https://github.com/modgethanc/ttbp
+
+if you have ideas for ttbp, you are welcome to fork the repo and
+work on it. i'm only a neophyte dev, so i apologize for any
+horrendously ugly coding habits i have. i'd love to hear about your
+ideas and brainstorm about new features!
+
+thanks to everyone who reads, listens, writes, and feels.\
+        """)
 
     raw_input("\n\npress <enter> to go back home.\n\n")
     redraw()
@@ -367,7 +413,16 @@ def show_credits():
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
 
-    entered = raw_input("\nfeels will be recorded for today, "+time.strftime("%d %B %Y")+".\n\nif you've already started recording feels for this day, you \ncan pick up where you left off.\n\npress <enter> to begin recording your feels.\n\n")
+    entered = raw_input("""
+feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
+
+if you've already started recording feels for this day, you
+can pick up where you left off.
+
+press <enter> to begin recording your feels.
+
+""")
+
     if entered:
         entryFile = open(entry, "a")
         entryFile.write("\n"+entered+"\n")
@@ -378,22 +433,31 @@ def write_entry(entry=os.path.join(DATA, "test.txt")):
     redraw("posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feels!")
     return
 
-def send_feedback(subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.strftime("%Y%m%d-%H%M")+".msg")):
+def send_feedback(entered, subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.strftime("%Y%m%d-%H%M")+".msg")):
 
-    mail = ""
+    message = ""
 
     temp = tempfile.NamedTemporaryFile()
+    if entered:
+        msgFile = open(temp.name, "a")
+        msgFile.write(entered+"\n")
+        msgFile.close()
     subprocess.call([SETTINGS["editor"], temp.name])
-    mail = open(temp.name, 'r').read()
+    message = open(temp.name, 'r').read()
 
-    outfile = open(mailbox, 'w')
-    outfile.write("from:\t\t~"+USER+"\n")
-    outfile.write("subject:\t"+subject+"\n")
-    outfile.write("date:\t"+time.strftime("%d %B %y")+"\n")
-    outfile.write(mail)
-    outfile.close()
+    id = "#"+util.genID(3)
+    mail = MIMEText(message)
+    mail['To'] = FEEDBOX
+    mail['From'] = USER+"@tilde.town"
+    mail['Subject'] = " ".join(["[ttbp]", subject, id])
+    m = os.popen("/usr/sbin/sendmail -t -oi", 'w')
+    m.write(mail.as_string())
+    m.close()
 
-    return "mail sent. thanks for writing! i'll try to respond to you soon."
+    return """\
+thanks for writing! for your reference, it's been recorded
+> as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
+            """
 
 def view_entries(metas, entries, prompt):
 
@@ -427,10 +491,8 @@ def view_feed():
     for townie in find_ttbps():
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
         filenames = os.listdir(entryDir)
+
         for entry in filenames:
-            ### REALLY MAKE A REAL FILENAME VALIDATOR
-            #fileSplit = os.path.splitext(entry)
-            #if len(fileSplit[0]) == 8 and fileSplit[1] == ".txt":
             if core.valid(entry):
                 feedList.append(os.path.join(entryDir, entry))
 
@@ -452,6 +514,7 @@ def view_feed():
     redraw()
 
     return
+
 #####
 
 def find_ttbps():
@@ -471,13 +534,8 @@ def list_select(options, prompt):
     invalid = True
 
     while invalid:
-        #try:
-        #    choice = raw_input("\n\n"+prompt)
-        #except KeyboardInterrupt:
-        #    redraw()
-        #    main_menu()
-
         choice = raw_input("\n\n"+prompt)
+
         if choice in BACKS:
             return False
 

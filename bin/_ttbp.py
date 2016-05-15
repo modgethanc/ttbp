@@ -318,7 +318,8 @@ def feedback_menu():
 composing a """+cat+""" to ~endorphant.
 
 press <enter> to open an external text editor. mail will be sent once you save and quit.
-        """)
+
+""")
         redraw(send_feedback(entered, cat))
         return
     else:
@@ -394,8 +395,8 @@ def show_credits():
 ttbp was written by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
 
-if you have ideas for ttbp, you are welcome to fork the repo and 
-work on it. i'm only a neophyte dev, so i apologize for any 
+if you have ideas for ttbp, you are welcome to fork the repo and
+work on it. i'm only a neophyte dev, so i apologize for any
 horrendously ugly coding habits i have. i'd love to hear about your
 ideas and brainstorm about new features!
 
@@ -419,7 +420,8 @@ if you've already started recording feels for this day, you
 can pick up where you left off.
 
 press <enter> to begin recording your feels.
-    """)
+
+""")
 
     if entered:
         entryFile = open(entry, "a")
@@ -454,7 +456,7 @@ def send_feedback(entered, subject="none", mailbox=os.path.join(FEEDBACK, USER+"
 
     return """\
 thanks for writing! for your reference, it's been recorded
-> as "+ " ".join([subject, id])+". i'll try to respond to you soon.\
+> as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
             """
 
 def view_entries(metas, entries, prompt):
