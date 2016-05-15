@@ -2,7 +2,8 @@ config file things:
 -preferred text editor
 -set www symlink
 -set page title
+-set colorizing pref
 
 flair:
--themes
+-themes/stylesheets
 -global post announcements

@@ -1,18 +1,17 @@
 TO-DO:
 	(goals for stable release)
 
-	-show most recent global entries on html
 	-command line flags:
 		-shortcut to most recent feels, writing entry, seeing own entry
 	-neighbor view takes you to individual entry listing
 
-	(goals for phase two)
+	(goals for version two)
 
 	-stylesheet selector
 		-and make a couple more custom stylesheets
 	-replying to entries??
 		-direct mail to author
-	-paginate entry list
+	-paginate entry/neighbor list
 	-make a nicer entry view wrapper
 		-maybe with a box? and a nicer feed view?
 
@@ -21,8 +20,12 @@ TO-DO:
 
 CHANGELOG:
 
+ver 0.8.5
+	-publish feels directory to ~endorphant/ttbp/index.html
+
 ver 0.8.0
 	-markdown parsing for entries
+	-(beta only) colorized menus
 
 ver 0.7.5
 	-COLORFUL BANNER
