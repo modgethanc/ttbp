@@ -239,10 +239,12 @@ def print_menu(menu):
     i = 0
     for x in menu:
         line = []
+        line.append(util.attach_rainbow())
         line.append("\t[ ")
         if i < 10:
             line.append(" ")
         line.append(str(i)+" ] "+x)
+        line.append(util.attach_reset())
         print("".join(line))
         i += 1
 

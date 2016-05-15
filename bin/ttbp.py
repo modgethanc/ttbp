@@ -53,6 +53,7 @@ SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment
 def redraw(leftover=""):
     os.system("clear")
     print(BANNER)
+    print("DEV NOTE: want to see more color? try ~endorphant/bin/ttbp-beta and let me know what you think!")
     print(SPACER)
     if leftover:
         print("> "+leftover+"\n")
