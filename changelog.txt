@@ -23,10 +23,10 @@ CHANGELOG:
 
 ver 0.8.5
 	-publish feels directory to ~endorphant/ttbp/index.html
+	-(beta only) colorized menus
 
 ver 0.8.0
 	-markdown parsing for entries
-	-(beta only) colorized menus
 
 ver 0.7.5
 	-COLORFUL BANNER

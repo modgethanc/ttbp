@@ -189,42 +189,56 @@ def setup():
     global SETTINGS
 
     # editor selection
-    print_menu(EDITORS)
-    choice = raw_input("\npick your favorite text editor: ")
-    while choice  not in ['0', '1', '2', '3', '4']:
-        choice = raw_input("\nplease pick a number from the list: ")
-
-    SETTINGS["editor"] = EDITORS[int(choice)]
+    SETTINGS.update({"editor": select_editor()})
     redraw("text editor set to: "+SETTINGS["editor"])
 
+    # set up public publish option
+    #publish = input_yn("""\
+#do you want to publish your feels online? 
+
+#if yes, i'll make a directory in your public_html where your blog posts
+#will be published. if not, your posts will only be readable from
+#within the tilde.town network.
+
+#you can change this option any time.
+
+#please enter\
+#""")
+    SETTINGS.update({"publishing":select_publishing()})
+    redraw("blog publishing: "+str(publishing()))
+
     # publish directory selection
-    if SETTINGS["publish dir"]:
-        print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
-    choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
-    if not choice:
-        choice = "blog"
+    #if SETTINGS["publish dir"]:
+    #    print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
+    #choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
+    #if not choice:
+    #    choice = "blog"
 
-    publishing = os.path.join(PUBLIC, choice)
-    while os.path.exists(publishing):
-        second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
-        if second == "":
-            break
-        choice = second
-        publishing = os.path.join(PUBLIC, choice)
+    #publishing = os.path.join(PUBLIC, choice)
+    #while os.path.exists(publishing):
+    #    second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
+    #    if second == "":
+    #        break
+    #    choice = second
+    #    publishing = os.path.join(PUBLIC, choice)
 
-    SETTINGS["publish dir"] = choice
+    #SETTINGS.update({"publish dir": choice})
+    if publishing():
+      SETTINGS.update({"publish dir": select_publish_dir()})
 
     # set up publish directory
-    if not os.path.exists(publishing):
-        subprocess.call(["mkdir", publishing])
-        subprocess.call(["touch", os.path.join(publishing, "index.html")])
-        index = open(os.path.join(publishing, "index.html"), "w")
-        index.write("<h1>ttbp blog placeholder</h1>")
-        index.close()
-    if os.path.exists(WWW):
-        subprocess.call(["rm", WWW])
-    subprocess.call(["ln", "-s", publishing, WWW])
-    print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/\n\n")
+    #publishing = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+    #if not os.path.exists(publishing):
+    #    subprocess.call(["mkdir", publishing])
+    #    subprocess.call(["touch", os.path.join(publishing, "index.html")])
+    #    index = open(os.path.join(publishing, "index.html"), "w")
+    #    index.write("<h1>ttbp blog placeholder</h1>")
+    #    index.close()
+    #if os.path.exists(WWW):
+    #    subprocess.call(["rm", WWW])
+    #subprocess.call(["ln", "-s", publishing, WWW])
+    #print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
+      make_publish_dir()
 
     # save settings
     ttbprc = open(TTBPRC, "w")
@@ -283,8 +297,9 @@ def main_menu():
         redraw("now viewing most recent entries\n\n")
         view_feed()
     elif choice == '4':
-        pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
-        pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS["publish dir"])
+        pretty_settings = "\n\ttext editor:\t" +SETTINGS.get("editor")
+        pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+        pretty_settings += "\n\tpubishing:\t"+str(SETTINGS.get("publishing"))
 
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.\n\ncurrent settings "+pretty_settings+"\n")
         try:
@@ -336,7 +351,7 @@ def view_neighbors(users):
 
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-        url = LIVE+user+"/"+userRC["publish dir"]
+        url = LIVE+user+"/"+userRC.get("publish dir")
         count = 0
         lastfile = ""
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
@@ -538,8 +553,13 @@ def www_neighbors(users):
     userList = []
 
     for user in users:
+        if not publishing(user):
+            continue
+
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+
         url = LIVE+user+"/"+userRC["publish dir"]
+
         lastfile = ""
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
@@ -589,6 +609,91 @@ def list_select(options, prompt):
         return list_select(options, prompt)
 
     return ans
+
+def input_yn(query):
+    # returns boolean True or False
+
+    ans = raw_input(query+" [y/n] ")
+
+    while ans not in ["y", "n"]:
+        ans = raw_input("'y' or 'n' please: ")
+
+    if ans == "y":
+        return True
+    else:
+        return False
+
+def publishing(username = USER):
+    # checks .ttbprc for whether or not user wants their blog published online
+
+    ttbprc = {}
+
+    if username == USER:
+        ttbprc = SETTINGS
+
+    else:
+        ttbprc = json.load(open(os.path.join("/home", username, ".ttbp", "config", "ttbprc")))
+
+    return ttbprc.get("publishing")
+
+def select_editor():
+    # setup helper for editor selection
+
+    print_menu(EDITORS)
+    choice = raw_input("\npick your favorite text editor: ")
+    while choice  not in ['0', '1', '2', '3', '4']:
+        choice = raw_input("\nplease pick a number from the list: ")
+
+    return EDITORS[int(choice)]
+
+def select_publish_dir():
+    # setup helper for publish directory selection
+
+    if SETTINGS["publish dir"]:
+        print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
+    choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
+    if not choice:
+        choice = "blog"
+
+    publishing = os.path.join(PUBLIC, choice)
+    while os.path.exists(publishing):
+        second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
+        if second == "":
+            break
+        choice = second
+        publishing = os.path.join(PUBLIC, choice)
+
+    return choice
+
+def select_publishing():
+    # setup helper for toggling publishing
+
+    return input_yn("""\
+do you want to publish your feels online?
+
+if yes, i'll make a directory in your public_html where your blog posts
+will be published. if not, your posts will only be readable from
+within the tilde.town network.
+
+you can change this option any time.
+
+please enter\
+""")
+
+def make_publish_dir():
+    # setup helper to create publishing directory
+
+    publishing = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+    if not os.path.exists(publishing):
+        subprocess.call(["mkdir", publishing])
+        subprocess.call(["touch", os.path.join(publishing, "index.html")])
+        index = open(os.path.join(publishing, "index.html"), "w")
+        index.write("<h1>ttbp blog placeholder</h1>")
+        index.close()
+    if os.path.exists(WWW):
+        subprocess.call(["rm", WWW])
+    subprocess.call(["ln", "-s", publishing, WWW])
+    print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
 #####
 

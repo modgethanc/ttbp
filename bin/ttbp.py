@@ -270,6 +270,7 @@ def main_menu():
         redraw()
         today = time.strftime("%Y%m%d")
         write_entry(os.path.join(DATA, today+".txt"))
+        www_neighbors(find_ttbps())
     elif choice == '1':
         redraw("here are your recorded feels, listed by date:\n\n")
         view_own()
@@ -340,7 +341,6 @@ def view_neighbors(users):
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
         for filename in files:
-            #if os.path.splitext(filename)[1] == ".txt" and len(os.path.splitext(filename)[0]) == 8:
             if core.valid(filename):
                 count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
@@ -530,6 +530,40 @@ def find_ttbps():
             users.append(townie)
 
     return users
+
+def www_neighbors(users):
+    # takes a raw list of valid users and formats for www view
+
+    userList = []
+
+    for user in users:
+        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+        url = LIVE+user+"/"+userRC["publish dir"]
+        lastfile = ""
+        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        files.sort()
+        for filename in files:
+            if core.valid(filename):
+                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
+
+        ago = "never"
+        if lastfile:
+            last = os.path.getctime(lastfile)
+            since = time.time()-last
+            ago = util.pretty_time(int(since)) + " ago"
+        else:
+            last = 0
+
+        userList.append(["<a href=\""+url+"\">~"+user+"</a> ("+ago+")", last])
+
+    # sort user by most recent entry
+    userList.sort(key = lambda userdata:userdata[1])
+    userList.reverse()
+    sortedUsers = []
+    for user in userList:
+        sortedUsers.append(user[0])
+
+    core.write_global_feed(sortedUsers)
 
 def list_select(options, prompt):
     # runs the prompt for the list until a valid index is imputted

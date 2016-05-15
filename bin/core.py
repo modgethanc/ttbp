@@ -187,7 +187,7 @@ def write_global_feed(blogList):
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
 <html>
     <head>
-        <title>tilde.town global feels engine</title>
+        <title>tilde.town feels engine</title>
         <link rel=\"stylesheet\" href=\"style.css\" />
     </head>
     <body>
@@ -202,6 +202,7 @@ def write_global_feed(blogList):
         <p>&nbsp;</p>
 
         <h3>live feels-sharing:</h3>
+        <p><i>(time not exactly to scale)</i></p>
         <div class=\"feed\">
             <ul>
 """)
