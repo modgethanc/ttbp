@@ -2,6 +2,7 @@
 
 import inflect
 import time
+import random
 
 p = inflect.engine()
 
@@ -27,3 +28,14 @@ def pretty_time(time):
             return p.no("minute", m)
     else:
         return p.no("second", s)
+
+def genID(digits=5):
+    # makes a string of digits
+
+    id = ""
+    x  = 0
+    while x < digits:
+        id += str(random.randint(0,9))
+        x += 1
+
+    return id
