@@ -58,35 +58,35 @@ def redraw(leftover=""):
         print("> "+leftover+"\n")
 
 def start():
-  redraw()
-  #print(chatter.say("greet")+", "+chatter.say("friend"))
-  #print("(remember, you can always press ctrl-c to come home)\n")
-  print("""
+    redraw()
+    #print(chatter.say("greet")+", "+chatter.say("friend"))
+    #print("(remember, you can always press ctrl-c to come home)\n")
+    print("""
 if you don't want to be here at any point, press <ctrl-d> and it'll all go away.
 just keep in mind that you might lose anything you've started here.\
 """)
 
-  try:
-    print(check_init())
-  except EOFError:
-      print(stop())
-      return
-
-  redraw()
-
-  while 1:
     try:
-        print(main_menu())
+        print(check_init())
     except EOFError:
         print(stop())
-        break
-    except KeyboardInterrupt:
-        redraw(EJECT)
-    else:
-        break
+        return
+
+    redraw()
+
+    while 1:
+        try:
+            print(main_menu())
+        except EOFError:
+            print(stop())
+            break
+        except KeyboardInterrupt:
+            redraw(EJECT)
+        else:
+            break
 
 def stop():
-  return "\n\n\t"+chatter.say("bye")+"\n\n"
+    return "\n\n\t"+chatter.say("bye")+"\n\n"
 
 def check_init():
   global SETTINGS
@@ -133,7 +133,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
 
     setup()
-    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
+    #subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
     core.load()
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
@@ -192,53 +192,20 @@ def setup():
     SETTINGS.update({"editor": select_editor()})
     redraw("text editor set to: "+SETTINGS["editor"])
 
-    # set up public publish option
-    #publish = input_yn("""\
-#do you want to publish your feels online? 
-
-#if yes, i'll make a directory in your public_html where your blog posts
-#will be published. if not, your posts will only be readable from
-#within the tilde.town network.
-
-#you can change this option any time.
-
-#please enter\
-#""")
+    # publishing selection
     SETTINGS.update({"publishing":select_publishing()})
     redraw("blog publishing: "+str(publishing()))
 
-    # publish directory selection
-    #if SETTINGS["publish dir"]:
-    #    print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
-    #choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
-    #if not choice:
-    #    choice = "blog"
-
-    #publishing = os.path.join(PUBLIC, choice)
-    #while os.path.exists(publishing):
-    #    second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
-    #    if second == "":
-    #        break
-    #    choice = second
-    #    publishing = os.path.join(PUBLIC, choice)
-
-    #SETTINGS.update({"publish dir": choice})
     if publishing():
-      SETTINGS.update({"publish dir": select_publish_dir()})
-
-    # set up publish directory
-    #publishing = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
-    #if not os.path.exists(publishing):
-    #    subprocess.call(["mkdir", publishing])
-    #    subprocess.call(["touch", os.path.join(publishing, "index.html")])
-    #    index = open(os.path.join(publishing, "index.html"), "w")
-    #    index.write("<h1>ttbp blog placeholder</h1>")
-    #    index.close()
-    #if os.path.exists(WWW):
-    #    subprocess.call(["rm", WWW])
-    #subprocess.call(["ln", "-s", publishing, WWW])
-    #print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
-      make_publish_dir()
+        oldDir = SETTINGS.get("publish dir")
+        newDir = select_publish_dir()
+        SETTINGS.update({"publish dir": newDir})
+        make_publish_dir(newDir)
+        subprocess.call(["rm", "-rf", os.path.join(PUBLIC, oldDir)])
+        core.load_files()
+        core.write("index.html")
+    else:
+        unpublish()
 
     # save settings
     ttbprc = open(TTBPRC, "w")
@@ -648,8 +615,13 @@ def select_editor():
 def select_publish_dir():
     # setup helper for publish directory selection
 
-    if SETTINGS["publish dir"]:
+    current = SETTINGS.get("publish dir")
+    republish = False
+
+    if current:
         print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
+        republish = True
+
     choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
     if not choice:
         choice = "blog"
@@ -667,7 +639,7 @@ def select_publish_dir():
 def select_publishing():
     # setup helper for toggling publishing
 
-    return input_yn("""\
+    publishing = input_yn("""\
 do you want to publish your feels online?
 
 if yes, i'll make a directory in your public_html where your blog posts
@@ -679,10 +651,23 @@ you can change this option any time.
 please enter\
 """)
 
-def make_publish_dir():
-    # setup helper to create publishing directory
+    return publishing
+
+def unpublish():
+    # remove user's published directory, if it exists
 
     publishing = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+
+    if os.path.exists(publishing):
+        subprocess.call(["rm", "-rf", publishing])
+        subprocess.call(["rm", "-rf", WWW])
+
+    return
+
+def make_publish_dir(dir):
+    # setup helper to create publishing directory
+
+    publishing = os.path.join(PUBLIC, dir)
     if not os.path.exists(publishing):
         subprocess.call(["mkdir", publishing])
         subprocess.call(["touch", os.path.join(publishing, "index.html")])
@@ -692,6 +677,7 @@ def make_publish_dir():
     if os.path.exists(WWW):
         subprocess.call(["rm", WWW])
     subprocess.call(["ln", "-s", publishing, WWW])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
     print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
 #####
