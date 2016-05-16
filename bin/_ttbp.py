@@ -200,8 +200,8 @@ def setup():
         oldDir = SETTINGS.get("publish dir")
         newDir = select_publish_dir()
         SETTINGS.update({"publish dir": newDir})
-        make_publish_dir(newDir)
         subprocess.call(["rm", "-rf", os.path.join(PUBLIC, oldDir)])
+        make_publish_dir(newDir)
         core.load_files()
         core.write("index.html")
     else:
@@ -415,9 +415,15 @@ press <enter> to begin recording your feels.
         entryFile.write("\n"+entered+"\n")
         entryFile.close()
     subprocess.call([SETTINGS["editor"], entry])
-    core.load_files()
-    core.write("index.html")
-    redraw("posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\nthanks for sharing your feels!")
+
+    left = ""
+
+    if publishing():
+        core.load_files()
+        core.write("index.html")
+        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html"
+    redraw(left + " thanks for sharing your feels!")
+
     return
 
 def send_feedback(entered, subject="none", mailbox=os.path.join(FEEDBACK, USER+"-"+time.strftime("%Y%m%d-%H%M")+".msg")):
@@ -660,7 +666,7 @@ def unpublish():
 
     if os.path.exists(publishing):
         subprocess.call(["rm", "-rf", publishing])
-        subprocess.call(["rm", "-rf", WWW])
+        subprocess.call(["rm", WWW])
 
     return
 
