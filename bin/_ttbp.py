@@ -19,10 +19,13 @@ LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
+VERSION = "0.8.6"
+
 p = inflect.engine()
 
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
+
 PATH = os.path.join("/home", USER, ".ttbp")
 PUBLIC = os.path.join("/home", USER, "public_html")
 WWW = os.path.join(PATH, "www")
@@ -72,6 +75,11 @@ just keep in mind that you might lose anything you've started here.\
         print(stop())
         return
 
+    ## PATCH CHECK HERE
+    if not updated():
+        update_version()
+
+    ##
     redraw()
 
     while 1:
@@ -131,31 +139,15 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     headerfile.close()
 
     subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "footer.txt"), CONFIG])
+    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), CONFIG])
 
     setup()
-    #subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
     core.load()
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
 
 def gen_header():
-    #header = []
-
-    #header.append("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">")
-    #header.append("\n<html>")
-    #header.append("\n\t<head>")
-    #header.append("\n\t\t<title>~"+USER+" on TTBP</title>")
-    #header.append("\n\t\t<link rel=\"stylesheet\" href=\"style.css\" />")
-    #header.append("\n\t</head>")
-    #header.append("\n\t<body>")
-    #header.append("\n\t\t<div id=\"meta\">")
-    #header.append("\n\t\t\t<h1><a href=\"index.html#\">~"+USER+"</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>")
-    #header.append("\n\t\t</div>\n")
-    #header.append("\n\t\t<!---put your custom html here-->\n\n\n\n")
-    #header.append("\n\t\t<!---don't put anything after this line-->\n")
-    #header.append("\n\t\t<div id=\"tlogs\">\n")
-
     header ="""
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
 <html>
@@ -167,7 +159,7 @@ def gen_header():
         <div id=\"meta\">
             <h1><a href=\"index.html#\">~"""+USER+"""</a>@<a href=\"/~endorphant/ttbp\">TTBP</a></h1>
         </div>
-    
+
         <!---put your custom html here-->
 
 
@@ -632,20 +624,20 @@ def select_publish_dir():
     if not choice:
         choice = "blog"
 
-    publishing = os.path.join(PUBLIC, choice)
-    while os.path.exists(publishing):
-        second = raw_input("\n"+publishing+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
+    publishDir = os.path.join(PUBLIC, choice)
+    while os.path.exists(publishDir):
+        second = raw_input("\n"+publishDir+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
         if second == "":
             break
         choice = second
-        publishing = os.path.join(PUBLIC, choice)
+        publishDir = os.path.join(PUBLIC, choice)
 
     return choice
 
 def select_publishing():
     # setup helper for toggling publishing
 
-    publishing = input_yn("""\
+    publish = input_yn("""\
 do you want to publish your feels online?
 
 if yes, i'll make a directory in your public_html where your blog posts
@@ -657,15 +649,15 @@ you can change this option any time.
 please enter\
 """)
 
-    return publishing
+    return publish
 
 def unpublish():
     # remove user's published directory, if it exists
 
-    publishing = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+    publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
 
-    if os.path.exists(publishing):
-        subprocess.call(["rm", "-rf", publishing])
+    if os.path.exists(publishDir):
+        subprocess.call(["rm", "-rf", publishDir])
         subprocess.call(["rm", WWW])
 
     return
@@ -673,19 +665,75 @@ def unpublish():
 def make_publish_dir(dir):
     # setup helper to create publishing directory
 
-    publishing = os.path.join(PUBLIC, dir)
-    if not os.path.exists(publishing):
-        subprocess.call(["mkdir", publishing])
-        subprocess.call(["touch", os.path.join(publishing, "index.html")])
-        index = open(os.path.join(publishing, "index.html"), "w")
+    if not os.path.exists(WWW):
+        subprocess.call(["mkdir", WWW])
+        subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
+        subprocess.call(["touch", os.path.join(WWW, "index.html")])
+        index = open(os.path.join(WWW, "index.html"), "w")
         index.write("<h1>ttbp blog placeholder</h1>")
         index.close()
-    if os.path.exists(WWW):
-        subprocess.call(["rm", WWW])
-    subprocess.call(["ln", "-s", publishing, WWW])
-    subprocess.call(["cp", os.path.join(SOURCE, "config", "defaults", "style.css"), WWW])
+
+    publishDir = os.path.join(PUBLIC, dir)
+    if os.path.exists(publishDir):
+        subprocess.call(["rm", publishDir])
+
+    subprocess.call(["ln", "-s", WWW, publishDir])
+
     print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
+
+##### PATCHES
+
+def updated():
+    # checks to see if current user is up to the same version as system
+
+    versionFile = os.path.join(PATH, "version")
+    if not os.path.exists(versionFile):
+            return False
+
+    ver = open(versionFile, "r").read()
+
+    if ver == VERSION:
+        return True
+
+    return False
+
+def update_version():
+    # updates current user to current version
+
+    versionFile = os.path.join(PATH, "version")
+    print(versionFile)
+
+    # from 0.8.5 to 0.8.6:
+    if not os.path.isfile(versionFile):# and publishing():
+        #print("hi let's fix this")
+
+        # change style.css location
+        if os.path.exists(os.path.join(WWW, "style.css")):
+            subprocess.call(["mv", os.path.join(WWW, "style.css"), CONFIG])
+
+        # change www symlink
+        if os.path.exists(WWW):
+            subprocess.call(["rm", WWW])
+            subprocess.call(["mkdir", WWW])
+
+        subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
+
+        publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+        #print(publishDir)
+        if os.path.exists(publishDir):
+            #print("removing "+publishDir)
+            subprocess.call(["rm", "-rf", publishDir])
+            subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
+
+        # repopulate html files
+        core.load_files()
+        core.write("index.html")
+
+    # increment user versionfile
+    open(versionFile, "w").write(VERSION)
 
 #####
 
-start()
+
+#start()
+print("ttbp beta is out to lunch. bbl.")
