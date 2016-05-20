@@ -19,7 +19,7 @@ LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
-VERSION = "0.8.6"
+VERSION = "0.8.7"
 
 p = inflect.engine()
 
@@ -304,7 +304,9 @@ def view_neighbors(users):
 
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-        url = LIVE+user+"/"+userRC.get("publish dir")
+        url="\t\t\t\t"
+        if userRC.get("publish dir"):
+            url = LIVE+user+"/"+userRC.get("publish dir")
         count = 0
         lastfile = ""
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
@@ -409,7 +411,7 @@ press <enter> to begin recording your feels.
     if publishing():
         core.load_files()
         core.write("index.html")
-        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html"
+        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\n>"
     redraw(left + " thanks for sharing your feels!")
 
     return
@@ -733,13 +735,14 @@ def update_version():
 
     print("ttbp had some updates!")
 
-    # from 0.8.5 to 0.8.6:
-    if not os.path.isfile(versionFile):
-        print("\ngive me a second to update you from version 0.8.5 to "+VERSION+"...\n")
+    print("\ngive me a second to update you to version "+VERSION+"...\n")
 
-        time.sleep(1)
-        print("...")
-        time.sleep(2)
+    time.sleep(1)
+    print("...")
+    time.sleep(2)
+
+    if not os.path.isfile(versionFile):
+        # from 0.8.5 to 0.8.6:
 
         # change style.css location
         if os.path.isfile(os.path.join(WWW, "style.css")):
@@ -765,6 +768,19 @@ def update_version():
         print("\nnew feature!\n")
         SETTINGS.update({"publishing":select_publishing()})
         update_publishing()
+        ttbprc = open(TTBPRC, "w")
+        ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
+        ttbprc.close()
+
+    else: # version at least 0.8.6
+        # from 0.8.6 to 0.8.7
+        if open(versionFile, 'r').read() == "0.8.6":
+            print("\nresetting your publishing settings...\n")
+            SETTINGS.update({"publishing":select_publishing()})
+            update_publishing()
+            ttbprc = open(TTBPRC, "w")
+            ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
+            ttbprc.close()
 
 
     # increment user versionfile
