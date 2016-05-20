@@ -407,7 +407,7 @@ press <enter> to begin recording your feels.
     if publishing():
         core.load_files()
         core.write("index.html")
-        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html"
+        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\n>"
     redraw(left + " thanks for sharing your feels!")
 
     return

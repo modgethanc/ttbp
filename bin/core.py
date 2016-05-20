@@ -17,6 +17,7 @@ WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 DATA = os.path.join(PATH, "entries")
 FEED = os.path.join(SOURCE, "www", "index.html")
+NOPUB = os.path.join(CONFIG, "nopub")
 
 HEADER = ""
 FOOTER = ""
@@ -34,8 +35,16 @@ def load():
 def load_files():
     global FILES
 
+    exclude = []
+
+    if os.path.isfile(NOPUB):
+        for line in open(NOPUB, "r"):
+            exclude.append(line.rstrip())
+
     FILES = []
     for filename in os.listdir(DATA):
+        if filename in exclude:
+            continue
         filename = os.path.join(DATA, filename)
         if os.path.isfile(filename) and valid(filename):
             FILES.append(filename)
@@ -165,7 +174,7 @@ def valid(filename):
     # check if the filename is YYYYMMDD.txt
 
     filesplit = os.path.splitext(os.path.basename(filename))
-    
+
     if filesplit[1] != ".txt":
         return False
 
@@ -202,7 +211,6 @@ def write_global_feed(blogList):
         <p>&nbsp;</p>
 
         <h3>live feels-sharing:</h3>
-        <p><i>(time not exactly to scale)</i></p>
         <div class=\"feed\">
             <ul>
 """)
