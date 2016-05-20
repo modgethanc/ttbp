@@ -625,7 +625,15 @@ def select_publish_dir():
 
     publishDir = os.path.join(PUBLIC, choice)
     while os.path.exists(publishDir):
-        second = raw_input("\n"+publishDir+" already exists!\n\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
+        second = raw_input("\n"+publishDir+"""\
+ already exists! 
+ 
+setting this as your publishing directory means this program may
+delete or overwrite file there!
+ 
+if you're sure you want to use it, hit <enter> to confirm.
+otherwise, pick another location: """) 
+        
         if second == "":
             break
         choice = second
@@ -673,7 +681,7 @@ def update_publishing():
         newDir = select_publish_dir()
         SETTINGS.update({"publish dir": newDir})
         if oldDir:
-            subprocess.call(["rm", "-rf", os.path.join(PUBLIC, oldDir)])
+            subprocess.call(["rm", os.path.join(PUBLIC, oldDir)])
         make_publish_dir(newDir)
         core.load_files()
         core.write("index.html")
