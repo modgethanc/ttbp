@@ -38,8 +38,8 @@ SETTINGS = {
     }
 
 ## ui globals
-BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+util.attach_reset()
-SPACER = "\n\n\n"
+BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+"~potentially volatile beta version~"+util.attach_reset()
+SPACER = "\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
 QUITS = ['exit', 'quit', 'q', 'x']
@@ -48,7 +48,7 @@ EJECT = "eject button fired! going home now."
 
 ## ref
 
-EDITORS = ["vim", "vi", "emacs", "pico", "nano"]
+EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ##
@@ -75,10 +75,6 @@ just keep in mind that you might lose anything you've started here.\
         print(stop())
         return
 
-    ## PATCH CHECK HERE
-    if not updated():
-        update_version()
-
     ##
     redraw()
 
@@ -97,22 +93,27 @@ def stop():
     return "\n\n\t"+chatter.say("bye")+"\n\n"
 
 def check_init():
-  global SETTINGS
-  print("\n\n")
-  if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
-      print(chatter.say("greet")+", "+USER+".")
-      while not os.path.isfile(TTBPRC):
-        setup_handler()
-      try:
-        SETTINGS = json.load(open(TTBPRC))
-      except ValueError:
-        setup_handler()
+    global SETTINGS
+    print("\n\n")
+    if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
+        print(chatter.say("greet")+", "+USER+".\n")
+        while not os.path.isfile(TTBPRC):
+            setup_handler()
+        try:
+            SETTINGS = json.load(open(TTBPRC))
+        except ValueError:
+            setup_handler()
 
-      raw_input("\n\npress <enter> to explore your feels.\n\n")
-      core.load()
-      return ""
-  else:
-    return init()
+        ## PATCH CHECK HERE
+        if not updated():
+            print(update_version())
+
+        raw_input("press <enter> to explore your feels.\n\n")
+        core.load()
+
+        return ""
+    else:
+        return init()
 
 def init():
     try:
@@ -186,24 +187,18 @@ def setup():
 
     # publishing selection
     SETTINGS.update({"publishing":select_publishing()})
+    update_publishing()
     redraw("blog publishing: "+str(publishing()))
 
     if publishing():
-        oldDir = SETTINGS.get("publish dir")
-        newDir = select_publish_dir()
-        SETTINGS.update({"publish dir": newDir})
-        subprocess.call(["rm", "-rf", os.path.join(PUBLIC, oldDir)])
-        make_publish_dir(newDir)
-        core.load_files()
-        core.write("index.html")
-    else:
-        unpublish()
-
+        print("publish directory: ~"+USER+"/public_html/"+SETTINGS.get("publish dir"))
     # save settings
     ttbprc = open(TTBPRC, "w")
     ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
     ttbprc.close()
 
+    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    redraw()
     return SETTINGS
 
 ## menus
@@ -246,29 +241,28 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         www_neighbors(find_ttbps())
     elif choice == '1':
-        redraw("here are your recorded feels, listed by date:\n\n")
+        redraw("here are your recorded feels, listed by date:\n")
         view_own()
     elif choice == '2':
         users = find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
         view_neighbors(users)
     elif choice == '3':
-        redraw("now viewing most recent entries\n\n")
+        redraw("now viewing most recent entries\n")
         view_feed()
     elif choice == '4':
-        pretty_settings = "\n\ttext editor:\t" +SETTINGS.get("editor")
-        pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+        pretty_settings = "\n\n\ttext editor:\t" +SETTINGS.get("editor")
+        if publishing():
+            pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir"))
         pretty_settings += "\n\tpubishing:\t"+str(SETTINGS.get("publishing"))
 
-        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.\n\ncurrent settings "+pretty_settings+"\n")
+        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this."+pretty_settings+"\n")
         try:
             setup()
         except KeyboardInterrupt():
             redraw(EJECT)
-        raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
         redraw()
     elif choice == '5':
-        redraw()
         feedback_menu()
     elif choice == '6':
         redraw()
@@ -370,6 +364,8 @@ def show_credits():
     print("""
 ttbp was written by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
+
+for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
 if you have ideas for ttbp, you are welcome to fork the repo and
 work on it. i'm only a neophyte dev, so i apologize for any
@@ -577,7 +573,10 @@ def list_select(options, prompt):
 def input_yn(query):
     # returns boolean True or False
 
-    ans = raw_input(query+" [y/n] ")
+    try:
+        ans = raw_input(query+" [y/n] ")
+    except KeyboardInterrupt:
+        input_yn(query)
 
     while ans not in ["y", "n"]:
         ans = raw_input("'y' or 'n' please: ")
@@ -605,7 +604,7 @@ def select_editor():
 
     print_menu(EDITORS)
     choice = raw_input("\npick your favorite text editor: ")
-    while choice  not in ['0', '1', '2', '3', '4']:
+    while choice  not in ['0', '1', '2', '3', '4', '5']:
         choice = raw_input("\nplease pick a number from the list: ")
 
     return EDITORS[int(choice)]
@@ -617,7 +616,7 @@ def select_publish_dir():
     republish = False
 
     if current:
-        print("\tcurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"])+"\n\n")
+        print("\ncurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"]))
         republish = True
 
     choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
@@ -626,7 +625,7 @@ def select_publish_dir():
 
     publishDir = os.path.join(PUBLIC, choice)
     while os.path.exists(publishDir):
-        second = raw_input("\n"+publishDir+" already exists!\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
+        second = raw_input("\n"+publishDir+" already exists!\n\nif you're sure you want to use it, hit <enter> to confirm. otherwise, pick another location: ")
         if second == "":
             break
         choice = second
@@ -640,9 +639,13 @@ def select_publishing():
     publish = input_yn("""\
 do you want to publish your feels online?
 
-if yes, i'll make a directory in your public_html where your blog posts
-will be published. if not, your posts will only be readable from
-within the tilde.town network.
+if yes, your feels will be published to a directory of your choice in
+your public_html. i'll confirm the location of that directory in a
+moment.
+
+if not, your feels will only be readable from within the tilde.town
+network. if you already have a publishing directory, i'll remove it for
+you (don't worry, your written entries will still be saved!)
 
 you can change this option any time.
 
@@ -654,13 +657,29 @@ please enter\
 def unpublish():
     # remove user's published directory, if it exists
 
-    publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+    dir = SETTINGS.get("publish dir")
+    if dir:
+        publishDir = os.path.join(PUBLIC, dir)
+        subprocess.call(["rm", publishDir])
+        #subprocess.call(["rm", WWW])
 
-    if os.path.exists(publishDir):
-        subprocess.call(["rm", "-rf", publishDir])
-        subprocess.call(["rm", WWW])
+def update_publishing():
+    # handler to update publishing directory, or wipe it
 
-    return
+    global SETTINGS
+
+    if publishing():
+        oldDir = SETTINGS.get("publish dir")
+        newDir = select_publish_dir()
+        SETTINGS.update({"publish dir": newDir})
+        if oldDir:
+            subprocess.call(["rm", "-rf", os.path.join(PUBLIC, oldDir)])
+        make_publish_dir(newDir)
+        core.load_files()
+        core.write("index.html")
+    else:
+        unpublish()
+        SETTINGS.update({"publish dir": None})
 
 def make_publish_dir(dir):
     # setup helper to create publishing directory
@@ -698,17 +717,24 @@ def updated():
     return False
 
 def update_version():
-    # updates current user to current version
+    # updates user to current version
+
+    global SETTINGS
 
     versionFile = os.path.join(PATH, "version")
-    print(versionFile)
+
+    print("ttbp had some updates!")
 
     # from 0.8.5 to 0.8.6:
-    if not os.path.isfile(versionFile):# and publishing():
-        #print("hi let's fix this")
+    if not os.path.isfile(versionFile):
+        print("\ngive me a second to update you from version 0.8.5 to "+VERSION+"...\n")
+
+        time.sleep(1)
+        print("...")
+        time.sleep(2)
 
         # change style.css location
-        if os.path.exists(os.path.join(WWW, "style.css")):
+        if os.path.isfile(os.path.join(WWW, "style.css")):
             subprocess.call(["mv", os.path.join(WWW, "style.css"), CONFIG])
 
         # change www symlink
@@ -719,9 +745,7 @@ def update_version():
         subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
 
         publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
-        #print(publishDir)
         if os.path.exists(publishDir):
-            #print("removing "+publishDir)
             subprocess.call(["rm", "-rf", publishDir])
             subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
 
@@ -729,11 +753,18 @@ def update_version():
         core.load_files()
         core.write("index.html")
 
+        # add publishing setting
+        print("\nnew feature!\n")
+        SETTINGS.update({"publishing":select_publishing()})
+        update_publishing()
+
+
     # increment user versionfile
     open(versionFile, "w").write(VERSION)
 
+    return "you're all good to go, "+chatter.say("friend")+"!\n"
+
 #####
 
-
-#start()
-print("ttbp beta is out to lunch. bbl.")
+start()
+#print("ttbp beta is out to lunch. bbl.")

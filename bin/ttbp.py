@@ -36,7 +36,7 @@ SETTINGS = {
 
 ## ui globals
 BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+util.attach_reset()
-SPACER = "\n\n\n"
+SPACER = "\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
 QUITS = ['exit', 'quit', 'q', 'x']
@@ -45,7 +45,7 @@ EJECT = "eject button fired! going home now."
 
 ## ref
 
-EDITORS = ["vim", "vi", "emacs", "pico", "nano"]
+EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ##
@@ -53,7 +53,6 @@ SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment
 def redraw(leftover=""):
     os.system("clear")
     print(BANNER)
-    print("DEV NOTE: want to see more color? try ~endorphant/bin/ttbp-beta and let me know what you think!")
     print(SPACER)
     if leftover:
         print("> "+leftover+"\n")
@@ -192,7 +191,7 @@ def setup():
     # editor selection
     print_menu(EDITORS)
     choice = raw_input("\npick your favorite text editor: ")
-    while choice  not in ['0', '1', '2', '3', '4']:
+    while choice  not in ['0', '1', '2', '3', '4', '5']:
         choice = raw_input("\nplease pick a number from the list: ")
 
     SETTINGS["editor"] = EDITORS[int(choice)]
@@ -272,14 +271,14 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         www_neighbors(find_ttbps())
     elif choice == '1':
-        redraw("here are your recorded feels, listed by date:\n\n")
+        redraw("here are your recorded feels, listed by date:\n")
         view_own()
     elif choice == '2':
         users = find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
         view_neighbors(users)
     elif choice == '3':
-        redraw("now viewing most recent entries\n\n")
+        redraw("now viewing most recent entries\n")
         view_feed()
     elif choice == '4':
         pretty_settings = "\n\ttext editor:\t" +SETTINGS["editor"]
@@ -395,6 +394,8 @@ def show_credits():
     print("""
 ttbp was written by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
+
+for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
 if you have ideas for ttbp, you are welcome to fork the repo and
 work on it. i'm only a neophyte dev, so i apologize for any
