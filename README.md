@@ -34,7 +34,8 @@ header and footer files. the program sets you up with basic
 default. if you break your page somehow, you can force the program to
 regenerate your configuration by deleting your ~/.ttbp directory entirely. **you might want to back up your ~/.ttbp/entries directory before you do this.**
 
-* to modify your stylesheet, edit your ~/.ttbp/www/style.css
+* to modify your stylesheet, edit your ~/.ttbp/config/style.css
+  * (future feature: having multiple stylesheets you can select)
 * to modify the page header, edit your ~/.ttbp/config/header.txt
   * you might note that there's a place marked off in the default header where you can safely put custom HTML elements!
 * to modify the page footer, edit your ~/.ttbp/config/footer.txt

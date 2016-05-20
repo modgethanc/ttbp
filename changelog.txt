@@ -4,7 +4,6 @@ TO-DO:
 	-command line flags:
 		-shortcut to most recent feels, writing entry, seeing own entry
 	-neighbor view takes you to individual entry listing
-	-make ttbp/index.html reference readme.md
 
 	(goals for version two)
 
@@ -20,6 +19,15 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.8.6; mostly structural changes
+	-a freaking patch utility?! yes, there's a patch utility now
+	-settings now has an option to publish or not publish your blog to
+	public_html
+	-changing your publish directory actually moves files correctly
+	-html files are now stored at .ttbp/www, and the public_html path just
+	symlinks there
+	-style.css now lives in .ttbp/config, and is symlinked from www
 
 ver 0.8.5
 	-publish feels directory to ~endorphant/ttbp/index.html

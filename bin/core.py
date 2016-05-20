@@ -17,6 +17,7 @@ WWW = os.path.join(PATH, "www")
 CONFIG = os.path.join(PATH, "config")
 DATA = os.path.join(PATH, "entries")
 FEED = os.path.join(SOURCE, "www", "index.html")
+DOCS = os.path.join(SOURCE, "www", "help.html")
 NOPUB = os.path.join(CONFIG, "nopub")
 
 HEADER = ""
@@ -200,22 +201,31 @@ def write_global_feed(blogList):
         <link rel=\"stylesheet\" href=\"style.css\" />
     </head>
     <body>
+        <div class="meta">
         <h1>tilde.town feels engine</h1>
 
         <h2><a href="https://github.com/modgethanc/ttbp">github
         repo</a> | <a
         href="http://tilde.town/~endorphant/blog/20160510.html">state
-        of the ttbp</a></h2> <div class="box">
-        <p>curious? run <b>~endorphant/bin/ttbp</b> while logged in to tilde.town.</p>
-        <p>it's still a little volatile. let me know if anything breaks.</p>
+        of the ttbp</a></h2> 
+        <!--<p>curious? run <b>~endorphant/bin/ttbp</b> while logged in to tilde.town.</p>
+        <p>it's still a little volatile. let me know if anything breaks.</p>---></div>
         <p>&nbsp;</p>
-
-        <h3>live feels-sharing:</h3>
-        <div class=\"feed\">
-            <ul>
 """)
 
+    ## docs
+    outfile.write("""\
+        <div class="docs">""")
+    outfile.write(mistune.markdown(open(os.path.join(SOURCE, "..", "README.md"), "r").read()))
+    outfile.write("""\
+        </div>""")
+
     ## feed
+    outfile.write("""\
+        <p>&nbsp;</p>
+        <div class=\"feed\">
+        <h3>live feels-sharing:</h3>
+            <ul>""")
     for blog in blogList:
         outfile.write("""
                 <li>"""+blog+"""</li>\
@@ -231,7 +241,32 @@ def write_global_feed(blogList):
 
     outfile.close()
 
+def make_docs():
 
+    outfile = open(DOCS, "w")
+
+    outfile.write("""\
+<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
+<html>
+    <head>
+        <title>tilde.town feels engine</title>
+        <link rel=\"stylesheet\" href=\"style.css\" />
+    </head>
+    <body>
+        <h1>tilde.town feels engine</h1>
+
+        <h2><a href="https://github.com/modgethanc/ttbp">github
+        repo</a> | <a
+        href="http://tilde.town/~endorphant/blog/20160510.html">state
+        of the ttbp</a></h2> <div class="box">""")
+
+    outfile.write(mistune.markdown(open(os.path.join(SOURCE, "..", "README.md"), "r").read()))
+    outfile.write("""
+    </div>
+  </body>
+</html>
+""")
+    outfile.close()
 #############
 #############
 #############
