@@ -39,8 +39,21 @@ LANG = json.load(langfile)
 langfile.close()
 
 def say(keyword):
+    '''
+    takes a keyword and randomly returns from language dictionary to match that keyword
 
-  return random.choice(LANG.get(keyword))
+    returns None if keyword doesn't exist
+
+    TODO: validate keyword?
+    '''
+
+    return random.choice(LANG.get(keyword))
 
 def month(num):
-  return LANG["months"].get(num)
+    '''
+    takes a MM and returns lovercase full name of that month
+
+    TODO: validate num?
+    '''
+
+    return LANG["months"].get(num)

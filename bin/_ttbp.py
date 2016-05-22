@@ -184,7 +184,7 @@ def init():
         raw_input("""
 i don't recognize you, stranger. let's make friends.
 
-press <enter> to begin, or <ctrl-c> to get out of here.\
+press <enter> to begin, or <ctrl-c> to get out of here.
         """)
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
@@ -225,7 +225,7 @@ def gen_header():
     builds header to insert username
     '''
 
-    header ="""\
+    header ="""
 <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
 <html>
     <head>
@@ -354,7 +354,7 @@ def main_menu():
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
         view_neighbors(users)
     elif choice == '3':
-        redraw("now viewing most recent entries\n")
+        redraw("most recent global entries\n")
         view_feed()
     elif choice == '4':
         pretty_settings = "\n\n\ttext editor:\t" +SETTINGS.get("editor")
@@ -603,7 +603,7 @@ def view_feed():
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
     #print_menu(entries)
-    view_entries(metas, entries, "most recent ten entries: \n\n")
+    view_entries(metas, entries, "most recent global entries: \n\n")
 
     redraw()
 
@@ -903,4 +903,4 @@ def update_version():
 
 if __name__ == '__main__':
     start()
-#print("ttbp beta is out to lunch. bbl.")
+    #print("ttbp beta is out to lunch. bbl.")

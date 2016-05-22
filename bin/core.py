@@ -214,7 +214,7 @@ def meta(entries = FILES):
 
     * takes a list of filenames and returns a 2d list:
       [0] absolute path
-      [1] ctime
+      [1] mtime
       [2] wc -w
       [3] timestamp "DD month YYYY at HH:MM"
       [4] entry date YYYY-MM-DD
@@ -226,14 +226,14 @@ def meta(entries = FILES):
     meta = []
 
     for filename in entries:
-      ctime = os.path.getctime(filename)
+      mtime = os.path.getmtime(filename)
       wc = subprocess.check_output(["wc","-w",filename]).split()[0]
-      timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(ctime))
+      timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(mtime))
       date = "-".join(parse_date(filename))
       author = os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1]
 
 
-      meta.append([filename, ctime, wc, timestamp, date, author])
+      meta.append([filename, mtime, wc, timestamp, date, author])
 
     meta.sort(key = lambda filename:filename[4])
     meta.reverse()

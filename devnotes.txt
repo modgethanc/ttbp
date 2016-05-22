@@ -1,9 +1,5 @@
-config file things:
--preferred text editor
--set www symlink
--set page title
--set colorizing pref
+NOTES FOR ~ENDO
 
-flair:
--themes/stylesheets
--global post announcements
+handling global feels out of order:
+  -check to see if entry filename date and mtime date matches
+  -if not, process as if it was last modified on the date indicated by filename
