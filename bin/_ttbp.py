@@ -40,13 +40,16 @@ import chatter
 import inflect
 import util
 
+__version__ = "0.8.7"
+__author__ = "endorphant <endorphant@tilde.town)"
+#__name__ = "_ttpb: wip/beta version of the ttbp console interface"
+
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
-VERSION = "0.8.7"
 
 p = inflect.engine()
 
@@ -832,7 +835,7 @@ def updated():
 
     ver = open(versionFile, "r").read()
 
-    if ver == VERSION:
+    if ver == __version__:
         return True
 
     return False
@@ -846,7 +849,7 @@ def update_version():
 
     print("ttbp had some updates!")
 
-    print("\ngive me a second to update you to version "+VERSION+"...\n")
+    print("\ngive me a second to update you to version "+__version__+"...\n")
 
     time.sleep(1)
     print("...")
@@ -895,7 +898,7 @@ def update_version():
 
 
     # increment user versionfile
-    open(versionFile, "w").write(VERSION)
+    open(versionFile, "w").write(_version__)
 
     return "you're all good to go, "+chatter.say("friend")+"!\n"
 
