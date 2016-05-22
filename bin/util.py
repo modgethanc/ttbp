@@ -33,6 +33,10 @@ lastcolor = colorama.Fore.RESET
 p = inflect.engine()
 
 def set_rainbow():
+    '''
+    prints a random terminal color code
+    '''
+
     global lastcolor
 
     color = lastcolor
@@ -44,9 +48,17 @@ def set_rainbow():
     print(color)
 
 def reset_color():
+    '''
+    prints terminal color code reset
+    '''
+
     print(colorama.Fore.RESET)
 
 def attach_rainbow():
+    '''
+    returns a random terminal color code, presumably to be 'attached' to a string
+    '''
+
     global lastcolor
 
     color = lastcolor
@@ -57,12 +69,28 @@ def attach_rainbow():
     return color
 
 def attach_reset():
+    '''
+    returns terminal color code reset, presumably to be 'attached' to a string
+    '''
+
     return colorama.Style.RESET_ALL
 
 def hilight(text):
+    '''
+    takes a string and highlights it on return
+    '''
+
     return colorama.Style.BRIGHT+text+colorama.Style.NORMAL
 
 def pretty_time(time):
+    '''
+    human-friendly time formatter
+
+    takes an integer number of seconds and returns a phrase that describes it,
+    using the largest possible figure, rounded down (ie, time=604 returns '10
+    minutes', not '10 minutes, 4 seconds' or '604 seconds')
+    '''
+
     m, s = divmod(time, 60)
     if m > 0:
         h, m = divmod(m, 60)
@@ -86,7 +114,9 @@ def pretty_time(time):
         return p.no("second", s)
 
 def genID(digits=5):
-    # makes a string of digits
+    '''
+    returns a string-friendly string of digits, which can start with 0
+    '''
 
     id = ""
     x  = 0

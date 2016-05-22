@@ -28,7 +28,6 @@ https://github.com/modgethanc/ttbp
 '''
 
 import os
-import os
 import random
 import tempfile
 import subprocess

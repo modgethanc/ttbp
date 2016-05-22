@@ -17,10 +17,12 @@ TO-DO:
 	(flair)
 
 	-graffiti wall
-	-command line flags:
-		(maybe; not sure i want this to be a feature at all)
+	-command line flags
+		*maybe; not sure i want this to be a feature at all
 		-shortcut to most recent feels, writing entry, seeing own entry
 	-#hashtags
+	-rainbow menu selection
+	-break out hardcoded globals into config files
 
 ------
 
