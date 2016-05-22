@@ -1,9 +1,8 @@
 TO-DO:
 	(goals for stable release)
 
-	-command line flags:
-		-shortcut to most recent feels, writing entry, seeing own entry
 	-neighbor view takes you to individual entry listing
+	-set pub/nopub on entries
 
 	(goals for version two)
 
@@ -15,10 +14,20 @@ TO-DO:
 	-make a nicer entry view wrapper
 		-maybe with a box? and a nicer feed view?
 
+	(flair)
+
+	-graffiti wall
+	-command line flags:
+		(maybe; not sure i want this to be a feature at all)
+		-shortcut to most recent feels, writing entry, seeing own entry
+	-#hashtags
 
 ------
 
 CHANGELOG:
+
+ver 0.8.7
+	-fixing publish/nopub option setting from patcher
 
 ver 0.8.6; mostly structural changes
 	-a freaking patch utility?! yes, there's a patch utility now

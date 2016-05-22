@@ -1,4 +1,7 @@
-a command-line based blogging platform running on tilde.town
+*a command-line based blogging platform running on tilde.town*
+
+`ttbp` stands for "tilde.town blogging platform", the original working name for
+this project.
 
 to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
 
@@ -26,20 +29,50 @@ of date order by creating files with any date you want.
 in the feed but not render in a browser (but people can still read
 them with view-source)
 
+### privacy
+
+when you start your ttbp, you have the option of publishing or not publishing
+your blog.
+
+if you opt to publish, the program creates a directory `~/.ttbp/www`
+where it stores all html files it generates, and symlinks this from your
+`~/public_html` with your chosen blog directory. your blog will also be listed
+on the [main ttbp page](https://tilde.town/~endorphant/ttbp).
+
+if you opt to not publish, your entires will never be accessible from outside
+of the tilde.town network; other tilde.town users will still be able to read
+your entries through the ttbp interface, or by directly accessing your
+`~/.ttbp/entries` directory.
+
+if you want to further protect your entries, you can `chmod 700` your entries
+directory.
 
 ### changing your page layout
 
 you can modify how your blog looks by editing the stylesheet or
 header and footer files. the program sets you up with basic
 default. if you break your page somehow, you can force the program to
-regenerate your configuration by deleting your ~/.ttbp directory entirely. **you might want to back up your ~/.ttbp/entries directory before you do this.**
+regenerate your configuration by deleting your ~/.ttbp directory entirely.
+**you might want to back up your ~/.ttbp/entries directory before you do
+this.**
 
 * to modify your stylesheet, edit your ~/.ttbp/config/style.css
   * (future feature: having multiple stylesheets you can select)
 * to modify the page header, edit your ~/.ttbp/config/header.txt
-  * you might note that there's a place marked off in the default header where you can safely put custom HTML elements!
+  * you might note that there's a place marked off in the default header where
+    you can safely put custom HTML elements!
 * to modify the page footer, edit your ~/.ttbp/config/footer.txt
 
 ### general tips
 
 * add `alias ttbp="~endorphant/bin/ttbp"` to your .bash_aliases for fewer keystrokes
+
+### future features
+
+these are a few ideas being kicked around, or under active development:
+
+* better entry privacy/publish control options
+* stylesheet/theme selector
+* responding to entries
+* paginated list view
+* better entry display within ttbp
