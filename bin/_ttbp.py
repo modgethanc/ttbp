@@ -333,7 +333,8 @@ def main_menu():
             "browse global feels",
             "change your settings",
             "send some feedback",
-            "see credits"]
+            "see credits",
+            "read documentation"]
 
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
     print_menu(menuOptions)
@@ -376,6 +377,9 @@ def main_menu():
     elif choice == '6':
         redraw()
         show_credits()
+    elif choice == '7':
+        subprocess.call(["links", os.path.join(SOURCE, "..", "README.html")])
+        redraw()
     elif choice in QUITS:
         return stop()
     else:
