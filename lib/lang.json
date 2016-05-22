@@ -7,12 +7,14 @@
     "good afternoon",
     "good day",
     "good evening",
-    "welcome back"
+    "welcome back",
+    "nice to see you"
       ],
   "bye":[
     "see you later, space cowboy",
     "bye, townie",
-    "until next time, friend"
+    "until next time, friend",
+    "come back whenever"
       ],
   "friend":[
     "friend",
