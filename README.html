@@ -1,0 +1,98 @@
+<p><em>a command-line based blogging platform running on tilde.town</em></p>
+
+<p><code>ttbp</code> stands for &ldquo;tilde.town blogging platform&rdquo;, the original working name for
+this project.</p>
+
+<p>to use, run <code>~endorphant/bin/ttbp</code> while logged in to tilde.town</p>
+
+<p>you can also try <code>~endorphant/bin/ttbp-beta</code> for a more unstable, bleeding-edge
+experience.</p>
+
+<h3>writing entries</h3>
+
+<p>entries are recorded as plaintext files in your ~/.ttbp/entries
+directory. you can edit them there directly, or fix old entries, or
+delete entries.</p>
+
+<p><em>warning</em>: changing old entries might cause strange things to
+happen with timestamps. the main program looks at the filename
+first for setting the date, then the last modified time to sort
+recent posts. it expects YYYMMDD.txt as the filename; anything else
+won&rsquo;t show up as a valid entry. yes, this means you can post things out
+of date order by creating files with any date you want.</p>
+
+<h4>general entry-writing notes</h4>
+
+<ul>
+<li>you can use <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a></li>
+<li>you can use html</li>
+<li>you can also put things between <code>&lt;!-- comments --&gt;</code> to have them show up
+in the feed but not render in a browser (but people can still read
+them with view-source)</li>
+</ul>
+
+
+<h3>privacy</h3>
+
+<p>when you start your ttbp, you have the option of publishing or not publishing
+your blog.</p>
+
+<p>if you opt to publish, the program creates a directory <code>~/.ttbp/www</code>
+where it stores all html files it generates, and symlinks this from your
+<code>~/public_html</code> with your chosen blog directory. your blog will also be listed
+on the <a href="https://tilde.town/~endorphant/ttbp">main ttbp page</a>.</p>
+
+<p>if you opt to not publish, your entires will never be accessible from outside
+of the tilde.town network; other tilde.town users will still be able to read
+your entries through the ttbp interface, or by directly accessing your
+<code>~/.ttbp/entries</code> directory.</p>
+
+<p>if you want to further protect your entries, you can <code>chmod 700</code> your entries
+directory.</p>
+
+<h3>changing your page layout</h3>
+
+<p>you can modify how your blog looks by editing the stylesheet or
+header and footer files. the program sets you up with basic
+default. if you break your page somehow, you can force the program to
+regenerate your configuration by deleting your ~/.ttbp directory entirely.
+<strong>you might want to back up your ~/.ttbp/entries directory before you do
+this.</strong></p>
+
+<ul>
+<li>to modify your stylesheet, edit your ~/.ttbp/config/style.css
+
+<ul>
+<li>(future feature: having multiple stylesheets you can select)</li>
+</ul>
+</li>
+<li>to modify the page header, edit your ~/.ttbp/config/header.txt
+
+<ul>
+<li>you might note that there&rsquo;s a place marked off in the default header where
+you can safely put custom HTML elements!</li>
+</ul>
+</li>
+<li>to modify the page footer, edit your ~/.ttbp/config/footer.txt</li>
+</ul>
+
+
+<h3>general tips</h3>
+
+<ul>
+<li>add <code>alias ttbp="~endorphant/bin/ttbp"</code> to your .bash_aliases for fewer keystrokes</li>
+</ul>
+
+
+<h3>future features</h3>
+
+<p>these are a few ideas being kicked around, or under active development:</p>
+
+<ul>
+<li>better entry privacy/publish control options</li>
+<li>stylesheet/theme selector</li>
+<li>responding to entries</li>
+<li>paginated list view</li>
+<li>better entry display within ttbp</li>
+</ul>
+
