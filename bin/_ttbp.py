@@ -40,7 +40,7 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.8.7"
+__version__ = "0.9.0"
 __author__ = "endorphant <endorphant@tilde.town)"
 #__name__ = "_ttpb: wip/beta version of the ttbp console interface"
 
@@ -165,7 +165,7 @@ def check_init():
 
         ## PATCH CHECK HERE
         if not updated():
-            print(update_version())
+            update_version()
 
         ## when ready, enter main program and load core engine
         raw_input("press <enter> to explore your feels.\n\n")
@@ -665,17 +665,19 @@ def view_feed():
 
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
-    #print_menu(entries)
     list_entries(metas, entries, "most recent global entries: \n\n")
 
     redraw()
 
     return
 
-#####
+## misc helpers
 
 def find_ttbps():
-    # looks for users with a valid ttbp config and returns a list of them
+    '''
+    returns a list of users with a ttbp by checking for a valid ttbprc
+    '''
+
     users = []
 
     for townie in os.listdir("/home"):
@@ -685,7 +687,9 @@ def find_ttbps():
     return users
 
 def www_neighbors(users):
-    # takes a raw list of valid users and formats for www view
+    '''
+    takes a list of users with publiishing turned on and prepares it for www output
+    '''
 
     userList = []
 
@@ -723,7 +727,9 @@ def www_neighbors(users):
     core.write_global_feed(sortedUsers)
 
 def list_select(options, prompt):
-    # runs the prompt for the list until a valid index is imputted
+    '''
+    given a list, cycles through the prompt until a valid index is imputted
+    '''
 
     ans = ""
     invalid = True
@@ -747,7 +753,9 @@ def list_select(options, prompt):
     return ans
 
 def input_yn(query):
-    # returns boolean True or False
+    '''
+    given a query, returns boolean True or False by processing y/n input
+    '''
 
     try:
         ans = raw_input(query+" [y/n] ")
@@ -763,7 +771,9 @@ def input_yn(query):
         return False
 
 def publishing(username = USER):
-    # checks .ttbprc for whether or not user wants their blog published online
+    '''
+    checks .ttbprc for whether or not user opted for www publishing
+    '''
 
     ttbprc = {}
 
@@ -776,7 +786,9 @@ def publishing(username = USER):
     return ttbprc.get("publishing")
 
 def select_editor():
-    # setup helper for editor selection
+    '''
+    setup helper for editor selection
+    '''
 
     print_menu(EDITORS)
     choice = raw_input("\npick your favorite text editor: ")
@@ -786,7 +798,9 @@ def select_editor():
     return EDITORS[int(choice)]
 
 def select_publish_dir():
-    # setup helper for publish directory selection
+    '''
+    setup helper for publish directory selection
+    '''
 
     current = SETTINGS.get("publish dir")
     republish = False
@@ -802,14 +816,14 @@ def select_publish_dir():
     publishDir = os.path.join(PUBLIC, choice)
     while os.path.exists(publishDir):
         second = raw_input("\n"+publishDir+"""\
- already exists! 
- 
+ already exists!
+
 setting this as your publishing directory means this program may
 delete or overwrite file there!
- 
+
 if you're sure you want to use it, hit <enter> to confirm.
-otherwise, pick another location: """) 
-        
+otherwise, pick another location: """)
+
         if second == "":
             break
         choice = second
@@ -818,7 +832,9 @@ otherwise, pick another location: """)
     return choice
 
 def select_publishing():
-    # setup helper for toggling publishing
+    '''
+    setup helper for toggling publishing
+    '''
 
     publish = input_yn("""\
 do you want to publish your feels online?
@@ -839,16 +855,19 @@ please enter\
     return publish
 
 def unpublish():
-    # remove user's published directory, if it exists
+    '''
+    remove user's published directory, if it exists
+    '''
 
     dir = SETTINGS.get("publish dir")
     if dir:
         publishDir = os.path.join(PUBLIC, dir)
         subprocess.call(["rm", publishDir])
-        #subprocess.call(["rm", WWW])
 
 def update_publishing():
-    # handler to update publishing directory, or wipe it
+    '''
+    updates publishing directory if user is publishing. otherwise, wipe it.
+    '''
 
     global SETTINGS
 
@@ -866,7 +885,9 @@ def update_publishing():
         SETTINGS.update({"publish dir": None})
 
 def make_publish_dir(dir):
-    # setup helper to create publishing directory
+    '''
+    setup helper to create publishing directory
+    '''
 
     if not os.path.exists(WWW):
         subprocess.call(["mkdir", WWW])
@@ -884,10 +905,12 @@ def make_publish_dir(dir):
 
     print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
-##### PATCHES
+##### PATCHING UTILITIES
 
 def updated():
-    # checks to see if current user is up to the same version as system
+    '''
+    checks to see if current user is up to the same version as system
+    '''
 
     versionFile = os.path.join(PATH, "version")
     if not os.path.exists(versionFile):
@@ -901,7 +924,9 @@ def updated():
     return False
 
 def update_version():
-    # updates user to current version
+    '''
+    updates user to current version
+    '''
 
     global SETTINGS
 
@@ -947,8 +972,10 @@ def update_version():
         ttbprc.close()
 
     else: # version at least 0.8.6
+        userVersion = open(versionFile, 'r').read()
+
         # from 0.8.6 to 0.8.7
-        if open(versionFile, 'r').read() == "0.8.6":
+        if userVersion == "0.8.6":
             print("\nresetting your publishing settings...\n")
             SETTINGS.update({"publishing":select_publishing()})
             update_publishing()
@@ -959,8 +986,14 @@ def update_version():
 
     # increment user versionfile
     open(versionFile, "w").write(__version__)
+    print("you're all good to go, "+chatter.say("friend")+"!")
 
-    return "you're all good to go, "+chatter.say("friend")+"!\n"
+    # version 0.9.0 patch notes:
+    print("""
+ver. 0.9.0 features:
+    * browsing other people's feels from neighbor view
+    * documentation browser
+    """)
 
 #####
 
