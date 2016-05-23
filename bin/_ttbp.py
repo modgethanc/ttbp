@@ -279,6 +279,11 @@ def setup():
 
     global SETTINGS
 
+    print("\n\ttext editor:\t" +SETTINGS.get("editor"))
+    if publishing():
+        print("\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir")))
+    print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
+
     # editor selection
     SETTINGS.update({"editor": select_editor()})
     redraw("text editor set to: "+SETTINGS["editor"])
@@ -298,6 +303,7 @@ def setup():
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     redraw()
+
     return SETTINGS
 
 ## menus
@@ -351,8 +357,8 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         www_neighbors(find_ttbps())
     elif choice == '1':
-        redraw("here are your recorded feels, listed by date:\n")
-        view_own()
+        redraw("your recorded feels, listed by date:\n")
+        view_feels(USER)
     elif choice == '2':
         users = find_ttbps()
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
@@ -361,12 +367,7 @@ def main_menu():
         redraw("most recent global entries\n")
         view_feed()
     elif choice == '4':
-        pretty_settings = "\n\n\ttext editor:\t" +SETTINGS.get("editor")
-        if publishing():
-            pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir"))
-        pretty_settings += "\n\tpubishing:\t"+str(SETTINGS.get("publishing"))
-
-        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this."+pretty_settings+"\n")
+        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         try:
             setup()
         except KeyboardInterrupt():
@@ -417,23 +418,32 @@ press <enter> to open an external text editor. mail will be sent once you save a
     return feedback_menu()
 
 def view_neighbors(users):
+    '''
+    generates list of all users on ttbp, sorted by most recent post
+
+    * if user is publishing, list publish directory
+    '''
 
     userList = []
 
+    ## assumes list of users passed in all have valid config files
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+
+        ## retrieve publishing url, if it exists
         url="\t\t\t"
         if userRC.get("publish dir"):
             url = LIVE+user+"/"+userRC.get("publish dir")
-        count = 0
-        lastfile = ""
+
+        ## find last entry
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
+        lastfile = ""
         for filename in files:
             if core.valid(filename):
-                count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
+        ## generate human-friendly timestamp
         ago = "never"
         if lastfile:
             last = os.path.getctime(lastfile)
@@ -442,44 +452,73 @@ def view_neighbors(users):
         else:
             last = 0
 
-        pad = ""
-        if len(user) < 8:
-            pad = "\t"
-        user = "~"+user
-        if len(user) < 8:
-            user += "\t"
+        ## some formatting handwavin
+        urlpad = ""
+        if ago == "never":
+            urlpad = "\t"
 
-        userList.append(["\t"+user+"\t"+url+pad+"\t("+ago+")", last])
+        userpad = ""
+        if len(user) < 7:
+            userpad = "\t"
 
-    # sort user by most recent entry
+        userList.append(["\t~"+user+userpad+"\t("+ago+")"+urlpad+"\t"+url, last, user])
+
+    # sort user by most recent entry for display
     userList.sort(key = lambda userdata:userdata[1])
     userList.reverse()
     sortedUsers = []
+    userIndex = []
     for user in userList:
         sortedUsers.append(user[0])
+        userIndex.append(user[2])
 
     print_menu(sortedUsers)
 
-    raw_input("\n\npress <enter> to go back home.\n\n")
-    redraw()
+    #raw_input("\n\npress <enter> to go back home.\n\n")
+    choice = list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
 
-    return
+    if choice is not False:
+        redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
+        view_feels(userIndex[choice])
+        view_neighbors(users)
+    else:
+        redraw()
+        return
 
-def view_own():
+def view_feels(townie):
+    '''
+    generates a list of all feels by given townie and displays in
+    date order
+
+    * calls list_entries() to select feel to read
+    '''
 
     filenames = []
 
-    for entry in os.listdir(DATA):
-        filenames.append(os.path.join(DATA, entry))
+    if townie == USER:
+        entryDir = DATA
+        owner = "your"
+    else:
+        owner = "~"+townie+"'s"
+        entryDir = os.path.join("/home", townie, ".ttbp", "entries")
+
+    for entry in os.listdir(entryDir):
+        filenames.append(os.path.join(entryDir, entry))
     metas = core.meta(filenames)
 
-    entries = []
-    for entry in metas:
-        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
+    if len(filenames) > 0:
+        entries = []
+        for entry in metas:
+            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
 
-    return view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
+        return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
+    else:
+        redraw("no feels recorded by ~"+townie)
 
 def show_credits():
+    '''
+    prints author acknowledgements and commentary
+    '''
 
     print("""
 ttbp was written by ~endorphant in python. the codebase is
@@ -489,8 +528,10 @@ for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
 if you have ideas for ttbp, you are welcome to fork the repo and
 work on it. i'm only a neophyte dev, so i apologize for any
-horrendously ugly coding habits i have. i'd love to hear about your
-ideas and brainstorm about new features!
+bad style and practices of mine; i'm always open to suggestions for
+improvement.
+
+i'd love to hear about your ideas and brainstorm about new features!
 
 thanks to everyone who reads, listens, writes, and feels.\
         """)
@@ -500,21 +541,24 @@ thanks to everyone who reads, listens, writes, and feels.\
 
     return
 
-
 ## handlers
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
+    '''
+    main feels-recording handler
+    '''
 
     entered = raw_input("""
-"""+util.hilight("new feature!")+""" you can now use standard markdown in your entry text!
-raw html is still valid, and you can mix them together.
-
 feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
 
 if you've already started recording feels for this day, you
 can pick up where you left off.
 
-press <enter> to begin recording your feels.
+you can write your feels in plaintext, markdown, html, or a mixture of
+these. 
+
+press <enter> to begin recording your feels in your chosen text
+editor.
 
 """)
 
@@ -535,6 +579,9 @@ press <enter> to begin recording your feels.
     return
 
 def send_feedback(entered, subject="none"):
+    '''
+    main feedback/bug report handler
+    '''
 
     message = ""
 
@@ -558,13 +605,16 @@ def send_feedback(entered, subject="none"):
     return """\
 thanks for writing! for your reference, it's been recorded
 > as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
-            """
+    """
 
-def view_entries(metas, entries, prompt):
+def list_entries(metas, entries, prompt):
+    '''
+    displays a list of entries for reading selection
+    '''
 
     print_menu(entries)
 
-    choice = list_select(entries, "pick an entry from the list, or type 'back' to go home: ")
+    choice = list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
 
     if choice is not False:
 
@@ -573,19 +623,25 @@ def view_entries(metas, entries, prompt):
         show_entry(metas[choice][0])
         redraw(prompt)
 
-        return view_entries(metas, entries, prompt)
+        return list_entries(metas, entries, prompt)
 
     else:
         redraw()
         return
 
 def show_entry(filename):
+    '''
+    call less on passed in filename
+    '''
 
     subprocess.call(["less", filename])
 
     return
 
 def view_feed():
+    '''
+    generate and display list of most recent global entries
+    '''
 
     feedList = []
 
@@ -610,7 +666,7 @@ def view_feed():
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
     #print_menu(entries)
-    view_entries(metas, entries, "most recent global entries: \n\n")
+    list_entries(metas, entries, "most recent global entries: \n\n")
 
     redraw()
 
