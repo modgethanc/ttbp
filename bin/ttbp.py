@@ -413,7 +413,7 @@ def view_neighbors(users):
 
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-        url="\t\t\t\t"
+        url="\t\t\t"
         if userRC.get("publish dir"):
             url = LIVE+user+"/"+userRC.get("publish dir")
         count = 0

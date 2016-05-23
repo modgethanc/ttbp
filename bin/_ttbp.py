@@ -422,7 +422,7 @@ def view_neighbors(users):
 
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-        url="\t\t\t\t"
+        url="\t\t\t"
         if userRC.get("publish dir"):
             url = LIVE+user+"/"+userRC.get("publish dir")
         count = 0
@@ -902,7 +902,7 @@ def update_version():
 
 
     # increment user versionfile
-    open(versionFile, "w").write(_version__)
+    open(versionFile, "w").write(__version__)
 
     return "you're all good to go, "+chatter.say("friend")+"!\n"
 
