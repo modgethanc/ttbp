@@ -379,7 +379,7 @@ def main_menu():
         redraw()
         show_credits()
     elif choice == '7':
-        subprocess.call(["links", os.path.join(SOURCE, "..", "README.html")])
+        subprocess.call(["lynx", os.path.join(SOURCE, "..", "README.html")])
         redraw()
     elif choice in QUITS:
         return stop()

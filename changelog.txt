@@ -1,7 +1,6 @@
 TO-DO:
 	(goals for stable release)
 
-	-neighbor view takes you to individual entry listing
 	-set pub/nopub on entries
 
 	(goals for version two)
@@ -27,6 +26,11 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.9.0
+	-documentation browser
+	-reading neighbor feels lists
+	-overall code scrubbing and documentation
 
 ver 0.8.7
 	-fixing publish/nopub option setting from patcher
