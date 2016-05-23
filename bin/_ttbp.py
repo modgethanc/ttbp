@@ -710,7 +710,7 @@ def www_neighbors(users):
 
         if lastfile:
             last = os.path.getctime(lastfile)
-            timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(last)) + time.strftime(" (%z)")
+            timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(last)) + " (utc"+time.strftime("%z")[0]+time.strftime("%z")[2]+")"
         else:
             timestamp = ""
             last = 0
