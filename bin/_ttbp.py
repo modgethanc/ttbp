@@ -555,7 +555,7 @@ if you've already started recording feels for this day, you
 can pick up where you left off.
 
 you can write your feels in plaintext, markdown, html, or a mixture of
-these. 
+these.
 
 press <enter> to begin recording your feels in your chosen text
 editor.

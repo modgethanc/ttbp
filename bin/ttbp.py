@@ -40,13 +40,15 @@ import chatter
 import inflect
 import util
 
+__version__ = "0.9.0"
+__author__ = "endorphant <endorphant@tilde.town)"
+
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
 LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
-VERSION = "0.8.7"
 
 p = inflect.engine()
 
@@ -162,7 +164,7 @@ def check_init():
 
         ## PATCH CHECK HERE
         if not updated():
-            print(update_version())
+            update_version()
 
         ## when ready, enter main program and load core engine
         raw_input("press <enter> to explore your feels.\n\n")
@@ -276,6 +278,11 @@ def setup():
 
     global SETTINGS
 
+    print("\n\ttext editor:\t" +SETTINGS.get("editor"))
+    if publishing():
+        print("\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir")))
+    print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
+
     # editor selection
     SETTINGS.update({"editor": select_editor()})
     redraw("text editor set to: "+SETTINGS["editor"])
@@ -295,6 +302,7 @@ def setup():
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     redraw()
+
     return SETTINGS
 
 ## menus
@@ -328,7 +336,8 @@ def main_menu():
             "browse global feels",
             "change your settings",
             "send some feedback",
-            "see credits"]
+            "see credits",
+            "read documentation"]
 
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
     print_menu(menuOptions)
@@ -345,8 +354,8 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         www_neighbors(find_ttbps())
     elif choice == '1':
-        redraw("here are your recorded feels, listed by date:\n")
-        view_own()
+        redraw("your recorded feels, listed by date:\n")
+        view_feels(USER)
     elif choice == '2':
         users = find_ttbps()
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
@@ -355,12 +364,7 @@ def main_menu():
         redraw("most recent global entries\n")
         view_feed()
     elif choice == '4':
-        pretty_settings = "\n\n\ttext editor:\t" +SETTINGS.get("editor")
-        if publishing():
-            pretty_settings += "\n\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir"))
-        pretty_settings += "\n\tpubishing:\t"+str(SETTINGS.get("publishing"))
-
-        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this."+pretty_settings+"\n")
+        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         try:
             setup()
         except KeyboardInterrupt():
@@ -371,6 +375,9 @@ def main_menu():
     elif choice == '6':
         redraw()
         show_credits()
+    elif choice == '7':
+        subprocess.call(["links", os.path.join(SOURCE, "..", "README.html")])
+        redraw()
     elif choice in QUITS:
         return stop()
     else:
@@ -408,23 +415,32 @@ press <enter> to open an external text editor. mail will be sent once you save a
     return feedback_menu()
 
 def view_neighbors(users):
+    '''
+    generates list of all users on ttbp, sorted by most recent post
+
+    * if user is publishing, list publish directory
+    '''
 
     userList = []
 
+    ## assumes list of users passed in all have valid config files
     for user in users:
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+
+        ## retrieve publishing url, if it exists
         url="\t\t\t"
         if userRC.get("publish dir"):
             url = LIVE+user+"/"+userRC.get("publish dir")
-        count = 0
-        lastfile = ""
+
+        ## find last entry
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
         files.sort()
+        lastfile = ""
         for filename in files:
             if core.valid(filename):
-                count += 1
                 lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
 
+        ## generate human-friendly timestamp
         ago = "never"
         if lastfile:
             last = os.path.getctime(lastfile)
@@ -433,44 +449,73 @@ def view_neighbors(users):
         else:
             last = 0
 
-        pad = ""
-        if len(user) < 8:
-            pad = "\t"
-        user = "~"+user
-        if len(user) < 8:
-            user += "\t"
+        ## some formatting handwavin
+        urlpad = ""
+        if ago == "never":
+            urlpad = "\t"
 
-        userList.append(["\t"+user+"\t"+url+pad+"\t("+ago+")", last])
+        userpad = ""
+        if len(user) < 7:
+            userpad = "\t"
 
-    # sort user by most recent entry
+        userList.append(["\t~"+user+userpad+"\t("+ago+")"+urlpad+"\t"+url, last, user])
+
+    # sort user by most recent entry for display
     userList.sort(key = lambda userdata:userdata[1])
     userList.reverse()
     sortedUsers = []
+    userIndex = []
     for user in userList:
         sortedUsers.append(user[0])
+        userIndex.append(user[2])
 
     print_menu(sortedUsers)
 
-    raw_input("\n\npress <enter> to go back home.\n\n")
-    redraw()
+    #raw_input("\n\npress <enter> to go back home.\n\n")
+    choice = list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
 
-    return
+    if choice is not False:
+        redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
+        view_feels(userIndex[choice])
+        view_neighbors(users)
+    else:
+        redraw()
+        return
 
-def view_own():
+def view_feels(townie):
+    '''
+    generates a list of all feels by given townie and displays in
+    date order
+
+    * calls list_entries() to select feel to read
+    '''
 
     filenames = []
 
-    for entry in os.listdir(DATA):
-        filenames.append(os.path.join(DATA, entry))
+    if townie == USER:
+        entryDir = DATA
+        owner = "your"
+    else:
+        owner = "~"+townie+"'s"
+        entryDir = os.path.join("/home", townie, ".ttbp", "entries")
+
+    for entry in os.listdir(entryDir):
+        filenames.append(os.path.join(entryDir, entry))
     metas = core.meta(filenames)
 
-    entries = []
-    for entry in metas:
-        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
+    if len(filenames) > 0:
+        entries = []
+        for entry in metas:
+            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
 
-    return view_entries(metas, entries, "here are your recorded feels, listed by date: \n\n")
+        return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
+    else:
+        redraw("no feels recorded by ~"+townie)
 
 def show_credits():
+    '''
+    prints author acknowledgements and commentary
+    '''
 
     print("""
 ttbp was written by ~endorphant in python. the codebase is
@@ -480,8 +525,10 @@ for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
 if you have ideas for ttbp, you are welcome to fork the repo and
 work on it. i'm only a neophyte dev, so i apologize for any
-horrendously ugly coding habits i have. i'd love to hear about your
-ideas and brainstorm about new features!
+bad style and practices of mine; i'm always open to suggestions for
+improvement.
+
+i'd love to hear about your ideas and brainstorm about new features!
 
 thanks to everyone who reads, listens, writes, and feels.\
         """)
@@ -491,21 +538,24 @@ thanks to everyone who reads, listens, writes, and feels.\
 
     return
 
-
 ## handlers
 
 def write_entry(entry=os.path.join(DATA, "test.txt")):
+    '''
+    main feels-recording handler
+    '''
 
     entered = raw_input("""
-"""+util.hilight("new feature!")+""" you can now use standard markdown in your entry text!
-raw html is still valid, and you can mix them together.
-
 feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
 
 if you've already started recording feels for this day, you
 can pick up where you left off.
 
-press <enter> to begin recording your feels.
+you can write your feels in plaintext, markdown, html, or a mixture of
+these.
+
+press <enter> to begin recording your feels in your chosen text
+editor.
 
 """)
 
@@ -526,6 +576,9 @@ press <enter> to begin recording your feels.
     return
 
 def send_feedback(entered, subject="none"):
+    '''
+    main feedback/bug report handler
+    '''
 
     message = ""
 
@@ -549,13 +602,16 @@ def send_feedback(entered, subject="none"):
     return """\
 thanks for writing! for your reference, it's been recorded
 > as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
-            """
+    """
 
-def view_entries(metas, entries, prompt):
+def list_entries(metas, entries, prompt):
+    '''
+    displays a list of entries for reading selection
+    '''
 
     print_menu(entries)
 
-    choice = list_select(entries, "pick an entry from the list, or type 'back' to go home: ")
+    choice = list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
 
     if choice is not False:
 
@@ -564,19 +620,25 @@ def view_entries(metas, entries, prompt):
         show_entry(metas[choice][0])
         redraw(prompt)
 
-        return view_entries(metas, entries, prompt)
+        return list_entries(metas, entries, prompt)
 
     else:
         redraw()
         return
 
 def show_entry(filename):
+    '''
+    call less on passed in filename
+    '''
 
     subprocess.call(["less", filename])
 
     return
 
 def view_feed():
+    '''
+    generate and display list of most recent global entries
+    '''
 
     feedList = []
 
@@ -600,17 +662,19 @@ def view_feed():
 
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
-    #print_menu(entries)
-    view_entries(metas, entries, "most recent global entries: \n\n")
+    list_entries(metas, entries, "most recent global entries: \n\n")
 
     redraw()
 
     return
 
-#####
+## misc helpers
 
 def find_ttbps():
-    # looks for users with a valid ttbp config and returns a list of them
+    '''
+    returns a list of users with a ttbp by checking for a valid ttbprc
+    '''
+
     users = []
 
     for townie in os.listdir("/home"):
@@ -620,7 +684,9 @@ def find_ttbps():
     return users
 
 def www_neighbors(users):
-    # takes a raw list of valid users and formats for www view
+    '''
+    takes a list of users with publiishing turned on and prepares it for www output
+    '''
 
     userList = []
 
@@ -658,7 +724,9 @@ def www_neighbors(users):
     core.write_global_feed(sortedUsers)
 
 def list_select(options, prompt):
-    # runs the prompt for the list until a valid index is imputted
+    '''
+    given a list, cycles through the prompt until a valid index is imputted
+    '''
 
     ans = ""
     invalid = True
@@ -682,7 +750,9 @@ def list_select(options, prompt):
     return ans
 
 def input_yn(query):
-    # returns boolean True or False
+    '''
+    given a query, returns boolean True or False by processing y/n input
+    '''
 
     try:
         ans = raw_input(query+" [y/n] ")
@@ -698,7 +768,9 @@ def input_yn(query):
         return False
 
 def publishing(username = USER):
-    # checks .ttbprc for whether or not user wants their blog published online
+    '''
+    checks .ttbprc for whether or not user opted for www publishing
+    '''
 
     ttbprc = {}
 
@@ -711,7 +783,9 @@ def publishing(username = USER):
     return ttbprc.get("publishing")
 
 def select_editor():
-    # setup helper for editor selection
+    '''
+    setup helper for editor selection
+    '''
 
     print_menu(EDITORS)
     choice = raw_input("\npick your favorite text editor: ")
@@ -721,7 +795,9 @@ def select_editor():
     return EDITORS[int(choice)]
 
 def select_publish_dir():
-    # setup helper for publish directory selection
+    '''
+    setup helper for publish directory selection
+    '''
 
     current = SETTINGS.get("publish dir")
     republish = False
@@ -737,14 +813,14 @@ def select_publish_dir():
     publishDir = os.path.join(PUBLIC, choice)
     while os.path.exists(publishDir):
         second = raw_input("\n"+publishDir+"""\
- already exists! 
- 
+ already exists!
+
 setting this as your publishing directory means this program may
 delete or overwrite file there!
- 
+
 if you're sure you want to use it, hit <enter> to confirm.
-otherwise, pick another location: """) 
-        
+otherwise, pick another location: """)
+
         if second == "":
             break
         choice = second
@@ -753,7 +829,9 @@ otherwise, pick another location: """)
     return choice
 
 def select_publishing():
-    # setup helper for toggling publishing
+    '''
+    setup helper for toggling publishing
+    '''
 
     publish = input_yn("""\
 do you want to publish your feels online?
@@ -774,16 +852,19 @@ please enter\
     return publish
 
 def unpublish():
-    # remove user's published directory, if it exists
+    '''
+    remove user's published directory, if it exists
+    '''
 
     dir = SETTINGS.get("publish dir")
     if dir:
         publishDir = os.path.join(PUBLIC, dir)
         subprocess.call(["rm", publishDir])
-        #subprocess.call(["rm", WWW])
 
 def update_publishing():
-    # handler to update publishing directory, or wipe it
+    '''
+    updates publishing directory if user is publishing. otherwise, wipe it.
+    '''
 
     global SETTINGS
 
@@ -801,7 +882,9 @@ def update_publishing():
         SETTINGS.update({"publish dir": None})
 
 def make_publish_dir(dir):
-    # setup helper to create publishing directory
+    '''
+    setup helper to create publishing directory
+    '''
 
     if not os.path.exists(WWW):
         subprocess.call(["mkdir", WWW])
@@ -819,10 +902,12 @@ def make_publish_dir(dir):
 
     print("\n\tpublishing to "+LIVE+USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
-##### PATCHES
+##### PATCHING UTILITIES
 
 def updated():
-    # checks to see if current user is up to the same version as system
+    '''
+    checks to see if current user is up to the same version as system
+    '''
 
     versionFile = os.path.join(PATH, "version")
     if not os.path.exists(versionFile):
@@ -830,13 +915,15 @@ def updated():
 
     ver = open(versionFile, "r").read()
 
-    if ver == VERSION:
+    if ver == __version__:
         return True
 
     return False
 
 def update_version():
-    # updates user to current version
+    '''
+    updates user to current version
+    '''
 
     global SETTINGS
 
@@ -844,7 +931,7 @@ def update_version():
 
     print("ttbp had some updates!")
 
-    print("\ngive me a second to update you to version "+VERSION+"...\n")
+    print("\ngive me a second to update you to version "+__version__+"...\n")
 
     time.sleep(1)
     print("...")
@@ -882,8 +969,10 @@ def update_version():
         ttbprc.close()
 
     else: # version at least 0.8.6
+        userVersion = open(versionFile, 'r').read()
+
         # from 0.8.6 to 0.8.7
-        if open(versionFile, 'r').read() == "0.8.6":
+        if userVersion == "0.8.6":
             print("\nresetting your publishing settings...\n")
             SETTINGS.update({"publishing":select_publishing()})
             update_publishing()
@@ -893,11 +982,18 @@ def update_version():
 
 
     # increment user versionfile
-    open(versionFile, "w").write(VERSION)
+    open(versionFile, "w").write(__version__)
+    print("you're all good to go, "+chatter.say("friend")+"!")
 
-    return "you're all good to go, "+chatter.say("friend")+"!\n"
+    # version 0.9.0 patch notes:
+    print("""
+ver. 0.9.0 features:
+    * browsing other people's feels from neighbor view
+    * documentation browser
+    """)
 
 #####
 
 if __name__ == '__main__':
     start()
+    #print("down for maintenance, brb")
