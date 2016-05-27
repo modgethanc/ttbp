@@ -356,6 +356,7 @@ def main_menu():
             redraw(EJECT)
         redraw()
     elif choice == '5':
+        redraw("you're about to send mail to ~endorphant about ttbp\n")
         feedback_menu()
     elif choice == '6':
         redraw()
@@ -378,7 +379,6 @@ def feedback_menu():
     * calls feedback writing function
     '''
 
-    print("you're about to send mail to ~endorphant about ttbp\n\n")
 
     util.print_menu(SUBJECTS, RAINBOW)
     choice = raw_input("\npick a category for your feedback: ")

@@ -54,7 +54,7 @@ HEADER = ""
 FOOTER = ""
 FILES = []
 
-def load(ttbprc):
+def load(ttbprc={}):
     '''
     get all them globals set up!!
     '''
