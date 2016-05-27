@@ -84,6 +84,19 @@ def hilight(text):
 
     return colorama.Style.BRIGHT+text+colorama.Style.NORMAL
 
+def rainbow(txt):
+    '''
+    Takes a string and makes every letter a different color.
+    '''
+
+    rainbow = ""
+    for letter in txt:
+        rainbow += attach_rainbow() + letter
+
+    rainbow += attach_reset()
+
+    return rainbow
+
 def pretty_time(time):
     '''
     human-friendly time formatter

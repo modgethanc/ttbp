@@ -40,7 +40,7 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.9.0b"
+__version__ = "0.9.1b"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals
@@ -49,6 +49,9 @@ LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
+GRAFF_DIR = os.path.join(SOURCE, "graffiti")
+WALL = os.path.join(GRAFF_DIR, "wall.txt")
+WALL_LOCK = os.path.join(GRAFF_DIR, ".lock")
 
 p = inflect.engine()
 
@@ -67,7 +70,7 @@ SETTINGS = {
     }
 
 ## ui globals
-BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner.txt")).read()+"~potentially volatile beta version~"+util.attach_reset()
+BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner-beta.txt")).read()+util.rainbow("\t~potentially volatile beta version~")+util.attach_reset()
 SPACER = "\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
@@ -162,9 +165,10 @@ def check_init():
         except ValueError:
             setup_repair()
 
-        ## version checker 
-        if build_mismatch():
-            switch_build()
+        ## version checker
+        mismatch = build_mismatch()
+        if mismatch is not False:
+            switch_build(mismatch)
         if not updated():
             update_version()
 
@@ -319,6 +323,7 @@ def main_menu():
             "review your feels",
             "check out your neighbors",
             "browse global feels",
+            "scribble some graffiti\t(new!)",
             "change your settings",
             "send some feedback",
             "see credits",
@@ -349,19 +354,21 @@ def main_menu():
         redraw("most recent global entries\n")
         view_feed()
     elif choice == '4':
+        graffiti_handler()
+    elif choice == '5':
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         try:
             core.load(setup()) # reload settings to core
         except KeyboardInterrupt():
             redraw(EJECT)
         redraw()
-    elif choice == '5':
+    elif choice == '6':
         redraw("you're about to send mail to ~endorphant about ttbp\n")
         feedback_menu()
-    elif choice == '6':
+    elif choice == '7':
         redraw()
         show_credits()
-    elif choice == '7':
+    elif choice == '8':
         subprocess.call(["lynx", os.path.join(SOURCE, "..", "README.html")])
         redraw()
     elif choice in QUITS:
@@ -548,7 +555,7 @@ editor.
         entryFile = open(entry, "a")
         entryFile.write("\n"+entered+"\n")
         entryFile.close()
-    subprocess.call([SETTINGS["editor"], entry])
+    subprocess.call([SETTINGS.get("editor"), entry])
 
     left = ""
 
@@ -652,6 +659,33 @@ def view_feed():
     redraw()
 
     return
+
+def graffiti_handler():
+    '''
+    Main graffiti handler.
+    '''
+
+    if os.path.isfile(WALL_LOCK):
+        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!\n")
+    else:
+        subprocess.call(["touch", WALL_LOCK])
+        redraw()
+        print("""\
+the graffiti wall is a world-writeable text file. anyone can
+scribble on it; anyone can move or delete things. please be
+considerate of your neighbors when writing on it.
+
+no one will be able to visit the wall while you are here, so don't
+worry about overwriting someone else's work. anything you do to the
+wall will be recorded if you save the file, and you can cancel
+your changes by exiting without saving.
+
+""")
+        raw_input("press <enter> to visit the wall\n\n")
+        subprocess.call([SETTINGS.get("editor"), WALL])
+        subprocess.call(["rm", WALL_LOCK])
+        redraw("thanks for visiting the graffiti wall!")
+
 
 ## misc helpers
 
@@ -787,31 +821,32 @@ def build_mismatch():
     if not os.path.exists(versionFile):
         return False
 
-    ver = open(versionFile, "r").read()
-    
+    ver = open(versionFile, "r").read().rstrip()
     if ver[-1] == __version__[-1]:
         return False
 
-    return True 
+    return ver
 
-def switch_build():
+def switch_build(ver):
     '''
     switches user between beta and stable builds
     '''
 
     if __version__[-1] == 'b':
         build = "beta"
+        ver += "b"
     else:
         build = "stable"
+        ver = ver[0:-1]
 
-    # increment user versionfile
-    print("\nswitching you over to the most current "+build+" version...\n")
+    # write user versionfile
+    print("\nswitching you over to the "+build+" version...\n")
     time.sleep(1)
     print("...")
     versionFile = os.path.join(PATH, "version")
-    open(versionFile, "w").write(__version__)
-    time.sleep(2)
-    print("\nall good!\n")
+    open(versionFile, "w").write(ver)
+    time.sleep(1)
+    #print("\nall good!\n")
 
 def updated():
     '''
@@ -846,6 +881,8 @@ def update_version():
     print("...")
     time.sleep(2)
 
+    userVersion = ""
+
     if not os.path.isfile(versionFile):
         # from 0.8.5 to 0.8.6:
 
@@ -878,9 +915,9 @@ def update_version():
         ttbprc.close()
 
     else: # version at least 0.8.6
-        userVersion = open(versionFile, 'r').read()
+        userVersion = open(versionFile, "r").read().rstrip()
 
-        # from 0.8.6 to 0.8.7
+        # from 0.8.6
         if userVersion == "0.8.6":
             print("\nresetting your publishing settings...\n")
             SETTINGS.update({"publishing":select_publishing()})
@@ -889,16 +926,23 @@ def update_version():
             ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
             ttbprc.close()
 
-
     # increment user versionfile
     open(versionFile, "w").write(__version__)
-    print("you're all good to go, "+chatter.say("friend")+"!")
+    print("\nyou're all good to go, "+chatter.say("friend")+"!\n")
 
-    # version 0.9.0 patch notes:
-    print("""
+    # show patch notes
+    if userVersion != "0.9.0" and userVersion != "0.9.0b":
+        # version 0.9.0 patch notes:
+        print("""
 ver. 0.9.0 features:
     * browsing other people's feels from neighbor view
     * documentation browser
+        """)
+
+    # version 0.9.1 patch notes
+    print("""
+ver 0.9.1 features:
+    * graffiti wall
     """)
 
 #####
