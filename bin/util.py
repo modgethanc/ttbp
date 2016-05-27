@@ -24,10 +24,12 @@ import time
 import random
 import colorama
 
+## misc globals
+BACKS = ['back', 'b', 'q']
+
+## color stuff
 colorama.init()
-
 textcolors = [ colorama.Fore.RED, colorama.Fore.GREEN, colorama.Fore.YELLOW, colorama.Fore.BLUE, colorama.Fore.MAGENTA, colorama.Fore.WHITE, colorama.Fore.CYAN]
-
 lastcolor = colorama.Fore.RESET
 
 p = inflect.engine()
@@ -125,3 +127,71 @@ def genID(digits=5):
         x += 1
 
     return id
+
+def print_menu(menu, rainbow=False):
+    '''
+    A pretty menu handler that takes an incoming lists of
+    options and prints them nicely.
+
+    Set rainbow=True for colorized menus.
+    '''
+
+    i = 0
+    for x in menu:
+        line = []
+        if rainbow:
+            line.append(attach_rainbow())
+        line.append("\t[ ")
+        if i < 10:
+            line.append(" ")
+        line.append(str(i)+" ] "+x)
+        line.append(attach_reset())
+        print("".join(line))
+        i += 1
+
+def list_select(options, prompt):
+    '''
+    Given a list and query prompt, returns either False as an
+    eject flag, or an integer index of the list Catches cancel
+    option from list defined by BACKS; otherwise, retries on
+    ValueError or IndexError.
+    '''
+
+    ans = ""
+    invalid = True
+
+    choice = raw_input("\n\n"+prompt)
+
+    if choice in BACKS:
+        return False
+
+    try:
+        ans = int(choice)
+    except ValueError:
+        return list_select(options, prompt)
+
+    try:
+        options[ans]
+    except IndexError:
+        return list_select(options, prompt)
+
+    return ans
+
+def input_yn(query):
+    '''
+    Given a query, returns boolean True or False by processing y/n input
+    '''
+
+    try:
+        ans = raw_input(query+" [y/n] ")
+    except KeyboardInterrupt:
+        input_yn(query)
+
+    while ans not in ["y", "n"]:
+        ans = raw_input("'y' or 'n' please: ")
+
+    if ans == "y":
+        return True
+    else:
+        return False
+

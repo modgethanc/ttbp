@@ -33,6 +33,7 @@ import time
 import subprocess
 import re
 import mistune
+import json
 
 import chatter
 
@@ -47,21 +48,24 @@ DATA = os.path.join(PATH, "entries")
 FEED = os.path.join(SOURCE, "www", "index.html")
 DOCS = os.path.join(SOURCE, "www", "help.html")
 NOPUB = os.path.join(CONFIG, "nopub")
+SETTINGS = {}
 
 HEADER = ""
 FOOTER = ""
 FILES = []
 
-def load():
+def load(ttbprc):
     '''
     get all them globals set up!!
     '''
 
     global HEADER
     global FOOTER
+    global SETTINGS
 
     HEADER = open(os.path.join(CONFIG, "header.txt")).read()
     FOOTER = open(os.path.join(CONFIG, "footer.txt")).read()
+    SETTINGS = ttbprc
 
     load_files()
 
@@ -91,6 +95,9 @@ def load_files():
 
     FILES.sort()
     FILES.reverse()
+
+
+## html outputting
 
 def write(outurl="default.html"):
     '''
@@ -191,74 +198,6 @@ def write_entry(filename):
 
     return entry
 
-def parse_date(file):
-    '''
-    parses date out of pre-validated filename
-
-    * assumes a filename of YYYYMMDD.txt
-    * returns a list:
-      [0] 'YYYY'
-      [1] 'MM'
-      [2] 'DD'
-    '''
-
-    rawdate = os.path.splitext(os.path.basename(file))[0]
-
-    date = [rawdate[0:4], rawdate[4:6], rawdate[6:]]
-
-    return date
-
-def meta(entries = FILES):
-    '''
-    metadata generator
-
-    * takes a list of filenames and returns a 2d list:
-      [0] absolute path
-      [1] mtime
-      [2] wc -w
-      [3] timestamp "DD month YYYY at HH:MM"
-      [4] entry date YYYY-MM-DD
-      [5] author
-
-    * sorted in reverse date order by [4]
-    '''
-
-    meta = []
-
-    for filename in entries:
-      mtime = os.path.getmtime(filename)
-      wc = subprocess.check_output(["wc","-w",filename]).split()[0]
-      timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(mtime))
-      date = "-".join(parse_date(filename))
-      author = os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1]
-
-
-      meta.append([filename, mtime, wc, timestamp, date, author])
-
-    meta.sort(key = lambda filename:filename[4])
-    meta.reverse()
-
-    return meta
-
-def valid(filename):
-    '''
-    filename validator
-
-    * check if the filename is YYYYMMDD.txt
-    '''
-
-    filesplit = os.path.splitext(os.path.basename(filename))
-
-    if filesplit[1] != ".txt":
-        return False
-
-    pattern = '^((19|20)\d{2})(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])$'
-
-    if not re.match(pattern, filesplit[0]):
-        return False
-
-    return True
-
 def write_global_feed(blogList):
     '''
     main ttbp index printer
@@ -318,6 +257,143 @@ def write_global_feed(blogList):
 """)
 
     outfile.close()
+
+## misc helpers
+
+def meta(entries = FILES):
+    '''
+    metadata generator
+
+    * takes a list of filenames and returns a 2d list:
+      [0] absolute path
+      [1] mtime
+      [2] wc -w
+      [3] timestamp "DD month YYYY at HH:MM"
+      [4] entry date YYYY-MM-DD
+      [5] author
+
+    * sorted in reverse date order by [4]
+    '''
+
+    meta = []
+
+    for filename in entries:
+      mtime = os.path.getmtime(filename)
+      wc = subprocess.check_output(["wc","-w",filename]).split()[0]
+      timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(mtime))
+      date = "-".join(parse_date(filename))
+      author = os.path.split(os.path.split(os.path.split(os.path.split(filename)[0])[0])[0])[1]
+
+      meta.append([filename, mtime, wc, timestamp, date, author])
+
+    meta.sort(key = lambda filename:filename[4])
+    meta.reverse()
+
+    return meta
+
+def valid(filename):
+    '''
+    filename validator
+
+    * check if the filename is YYYYMMDD.txt
+    '''
+
+    filesplit = os.path.splitext(os.path.basename(filename))
+
+    if filesplit[1] != ".txt":
+        return False
+
+    pattern = '^((19|20)\d{2})(0[1-9]|1[0-2])(0[1-9]|1\d|2\d|3[01])$'
+
+    if not re.match(pattern, filesplit[0]):
+        return False
+
+    return True
+
+def parse_date(file):
+    '''
+    parses date out of pre-validated filename
+
+    * assumes a filename of YYYYMMDD.txt
+    * returns a list:
+      [0] 'YYYY'
+      [1] 'MM'
+      [2] 'DD'
+    '''
+
+    rawdate = os.path.splitext(os.path.basename(file))[0]
+
+    date = [rawdate[0:4], rawdate[4:6], rawdate[6:]]
+
+    return date
+
+def find_ttbps():
+    '''
+    returns a list of users with a ttbp by checking for a valid ttbprc
+    '''
+
+    users = []
+
+    for townie in os.listdir("/home"):
+        if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
+            users.append(townie)
+
+    return users
+
+def publishing(username = USER):
+    '''
+    checks .ttbprc for whether or not user opted for www publishing
+    '''
+
+    ttbprc = {}
+
+    if username == USER:
+        ttbprc = SETTINGS
+
+    else:
+        ttbprc = json.load(open(os.path.join("/home", username, ".ttbp", "config", "ttbprc")))
+
+    return ttbprc.get("publishing")
+
+def www_neighbors():
+    '''
+    takes a list of users with publiishing turned on and prepares it for www output
+    '''
+
+    userList = []
+
+    for user in find_ttbps():
+        if not publishing(user):
+            continue
+
+        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
+
+        url = LIVE+user+"/"+userRC["publish dir"]
+
+        lastfile = ""
+        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        files.sort()
+        for filename in files:
+            if valid(filename):
+                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
+
+        if lastfile:
+            last = os.path.getctime(lastfile)
+            timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(last)) + " (utc"+time.strftime("%z")[0]+time.strftime("%z")[2]+")"
+        else:
+            timestamp = ""
+            last = 0
+
+        userList.append(["<a href=\""+url+"\">~"+user+"</a> "+timestamp, last])
+
+    # sort user by most recent entry
+    userList.sort(key = lambda userdata:userdata[1])
+    userList.reverse()
+    sortedUsers = []
+    for user in userList:
+        sortedUsers.append(user[0])
+
+    write_global_feed(sortedUsers)
 
 #############
 #############
