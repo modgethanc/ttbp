@@ -40,9 +40,8 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.9.0"
+__version__ = "0.9.0b"
 __author__ = "endorphant <endorphant@tilde.town)"
-#__name__ = "_ttpb: wip/beta version of the ttbp console interface"
 
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
@@ -164,6 +163,8 @@ def check_init():
             setup_handler()
 
         ## PATCH CHECK HERE
+        if build_mismatch():
+            switch_build()
         if not updated():
             update_version()
 
@@ -907,6 +908,41 @@ def make_publish_dir(dir):
 
 ##### PATCHING UTILITIES
 
+def build_mismatch():
+    '''
+    checks to see if user's last run build is the same as this session
+    '''
+
+    versionFile = os.path.join(PATH, "version")
+    if not os.path.exists(versionFile):
+        return False
+
+    ver = open(versionFile, "r").read()
+    
+    if ver[-1] == __version__[-1]:
+        return False
+
+    return True 
+
+def switch_build():
+    '''
+    switches user between beta and stable builds
+    '''
+
+    if __version__[-1] == 'b':
+        build = "beta"
+    else:
+        build = "stable"
+
+    # increment user versionfile
+    print("\nswitching you over to the most current "+build+" version...\n")
+    time.sleep(1)
+    print("...")
+    versionFile = os.path.join(PATH, "version")
+    open(versionFile, "w").write(__version__)
+    time.sleep(2)
+    print("\nall good!\n")
+
 def updated():
     '''
     checks to see if current user is up to the same version as system
@@ -914,7 +950,7 @@ def updated():
 
     versionFile = os.path.join(PATH, "version")
     if not os.path.exists(versionFile):
-            return False
+        return False
 
     ver = open(versionFile, "r").read()
 
