@@ -345,8 +345,9 @@ def main_menu():
         core.www_neighbors()
     elif choice == '1':
         if core.publishing():
-            redraw("here are some options for reviewing your feels:\n")
-            review_menu()
+            intro = "here are some options for reviewing your feels:\n"
+            redraw(intro)
+            review_menu(intro)
         else:
             redraw("your recorded feels, listed by date:\n")
             view_feels(USER)
@@ -409,7 +410,7 @@ press <enter> to open an external text editor. mail will be sent once you save a
 
     return feedback_menu()
 
-def review_menu():
+def review_menu(intro):
     '''
     submenu for reviewing feels.
     '''
@@ -423,19 +424,18 @@ def review_menu():
 
     choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
 
-    left = ""
-
     if choice is not False:
         if choice == 0:
             redraw("your recorded feels, listed by date:\n")
             view_feels(USER)
         elif choice == 1:
-            left = DUST+"\n> "
+            redraw("here's your current nopub status:\n")
+            set_nopubs()
     else:
         redraw()
         return
 
-    redraw(left+"here are some options for reviewing your feels:\n")
+    redraw(intro)
     return review_menu()
 
 
@@ -606,6 +606,13 @@ editor.
 
     return
 
+def set_nopubs():
+    '''
+    handler for toggling nopub on individual entries
+    '''
+
+    raw_input(DUST)
+
 def send_feedback(entered, subject="none"):
     '''
     main feedback/bug report handler
@@ -735,9 +742,15 @@ def select_editor():
     '''
 
     util.print_menu(EDITORS, RAINBOW)
-    choice = raw_input("\npick your favorite text editor: ")
-    while choice  not in ['0', '1', '2', '3', '4', '5']:
-        choice = raw_input("\nplease pick a number from the list: ")
+    
+    choice = util.list_select(EDITORS, "pick your favorite text editor: ")
+    #choice = raw_input("\npick your favorite text editor: ")
+    #while choice  not in ['0', '1', '2', '3', '4', '5']:
+    #    choice = raw_input("\nplease pick a number from the list: ")
+
+    if choice is False:
+        redraw("please pick a text editor!")
+        select_editor()
 
     return EDITORS[int(choice)]
 
@@ -989,5 +1002,5 @@ ver 0.9.1 features:
 #####
 
 if __name__ == '__main__':
-    #start()
-    print("ttbp beta is out to lunch. bbl.")
+    start()
+    #print("ttbp beta is out to lunch. bbl.")
