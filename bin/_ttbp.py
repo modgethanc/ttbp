@@ -344,8 +344,12 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        redraw("your recorded feels, listed by date:\n")
-        view_feels(USER)
+        if core.publishing():
+            redraw("here are some options for reviewing your feels:\n")
+            review_menu()
+        else:
+            redraw("your recorded feels, listed by date:\n")
+            view_feels(USER)
     elif choice == '2':
         users = core.find_ttbps()
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
@@ -386,7 +390,6 @@ def feedback_menu():
     * calls feedback writing function
     '''
 
-
     util.print_menu(SUBJECTS, RAINBOW)
     choice = raw_input("\npick a category for your feedback: ")
 
@@ -405,6 +408,36 @@ press <enter> to open an external text editor. mail will be sent once you save a
         redraw(INVALID)
 
     return feedback_menu()
+
+def review_menu():
+    '''
+    submenu for reviewing feels.
+    '''
+
+    menuOptions = [
+            "read over feels",
+            "modify feels publishing"
+            ]
+
+    util.print_menu(menuOptions, RAINBOW)
+
+    choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
+
+    left = ""
+
+    if choice is not False:
+        if choice == 0:
+            redraw("your recorded feels, listed by date:\n")
+            view_feels(USER)
+        elif choice == 1:
+            left = DUST+"\n> "
+    else:
+        redraw()
+        return
+
+    redraw(left+"here are some options for reviewing your feels:\n")
+    return review_menu()
+
 
 def view_neighbors(users):
     '''
