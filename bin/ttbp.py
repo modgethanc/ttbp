@@ -40,7 +40,7 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals

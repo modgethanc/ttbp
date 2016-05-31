@@ -931,7 +931,8 @@ def update_version():
     print("\nyou're all good to go, "+chatter.say("friend")+"!\n")
 
     # show patch notes
-    if userVersion != "0.9.0" and userVersion != "0.9.0b":
+    #if userVersion != "0.9.0" and userVersion != "0.9.0b":
+    if userVersion[0:5] < "0.9.0":
         # version 0.9.0 patch notes:
         print("""
 ver. 0.9.0 features:
@@ -939,14 +940,15 @@ ver. 0.9.0 features:
     * documentation browser
         """)
 
-    # version 0.9.1 patch notes
-    print("""
+    if userVersion[0:5] < "0.9.1":
+        # version 0.9.1 patch notes
+        print("""
 ver 0.9.1 features:
     * graffiti wall
-    """)
+        """)
 
 #####
 
 if __name__ == '__main__':
-    start()
-    #print("ttbp beta is out to lunch. bbl.")
+    #start()
+    print("ttbp beta is out to lunch. bbl.")
