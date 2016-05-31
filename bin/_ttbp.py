@@ -500,8 +500,10 @@ def view_feels(townie):
 
     if len(filenames) > 0:
         entries = []
-        pub = ""
         for entry in metas:
+            pub = ""
+            if core.nopub(entry[0]):
+                pub = "(nopub)"
             entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
         return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
