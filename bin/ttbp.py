@@ -49,6 +49,9 @@ LIVE = "http://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
+GRAFF_DIR = os.path.join(SOURCE, "graffiti")
+WALL = os.path.join(GRAFF_DIR, "wall.txt")
+WALL_LOCK = os.path.join(GRAFF_DIR, ".lock")
 
 p = inflect.engine()
 
@@ -72,8 +75,8 @@ SPACER = "\n"
 INVALID = "please pick a number from the list of options!\n\n"
 DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
 QUITS = ['exit', 'quit', 'q', 'x']
-BACKS = ['back', 'b', 'q']
 EJECT = "eject button fired! going home now."
+RAINBOW = False
 
 ## ref
 
@@ -156,21 +159,22 @@ def check_init():
 
         ## ttbprc validation
         while not os.path.isfile(TTBPRC):
-            setup_handler()
+            setup_repair()
         try:
             SETTINGS = json.load(open(TTBPRC))
         except ValueError:
-            setup_handler()
+            setup_repair()
 
-        ## PATCH CHECK HERE
-        if build_mismatch():
-            switch_build()
+        ## version checker
+        mismatch = build_mismatch()
+        if mismatch is not False:
+            switch_build(mismatch)
         if not updated():
             update_version()
 
         ## when ready, enter main program and load core engine
         raw_input("press <enter> to explore your feels.\n\n")
-        core.load()
+        core.load(SETTINGS)
 
         return ""
     else:
@@ -217,7 +221,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.
 
     ## run user-interactive setup and load core engine
     setup()
-    core.load()
+    core.load(SETTINGS)
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
@@ -251,9 +255,9 @@ def gen_header():
     """
     return header
 
-def setup_handler():
+def setup_repair():
     '''
-    setup wrapper function
+    setup repair function
 
     * calls setup()
     * handles ^c
@@ -281,7 +285,7 @@ def setup():
     global SETTINGS
 
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
-    if publishing():
+    if core.publishing():
         print("\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir")))
     print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
 
@@ -292,9 +296,9 @@ def setup():
     # publishing selection
     SETTINGS.update({"publishing":select_publishing()})
     update_publishing()
-    redraw("blog publishing: "+str(publishing()))
+    redraw("blog publishing: "+str(core.publishing()))
 
-    if publishing():
+    if core.publishing():
         print("publish directory: ~"+USER+"/public_html/"+SETTINGS.get("publish dir"))
 
     # save settings
@@ -309,23 +313,6 @@ def setup():
 
 ## menus
 
-def print_menu(menu):
-    '''
-    pretty menu handler
-
-    * takes list of options and prints them
-    '''
-
-    i = 0
-    for x in menu:
-        line = []
-        line.append("\t[ ")
-        if i < 10:
-            line.append(" ")
-        line.append(str(i)+" ] "+x)
-        print("".join(line))
-        i += 1
-
 def main_menu():
     '''
     main navigation menu
@@ -336,13 +323,14 @@ def main_menu():
             "review your feels",
             "check out your neighbors",
             "browse global feels",
+            "scribble some graffiti\t(new!)",
             "change your settings",
             "send some feedback",
             "see credits",
             "read documentation"]
 
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
-    print_menu(menuOptions)
+    util.print_menu(menuOptions, RAINBOW)
 
     try:
         choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
@@ -354,30 +342,33 @@ def main_menu():
         redraw()
         today = time.strftime("%Y%m%d")
         write_entry(os.path.join(DATA, today+".txt"))
-        www_neighbors(find_ttbps())
+        core.www_neighbors()
     elif choice == '1':
         redraw("your recorded feels, listed by date:\n")
         view_feels(USER)
     elif choice == '2':
-        users = find_ttbps()
+        users = core.find_ttbps()
         redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
         view_neighbors(users)
     elif choice == '3':
         redraw("most recent global entries\n")
         view_feed()
     elif choice == '4':
+        graffiti_handler()
+    elif choice == '5':
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         try:
-            setup()
+            core.load(setup()) # reload settings to core
         except KeyboardInterrupt():
             redraw(EJECT)
         redraw()
-    elif choice == '5':
-        feedback_menu()
     elif choice == '6':
+        redraw("you're about to send mail to ~endorphant about ttbp\n")
+        feedback_menu()
+    elif choice == '7':
         redraw()
         show_credits()
-    elif choice == '7':
+    elif choice == '8':
         subprocess.call(["lynx", os.path.join(SOURCE, "..", "README.html")])
         redraw()
     elif choice in QUITS:
@@ -395,9 +386,8 @@ def feedback_menu():
     * calls feedback writing function
     '''
 
-    print("you're about to send mail to ~endorphant about ttbp\n\n")
 
-    print_menu(SUBJECTS)
+    util.print_menu(SUBJECTS, RAINBOW)
     choice = raw_input("\npick a category for your feedback: ")
 
     cat = ""
@@ -471,10 +461,10 @@ def view_neighbors(users):
         sortedUsers.append(user[0])
         userIndex.append(user[2])
 
-    print_menu(sortedUsers)
+    util.print_menu(sortedUsers, RAINBOW)
 
     #raw_input("\n\npress <enter> to go back home.\n\n")
-    choice = list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
+    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
 
     if choice is not False:
         redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
@@ -565,11 +555,11 @@ editor.
         entryFile = open(entry, "a")
         entryFile.write("\n"+entered+"\n")
         entryFile.close()
-    subprocess.call([SETTINGS["editor"], entry])
+    subprocess.call([SETTINGS.get("editor"), entry])
 
     left = ""
 
-    if publishing():
+    if core.publishing():
         core.load_files()
         core.write("index.html")
         left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\n>"
@@ -611,9 +601,9 @@ def list_entries(metas, entries, prompt):
     displays a list of entries for reading selection
     '''
 
-    print_menu(entries)
+    util.print_menu(entries, RAINBOW)
 
-    choice = list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
+    choice = util.list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
 
     if choice is not False:
 
@@ -644,7 +634,7 @@ def view_feed():
 
     feedList = []
 
-    for townie in find_ttbps():
+    for townie in core.find_ttbps():
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
         filenames = os.listdir(entryDir)
 
@@ -670,126 +660,42 @@ def view_feed():
 
     return
 
+def graffiti_handler():
+    '''
+    Main graffiti handler.
+    '''
+
+    if os.path.isfile(WALL_LOCK):
+        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!\n")
+    else:
+        subprocess.call(["touch", WALL_LOCK])
+        redraw()
+        print("""\
+the graffiti wall is a world-writeable text file. anyone can
+scribble on it; anyone can move or delete things. please be
+considerate of your neighbors when writing on it.
+
+no one will be able to visit the wall while you are here, so don't
+worry about overwriting someone else's work. anything you do to the
+wall will be recorded if you save the file, and you can cancel
+your changes by exiting without saving.
+
+""")
+        raw_input("press <enter> to visit the wall\n\n")
+        subprocess.call([SETTINGS.get("editor"), WALL])
+        subprocess.call(["rm", WALL_LOCK])
+        redraw("thanks for visiting the graffiti wall!")
+
+
 ## misc helpers
 
-def find_ttbps():
-    '''
-    returns a list of users with a ttbp by checking for a valid ttbprc
-    '''
-
-    users = []
-
-    for townie in os.listdir("/home"):
-        if os.path.exists(os.path.join("/home", townie, ".ttbp", "config", "ttbprc")):
-            users.append(townie)
-
-    return users
-
-def www_neighbors(users):
-    '''
-    takes a list of users with publiishing turned on and prepares it for www output
-    '''
-
-    userList = []
-
-    for user in users:
-        if not publishing(user):
-            continue
-
-        userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
-
-        url = LIVE+user+"/"+userRC["publish dir"]
-
-        lastfile = ""
-        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
-        files.sort()
-        for filename in files:
-            if core.valid(filename):
-                lastfile = os.path.join("/home", user, ".ttbp", "entries", filename)
-
-        if lastfile:
-            last = os.path.getctime(lastfile)
-            timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(last)) + " (utc"+time.strftime("%z")[0]+time.strftime("%z")[2]+")"
-        else:
-            timestamp = ""
-            last = 0
-
-        userList.append(["<a href=\""+url+"\">~"+user+"</a> "+timestamp, last])
-
-    # sort user by most recent entry
-    userList.sort(key = lambda userdata:userdata[1])
-    userList.reverse()
-    sortedUsers = []
-    for user in userList:
-        sortedUsers.append(user[0])
-
-    core.write_global_feed(sortedUsers)
-
-def list_select(options, prompt):
-    '''
-    given a list, cycles through the prompt until a valid index is imputted
-    '''
-
-    ans = ""
-    invalid = True
-
-    while invalid:
-        choice = raw_input("\n\n"+prompt)
-
-        if choice in BACKS:
-            return False
-
-        try:
-            ans = int(choice)
-        except ValueError:
-            return list_select(options, prompt)
-
-        invalid = False
-
-    if ans >= len(options):
-        return list_select(options, prompt)
-
-    return ans
-
-def input_yn(query):
-    '''
-    given a query, returns boolean True or False by processing y/n input
-    '''
-
-    try:
-        ans = raw_input(query+" [y/n] ")
-    except KeyboardInterrupt:
-        input_yn(query)
-
-    while ans not in ["y", "n"]:
-        ans = raw_input("'y' or 'n' please: ")
-
-    if ans == "y":
-        return True
-    else:
-        return False
-
-def publishing(username = USER):
-    '''
-    checks .ttbprc for whether or not user opted for www publishing
-    '''
-
-    ttbprc = {}
-
-    if username == USER:
-        ttbprc = SETTINGS
-
-    else:
-        ttbprc = json.load(open(os.path.join("/home", username, ".ttbp", "config", "ttbprc")))
-
-    return ttbprc.get("publishing")
 
 def select_editor():
     '''
     setup helper for editor selection
     '''
 
-    print_menu(EDITORS)
+    util.print_menu(EDITORS, RAINBOW)
     choice = raw_input("\npick your favorite text editor: ")
     while choice  not in ['0', '1', '2', '3', '4', '5']:
         choice = raw_input("\nplease pick a number from the list: ")
@@ -835,7 +741,7 @@ def select_publishing():
     setup helper for toggling publishing
     '''
 
-    publish = input_yn("""\
+    publish = util.input_yn("""\
 do you want to publish your feels online?
 
 if yes, your feels will be published to a directory of your choice in
@@ -870,7 +776,7 @@ def update_publishing():
 
     global SETTINGS
 
-    if publishing():
+    if core.publishing():
         oldDir = SETTINGS.get("publish dir")
         newDir = select_publish_dir()
         SETTINGS.update({"publish dir": newDir})
@@ -915,31 +821,32 @@ def build_mismatch():
     if not os.path.exists(versionFile):
         return False
 
-    ver = open(versionFile, "r").read()
-    
+    ver = open(versionFile, "r").read().rstrip()
     if ver[-1] == __version__[-1]:
         return False
 
-    return True 
+    return ver
 
-def switch_build():
+def switch_build(ver):
     '''
     switches user between beta and stable builds
     '''
 
     if __version__[-1] == 'b':
         build = "beta"
+        ver += "b"
     else:
         build = "stable"
+        ver = ver[0:-1]
 
-    # increment user versionfile
-    print("\nswitching you over to the most current "+build+" version...\n")
+    # write user versionfile
+    print("\nswitching you over to the "+build+" version...\n")
     time.sleep(1)
     print("...")
     versionFile = os.path.join(PATH, "version")
-    open(versionFile, "w").write(__version__)
-    time.sleep(2)
-    print("\nall good!\n")
+    open(versionFile, "w").write(ver)
+    time.sleep(1)
+    #print("\nall good!\n")
 
 def updated():
     '''
@@ -974,6 +881,8 @@ def update_version():
     print("...")
     time.sleep(2)
 
+    userVersion = ""
+
     if not os.path.isfile(versionFile):
         # from 0.8.5 to 0.8.6:
 
@@ -1006,9 +915,9 @@ def update_version():
         ttbprc.close()
 
     else: # version at least 0.8.6
-        userVersion = open(versionFile, 'r').read()
+        userVersion = open(versionFile, "r").read().rstrip()
 
-        # from 0.8.6 to 0.8.7
+        # from 0.8.6
         if userVersion == "0.8.6":
             print("\nresetting your publishing settings...\n")
             SETTINGS.update({"publishing":select_publishing()})
@@ -1017,16 +926,23 @@ def update_version():
             ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
             ttbprc.close()
 
-
     # increment user versionfile
     open(versionFile, "w").write(__version__)
-    print("you're all good to go, "+chatter.say("friend")+"!")
+    print("\nyou're all good to go, "+chatter.say("friend")+"!\n")
 
-    # version 0.9.0 patch notes:
-    print("""
+    # show patch notes
+    if userVersion != "0.9.0" and userVersion != "0.9.0b":
+        # version 0.9.0 patch notes:
+        print("""
 ver. 0.9.0 features:
     * browsing other people's feels from neighbor view
     * documentation browser
+        """)
+
+    # version 0.9.1 patch notes
+    print("""
+ver 0.9.1 features:
+    * graffiti wall
     """)
 
 #####
