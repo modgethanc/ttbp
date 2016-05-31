@@ -483,10 +483,13 @@ def view_feels(townie):
     '''
 
     filenames = []
+    showpub = False
 
     if townie == USER:
         entryDir = DATA
         owner = "your"
+        if core.publishing():
+            showpub = True
     else:
         owner = "~"+townie+"'s"
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
@@ -497,8 +500,9 @@ def view_feels(townie):
 
     if len(filenames) > 0:
         entries = []
+        pub = ""
         for entry in metas:
-            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
+            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
         return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
     else:

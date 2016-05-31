@@ -79,15 +79,10 @@ def load_files():
 
     global FILES
 
-    exclude = []
-
-    if os.path.isfile(NOPUB):
-        for line in open(NOPUB, "r"):
-            exclude.append(line.rstrip())
-
     FILES = []
+
     for filename in os.listdir(DATA):
-        if filename in exclude:
+        if nopub(filename):
             continue
         filename = os.path.join(DATA, filename)
         if os.path.isfile(filename) and valid(filename):
@@ -394,6 +389,19 @@ def www_neighbors():
         sortedUsers.append(user[0])
 
     write_global_feed(sortedUsers)
+
+def nopub(filename):
+    '''
+    checks to see if given filename is in user's NOPUB
+    '''
+
+    exclude = []
+
+    if os.path.isfile(NOPUB):
+        for line in open(NOPUB, "r"):
+            exclude.append(line.rstrip())
+
+    return os.path.basename(filename) in exclude
 
 #############
 #############
