@@ -94,6 +94,7 @@ def redraw(leftover=""):
 
     os.system("clear")
     print(BANNER)
+    print("\t\ttoday is "+ time.strftime("%d %B %Y"))
     print(SPACER)
     if leftover:
         print("> "+leftover+"\n")
@@ -329,7 +330,7 @@ def main_menu():
             "see credits",
             "read documentation"]
 
-    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
+    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n")
     util.print_menu(menuOptions, RAINBOW)
 
     try:
@@ -345,18 +346,18 @@ def main_menu():
         core.www_neighbors()
     elif choice == '1':
         if core.publishing():
-            intro = "here are some options for reviewing your feels:\n"
+            intro = "here are some options for reviewing your feels:"
             redraw(intro)
             review_menu(intro)
         else:
-            redraw("your recorded feels, listed by date:\n")
+            redraw("your recorded feels, listed by date:")
             view_feels(USER)
     elif choice == '2':
         users = core.find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:")
         view_neighbors(users)
     elif choice == '3':
-        redraw("most recent global entries\n")
+        redraw("most recent global entries")
         view_feed()
     elif choice == '4':
         graffiti_handler()
@@ -368,7 +369,7 @@ def main_menu():
             redraw(EJECT)
         redraw()
     elif choice == '6':
-        redraw("you're about to send mail to ~endorphant about ttbp\n")
+        redraw("you're about to send mail to ~endorphant about ttbp")
         feedback_menu()
     elif choice == '7':
         redraw()
@@ -410,7 +411,7 @@ press <enter> to open an external text editor. mail will be sent once you save a
 
     return feedback_menu()
 
-def review_menu(intro):
+def review_menu(intro=""):
     '''
     submenu for reviewing feels.
     '''
@@ -426,10 +427,10 @@ def review_menu(intro):
 
     if choice is not False:
         if choice == 0:
-            redraw("your recorded feels, listed by date:\n")
+            redraw("your recorded feels, listed by date:")
             view_feels(USER)
         elif choice == 1:
-            redraw("here's your current nopub status:\n")
+            redraw("here's your current nopub status:")
             set_nopubs()
     else:
         redraw()
@@ -628,19 +629,27 @@ def send_feedback(entered, subject="none"):
     subprocess.call([SETTINGS["editor"], temp.name])
     message = open(temp.name, 'r').read()
 
-    id = "#"+util.genID(3)
-    mail = MIMEText(message)
-    mail['To'] = FEEDBOX
-    mail['From'] = USER+"@tilde.town"
-    mail['Subject'] = " ".join(["[ttbp]", subject, id])
-    m = os.popen("/usr/sbin/sendmail -t -oi", 'w')
-    m.write(mail.as_string())
-    m.close()
+    if message:
+        id = "#"+util.genID(3)
+        mail = MIMEText(message)
+        mail['To'] = FEEDBOX
+        mail['From'] = USER+"@tilde.town"
+        mail['Subject'] = " ".join(["[ttbp]", subject, id])
+        m = os.popen("/usr/sbin/sendmail -t -oi", 'w')
+        m.write(mail.as_string())
+        m.close()
 
-    return """\
+        exit = """\
 thanks for writing! for your reference, it's been recorded
 > as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
-    """
+        """
+    else:
+        exit = """\
+i didn't send your blank message. if you made a mistake, please try
+running through the feedback option again!\
+        """
+
+    return exit
 
 def list_entries(metas, entries, prompt):
     '''
@@ -712,7 +721,7 @@ def graffiti_handler():
     '''
 
     if os.path.isfile(WALL_LOCK):
-        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!\n")
+        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!")
     else:
         subprocess.call(["touch", WALL_LOCK])
         redraw()

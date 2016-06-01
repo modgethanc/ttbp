@@ -5,8 +5,9 @@ this project.
 
 to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
 
-you can also try `~endorphant/bin/ttbp-beta` for a more unstable, bleeding-edge
-experience.
+you can also try `~endorphant/bin/ttbp-beta` for a more colorful, but
+potentially volatile experience; i sometimes announce in irc or on twitter when
+i'm testing a new feature.
 
 ### writing entries
 
@@ -63,9 +64,14 @@ this.**
     you can safely put custom HTML elements!
 * to modify the page footer, edit your ~/.ttbp/config/footer.txt
 
-### general tips
+### general tips/troubleshooting
 
 * add `alias ttbp="~endorphant/bin/ttbp"` to your .bash_aliases for fewer keystrokes
+* (similarly, `alias ttbp-beta="~endorphant/bin/ttbp-beta"`)
+* if the date looks like it's ahead or behind, it's because you haven't set
+  your local timezone yet.  here are some
+  [http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/](timezone
+  setting instructions).
 
 ### future features
 
