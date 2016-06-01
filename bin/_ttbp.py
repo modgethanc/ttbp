@@ -709,7 +709,7 @@ def view_feed():
 
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
-    list_entries(metas, entries, "most recent global entries: \n\n")
+    list_entries(metas, entries, "most recent global entries:")
 
     redraw()
 

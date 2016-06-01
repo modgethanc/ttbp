@@ -173,7 +173,7 @@ def list_select(options, prompt):
     ans = ""
     invalid = True
 
-    choice = raw_input("\n\n"+prompt)
+    choice = raw_input("\n"+prompt)
 
     if choice in BACKS:
         return False
