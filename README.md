@@ -70,8 +70,7 @@ this.**
 * (similarly, `alias ttbp-beta="~endorphant/bin/ttbp-beta"`)
 * if the date looks like it's ahead or behind, it's because you haven't set
   your local timezone yet.  here are some
-  [http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/](timezone
-  setting instructions).
+  [timezone setting instructions](http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/)
 
 ### future features
 

@@ -45,7 +45,7 @@ __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals
 SOURCE = os.path.join("/home", "endorphant", "projects", "ttbp", "bin")
-LIVE = "http://tilde.town/~"
+LIVE = "https://tilde.town/~"
 FEEDBACK = os.path.join("/home", "endorphant", "ttbp-mail")
 FEEDBOX = "endorphant@tilde.town"
 USERFILE = os.path.join("/home", "endorphant", "projects", "ttbp", "users.txt")
@@ -72,8 +72,8 @@ SETTINGS = {
 ## ui globals
 BANNER = util.attach_rainbow()+open(os.path.join(SOURCE, "config", "banner-beta.txt")).read()+util.rainbow("\t~potentially volatile beta version~")+util.attach_reset()
 SPACER = "\n"
-INVALID = "please pick a number from the list of options!\n\n"
-DUST = "sorry about the dust, but this part is still under construction. check back later!\n\n"
+INVALID = "please pick a number from the list of options!"
+DUST = "sorry about the dust, but this part is still under construction. check back later!"
 QUITS = ['exit', 'quit', 'q', 'x']
 EJECT = "eject button fired! going home now."
 RAINBOW = True
@@ -349,6 +349,8 @@ def main_menu():
             intro = "here are some options for reviewing your feels:"
             redraw(intro)
             review_menu(intro)
+            core.load_files()
+            core.write("index.html")
         else:
             redraw("your recorded feels, listed by date:")
             view_feels(USER)
