@@ -15,7 +15,6 @@ TO-DO:
 
 	(flair)
 
-	-graffiti wall
 	-command line flags
 		*maybe; not sure i want this to be a feature at all
 		-shortcut to most recent feels, writing entry, seeing own entry
@@ -26,6 +25,9 @@ TO-DO:
 ------
 
 CHANGELOG:
+
+ver 0.9.1
+	-graffiti wall!!!
 
 ver 0.9.0
 	-documentation browser
