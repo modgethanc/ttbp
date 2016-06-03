@@ -72,6 +72,11 @@ this.**
   your local timezone yet.  here are some
   [timezone setting instructions](http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/)
 
+### dependencies
+
+* [mistune](https://pypi.python.org/pypi/mistune)
+* [inflect](https://pypi.python.org/pypi/inflect)
+
 ### future features
 
 these are a few ideas being kicked around, or under active development:
