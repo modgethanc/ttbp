@@ -893,14 +893,16 @@ def update_version():
         # change www symlink
         if os.path.exists(WWW):
             subprocess.call(["rm", WWW])
-            subprocess.call(["mkdir", WWW])
+        
+        subprocess.call(["mkdir", WWW])
 
         subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
 
         publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
         if os.path.exists(publishDir):
             subprocess.call(["rm", "-rf", publishDir])
-            subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
+        
+        subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
 
         # repopulate html files
         core.load_files()
@@ -928,7 +930,10 @@ def update_version():
 
     # increment user versionfile
     open(versionFile, "w").write(__version__)
-    print("\nyou're all good to go, "+chatter.say("friend")+"!\n")
+    print("""
+you're all good to go, "+chatter.say("friend")+"! please contact ~endorphant if
+somehing strange happened to you during this update.
+""")
 
     # show patch notes
     if userVersion != "0.9.0" and userVersion != "0.9.0b":
