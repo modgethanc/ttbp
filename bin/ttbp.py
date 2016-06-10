@@ -299,6 +299,7 @@ def setup():
     redraw("blog publishing: "+str(core.publishing()))
 
     if core.publishing():
+        SETTINGS.update({"publish dir":select_publish_dir()})
         print("publish directory: ~"+USER+"/public_html/"+SETTINGS.get("publish dir"))
 
     # save settings
@@ -710,7 +711,7 @@ def select_publish_dir():
     current = SETTINGS.get("publish dir")
     republish = False
 
-    if current:
+    if current != None:
         print("\ncurrent publish dir:\t"+os.path.join(PUBLIC, SETTINGS["publish dir"]))
         republish = True
 
