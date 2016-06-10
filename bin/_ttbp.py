@@ -57,7 +57,6 @@ p = inflect.engine()
 
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
-
 PATH = os.path.join("/home", USER, ".ttbp")
 PUBLIC = os.path.join("/home", USER, "public_html")
 WWW = os.path.join(PATH, "www")
@@ -158,12 +157,18 @@ def check_init():
     if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
         print(chatter.say("greet")+", "+USER+".\n")
 
+        '''
         ## ttbprc validation
         while not os.path.isfile(TTBPRC):
             setup_repair()
         try:
             SETTINGS = json.load(open(TTBPRC))
         except ValueError:
+            setup_repair()
+        '''
+
+        ## ttbp env validation
+        if not valid_setup():
             setup_repair()
 
         ## version checker
@@ -256,6 +261,33 @@ def gen_header():
     """
     return header
 
+def valid_setup():
+    '''
+    Checks to see if user has a sane ttbp environment.
+    '''
+
+    global SETTINGS
+
+    if not os.path.isfile(TTBPRC):
+        return False
+
+    try:
+        SETTINGS = json.load(open(TTBPRC))
+    except ValueError:
+        return False
+
+    if core.publishing():
+        if not SETTINGS.get("publish dir"):
+            return False
+
+        if not os.path.exists(WWW):
+            return False
+
+        if not os.path.exists(os.path.join(WWW, SETTINGS.get("pubish dir"))):
+            return False
+
+    return True
+
 def setup_repair():
     '''
     setup repair function
@@ -296,6 +328,7 @@ def setup():
 
     # publishing selection
     SETTINGS.update({"publishing":select_publishing()})
+    core.reload_ttbprc(SETTINGS)
     update_publishing()
     redraw("blog publishing: "+str(core.publishing()))
 

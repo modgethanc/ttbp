@@ -69,6 +69,15 @@ def load(ttbprc={}):
 
     load_files()
 
+def reload_ttbprc(ttbprc={}):
+    '''
+    reloads new ttbprc into current session
+    '''
+
+    global SETTINGS
+
+    SETTINGS = ttbprc
+
 def load_files():
     '''
     file loader
@@ -83,6 +92,9 @@ def load_files():
 
     for filename in os.listdir(DATA):
         if nopub(filename):
+            link = os.path.join(WWW, os.path.splitext(os.path.basename(filename))[0]+".html")
+            if os.path.exists(link):
+                subprocess.call(["rm", link])
             continue
         filename = os.path.join(DATA, filename)
         if os.path.isfile(filename) and valid(filename):
