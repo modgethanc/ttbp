@@ -299,8 +299,7 @@ def setup():
     redraw("blog publishing: "+str(core.publishing()))
 
     if core.publishing():
-        if SETTINGS.get("publish dir") == None:
-            SETTINGS.update({"publish dir":select_publish_dir()})
+        SETTINGS.update({"publish dir":select_publish_dir()})
         print("publish directory: ~"+USER+"/public_html/"+SETTINGS.get("publish dir"))
 
     # save settings
