@@ -324,7 +324,7 @@ def setup():
 
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
     if core.publishing():
-        print("\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir")))
+        print("\tpublish dir:\t" +os.path.join(PUBLIC, str(SETTINGS.get("publish dir"))))
     print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
 
     # editor selection
@@ -642,7 +642,7 @@ editor.
     if core.publishing():
         core.load_files()
         core.write("index.html")
-        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\n>"
+        left = "posted to "+LIVE+USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
     redraw(left + " thanks for sharing your feels!")
 
     return
@@ -890,6 +890,8 @@ def update_publishing():
         unpublish()
         SETTINGS.update({"publish dir": None})
 
+    core.load(SETTINGS)
+
 def make_publish_dir(dir):
     '''
     setup helper to create publishing directory
@@ -1032,7 +1034,7 @@ def update_version():
     # increment user versionfile
     open(versionFile, "w").write(__version__)
     print("""
-you're all good to go, "+chatter.say("friend")+"! please contact ~endorphant if
+you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
 somehing strange happened to you during this update.
 """)
 

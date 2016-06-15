@@ -62,7 +62,6 @@ p = inflect.engine()
 
 ## user globals
 USER = os.path.basename(os.path.expanduser("~"))
-
 PATH = os.path.join("/home", USER, ".ttbp")
 PUBLIC = os.path.join("/home", USER, "public_html")
 WWW = os.path.join(PATH, "www")
@@ -291,7 +290,7 @@ def setup():
 
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
     if core.publishing():
-        print("\tpublish dir:\t" +os.path.join(PUBLIC, SETTINGS.get("publish dir")))
+        print("\tpublish dir:\t" +os.path.join(PUBLIC, str(SETTINGS.get("publish dir"))))
     print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
 
     # editor selection
@@ -300,6 +299,7 @@ def setup():
 
     # publishing selection
     SETTINGS.update({"publishing":select_publishing()})
+    core.reload_ttbprc(SETTINGS)
     update_publishing()
     redraw("blog publishing: "+str(core.publishing()))
 
@@ -390,7 +390,6 @@ def feedback_menu():
     * selects feedback type
     * calls feedback writing function
     '''
-
 
     util.print_menu(SUBJECTS, RAINBOW)
     choice = raw_input("\npick a category for your feedback: ")
@@ -567,7 +566,7 @@ editor.
     if core.publishing():
         core.load_files()
         core.write("index.html")
-        left = "posted to "+LIVE+USER+"/"+SETTINGS["publish dir"]+"/index.html\n\n>"
+        left = "posted to "+LIVE+USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
     redraw(left + " thanks for sharing your feels!")
 
     return
@@ -794,6 +793,8 @@ def update_publishing():
         unpublish()
         SETTINGS.update({"publish dir": None})
 
+    core.load(SETTINGS)
+
 def make_publish_dir(dir):
     '''
     setup helper to create publishing directory
@@ -906,7 +907,7 @@ def update_version():
         publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
         if os.path.exists(publishDir):
             subprocess.call(["rm", "-rf", publishDir])
-        
+
         subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
 
         # repopulate html files
@@ -936,7 +937,7 @@ def update_version():
     # increment user versionfile
     open(versionFile, "w").write(__version__)
     print("""
-you're all good to go, "+chatter.say("friend")+"! please contact ~endorphant if
+you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
 somehing strange happened to you during this update.
 """)
 
