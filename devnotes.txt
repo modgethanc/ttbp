@@ -3,3 +3,15 @@ NOTES FOR ~ENDO
 handling global feels out of order:
   -check to see if entry filename date and mtime date matches
   -if not, process as if it was last modified on the date indicated by filename
+
+stuff to sort out:
+
+  -figure out how to deal with entries scrolling too far (either learn more
+  curses handling, or find someone who knows how to do curses stuff)
+
+  -there's like some seriously weird out of order updating for publishing that
+  breaks things too much
+
+user-friendliness:
+  -reset button, instead of having to manually delete things
+  -wall lock clearing

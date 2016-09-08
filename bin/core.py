@@ -382,7 +382,9 @@ def www_neighbors():
 
         userRC = json.load(open(os.path.join("/home", user, ".ttbp", "config", "ttbprc")))
 
-        url = LIVE+user+"/"+userRC["publish dir"]
+        url = ""
+        if userRC["publish dir"]:
+            url = LIVE+user+"/"+userRC["publish dir"]
 
         lastfile = ""
         files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
