@@ -990,26 +990,27 @@ def update_version():
         # from 0.8.5 to 0.8.6:
 
         # change style.css location
-        if os.path.isfile(os.path.join(WWW, "style.css")):
-            subprocess.call(["mv", os.path.join(WWW, "style.css"), CONFIG])
+        if core.publishing():
+            if os.path.isfile(os.path.join(WWW, "style.css")):
+                subprocess.call(["mv", os.path.join(WWW, "style.css"), CONFIG])
 
-        # change www symlink
-        if os.path.exists(WWW):
-            subprocess.call(["rm", WWW])
-        
-        subprocess.call(["mkdir", WWW])
+            # change www symlink
+            if os.path.exists(WWW):
+                subprocess.call(["rm", WWW])
 
-        subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
+            subprocess.call(["mkdir", WWW])
 
-        publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
-        if os.path.exists(publishDir):
-            subprocess.call(["rm", "-rf", publishDir])
+            subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
 
-        subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
+            publishDir = os.path.join(PUBLIC, SETTINGS.get("publish dir"))
+            if os.path.exists(publishDir):
+                subprocess.call(["rm", "-rf", publishDir])
 
-        # repopulate html files
-        core.load_files()
-        core.write("index.html")
+            subprocess.call(["ln", "-s", WWW, os.path.join(PUBLIC, SETTINGS.get("publish dir"))])
+
+            # repopulate html files
+            core.load_files()
+            core.write("index.html")
 
         # add publishing setting
         print("\nnew feature!\n")

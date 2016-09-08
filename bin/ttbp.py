@@ -900,7 +900,7 @@ def update_version():
             # change www symlink
             if os.path.exists(WWW):
                 subprocess.call(["rm", WWW])
-            
+
             subprocess.call(["mkdir", WWW])
 
             subprocess.call(["ln", "-s", os.path.join(CONFIG, "style.css"), os.path.join(WWW, "style.css")])
