@@ -3,6 +3,12 @@
 `ttbp` stands for "tilde.town blogging platform", the original working name for
 this project.
 
+![ttbp main menu screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-main.png)
+
+![ttbp entries view screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-entries.png)
+
+![ttbp compose view screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-compose.png)
+
 `ttbp` runs from the command line, providing a hub for writing personal blog
 posts and reading posts written by other users of tilde.town. it's a little bit
 like livejournal or dreamwidth or tumblr. you can opt to publish your posts to
@@ -19,10 +25,13 @@ i'm testing a new feature.
 
 no coding or html experience is necessary to get started. just log in to your
 tilde.town account and enter:
+
 `~endorphant/bin/ttbp`
 
 ttbp will ask you a few questions to get you started. after that, writing and
 reading entries all happen within the program.
+
+that's it!
 
 ### SUPPORT
 
@@ -93,11 +102,6 @@ this.**
   your local timezone yet.  here are some
   [timezone setting instructions](http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/)
 
-### dependencies
-
-* [mistune](https://pypi.python.org/pypi/mistune)
-* [inflect](https://pypi.python.org/pypi/inflect)
-
 ### future features
 
 these are a few ideas being kicked around, or under active development:
@@ -107,3 +111,17 @@ these are a few ideas being kicked around, or under active development:
 * responding to entries
 * paginated list view
 * better entry display within ttbp
+
+### dependencies
+
+(this section is only relevant if you plan on forking the repo and running an
+instance of this yourself)
+
+* [mistune](https://pypi.python.org/pypi/mistune)
+* [inflect](https://pypi.python.org/pypi/inflect)
+
+### contributing
+
+if you're interested in helping with the code, please drop me some tildemail!
+
+unsolicited pull requests for bug-swatting are greatly appreciated.
