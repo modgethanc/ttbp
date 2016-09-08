@@ -212,6 +212,9 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     subprocess.call(["mkdir", CONFIG])
     subprocess.call(["mkdir", DATA])
 
+    versionFile = os.path.join(PATH, "version")
+    open(versionFile, "w").write(__version__)
+
     ## create header file
     header = gen_header()
     headerfile = open(os.path.join(CONFIG, "header.txt"), 'w')
@@ -227,7 +230,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     setup()
     core.load(SETTINGS)
 
-    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    #raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
 
 def gen_header():
