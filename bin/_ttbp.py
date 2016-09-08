@@ -372,7 +372,7 @@ def main_menu():
     util.print_menu(menuOptions, RAINBOW)
 
     try:
-        choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
+        choice = raw_input("\ntell me about your feels (or type 'q' to exit): ")
     except KeyboardInterrupt:
         redraw(EJECT)
         return main_menu()
@@ -538,7 +538,7 @@ def view_neighbors(users):
     util.print_menu(sortedUsers, RAINBOW)
 
     #raw_input("\n\npress <enter> to go back home.\n\n")
-    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
+    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ")
 
     if choice is not False:
         redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
@@ -698,7 +698,7 @@ def list_entries(metas, entries, prompt):
 
     util.print_menu(entries, RAINBOW)
 
-    choice = util.list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
+    choice = util.list_select(entries, "pick an entry from the list, or type 'back' or 'q' to go back: ")
 
     if choice is not False:
 

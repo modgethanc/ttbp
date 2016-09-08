@@ -3,11 +3,32 @@
 `ttbp` stands for "tilde.town blogging platform", the original working name for
 this project.
 
+`ttbp` runs from the command line, providing a hub for writing personal blog
+posts and reading posts written by other users of tilde.town. it's a little bit
+like livejournal or dreamwidth or tumblr. you can opt to publish your posts to
+a public html file hosted on your tilde page, or keep all your entries private
+to the tilde.town server.
+
 to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
 
 you can also try `~endorphant/bin/ttbp-beta` for a more colorful, but
 potentially volatile experience; i sometimes announce in irc or on twitter when
 i'm testing a new feature.
+
+### QUICK START
+
+no coding or html experience is necessary to get started. just log in to your
+tilde.town account and enter:
+`~endorphant/bin/ttbp`
+
+ttbp will ask you a few questions to get you started. after that, writing and
+reading entries all happen within the program.
+
+### SUPPORT
+
+if you're having trouble getting started, or run into program errors or strange
+behavior, please send internal tilde.town mail to ~endorphant and i'll try to
+sort things out!
 
 ### writing entries
 
