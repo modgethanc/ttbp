@@ -501,6 +501,8 @@ def view_feels(townie):
     for entry in os.listdir(entryDir):
         filenames.append(os.path.join(entryDir, entry))
     metas = core.meta(filenames)
+    metas.sort(key = lambda entry:entry[4])
+    metas.reverse()
 
     if len(filenames) > 0:
         entries = []

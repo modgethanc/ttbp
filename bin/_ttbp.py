@@ -45,7 +45,7 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.9.1b"
+__version__ = "0.9.2b"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals
@@ -365,7 +365,7 @@ def main_menu():
             "review your feels",
             "check out your neighbors",
             "browse global feels",
-            "scribble some graffiti\t(new!)",
+            "scribble some graffiti",
             "change your settings",
             "send some feedback",
             "see credits",
@@ -574,6 +574,8 @@ def view_feels(townie):
     for entry in os.listdir(entryDir):
         filenames.append(os.path.join(entryDir, entry))
     metas = core.meta(filenames)
+    metas.sort(key = lambda entry:entry[4])
+    metas.reverse()
 
     if len(filenames) > 0:
         entries = []
@@ -699,9 +701,12 @@ def list_entries(metas, entries, prompt):
     displays a list of entries for reading selection
     '''
 
+    '''
     util.print_menu(entries, RAINBOW)
-
     choice = util.list_select(entries, "pick an entry from the list, or type 'back' or 'q' to go back: ")
+    '''
+
+    choice = util.menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW)
 
     if choice is not False:
 
@@ -794,11 +799,7 @@ def select_editor():
     '''
 
     util.print_menu(EDITORS, RAINBOW)
-
     choice = util.list_select(EDITORS, "pick your favorite text editor: ")
-    #choice = raw_input("\npick your favorite text editor: ")
-    #while choice  not in ['0', '1', '2', '3', '4', '5']:
-    #    choice = raw_input("\nplease pick a number from the list: ")
 
     if choice is False:
         redraw("please pick a text editor!")
@@ -1057,6 +1058,15 @@ ver. 0.9.0 features:
         print("""
 ver 0.9.1 features:
     * graffiti wall
+        """)
+
+    if userVersion[0:5] < "0.9.2":
+        # version 0.9.2 patch notes
+        print("""
+ver 0.9.2 features:
+    * paginated entry view
+    * expanded menu for viewing your own feels (further 
+      features to be implemented)
         """)
 
 #####

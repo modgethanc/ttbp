@@ -300,8 +300,8 @@ def meta(entries = FILES):
 
       meta.append([filename, mtime, wc, timestamp, date, author])
 
-    meta.sort(key = lambda filename:filename[4])
-    meta.reverse()
+    #meta.sort(key = lambda filename:filename[4])
+    #meta.reverse()
 
     return meta
 
