@@ -147,61 +147,6 @@ def genID(digits=5):
 
     return id
 
-def menu_handler(options, prompt, pagify=10, rainbow=False):
-    ''' 
-    This menu handler takes an incoming list of options, pagifies to a
-    pre-set value, and queries via the prompt. Calls print_menu() and
-    list_select() as helpers.
-    '''
-
-    optCount = len(options)
-    page = 0
-    total = optCount / pagify
-
-    # don't display empty pages
-    if optCount % pagify == 0:
-        total = total - 1
-
-    if total < 2:
-        print_menu(options, rainbow)
-        return list_select(options, prompt)
-
-    else:
-        return page_helper(options, prompt, pagify, rainbow, page, total)
-
-
-def page_helper(options, prompt, pagify, rainbow, page, total):
-    '''
-    A helper to process pagination.
-    '''
-
-    ## make short list
-    x = 0 + page * pagify
-    y = x + pagify
-    optPage = options[x:y]
-
-    print_menu(optPage, prompt)
-    print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
-
-    ans = list_select(optPage, prompt)
-
-    if ans in NAVS:
-        if ans == 'u':
-            if page == 0:
-                print("can't scroll up anymore!")
-            else:
-                page = page - 1
-        else:
-            if page == total:
-                print("can't scroll down anymore!")
-            else:
-                page = page + 1
-
-        print("")
-        return page_helper(options, prompt, pagify, rainbow, page, total)
-
-    return ans
-
 def print_menu(menu, rainbow=False):
     '''
     A pretty menu handler that takes an incoming lists of

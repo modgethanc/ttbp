@@ -87,7 +87,64 @@ RAINBOW = True
 EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
-##
+## ttbp specific utilities
+
+def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
+    '''
+    This menu handler takes an incoming list of options, pagifies to a
+    pre-set value, and queries via the prompt. Calls print_menu() and
+    list_select() as helpers.
+
+    'top' is an optional list topper, to be passed to redraw()
+    '''
+
+    optCount = len(options)
+    page = 0
+    total = optCount / pagify
+
+    # don't display empty pages
+    if optCount % pagify == 0:
+        total = total - 1
+
+    if total < 2:
+        print_menu(options, rainbow)
+        return list_select(options, prompt)
+
+    else:
+        return page_helper(options, prompt, pagify, rainbow, page, total, top)
+
+
+def page_helper(options, prompt, pagify, rainbow, page, total, top):
+    '''
+    A helper to process pagination.
+    '''
+
+    ## make short list
+    x = 0 + page * pagify
+    y = x + pagify
+    optPage = options[x:y]
+
+    util.print_menu(optPage, prompt)
+    print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
+
+    ans = util.list_select(optPage, prompt)
+
+    if ans in util.NAVS:
+        error = ""
+        if ans == 'u':
+            if page == 0:
+                error = "can't scroll up anymore!\n\n> "
+            else:
+                page = page - 1
+        else:
+            if page == total:
+                error = "can't scroll down anymore!\n\n> "
+            else:
+                page = page + 1
+        redraw(error+top)
+        return page_helper(options, prompt, pagify, rainbow, page, total, top)
+
+    return ans
 
 def redraw(leftover=""):
     '''
@@ -482,7 +539,6 @@ def review_menu(intro=""):
     redraw(intro)
     return review_menu()
 
-
 def view_neighbors(users):
     '''
     generates list of all users on ttbp, sorted by most recent post
@@ -585,7 +641,7 @@ def view_feels(townie):
                 pub = "(nopub)"
             entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-        return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
+        return list_entries(metas, entries, owner+" recorded feels, listed by date: ")
     else:
         redraw("no feels recorded by ~"+townie)
 
@@ -706,7 +762,7 @@ def list_entries(metas, entries, prompt):
     choice = util.list_select(entries, "pick an entry from the list, or type 'back' or 'q' to go back: ")
     '''
 
-    choice = util.menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW)
+    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW, prompt)
 
     if choice is not False:
 
@@ -1065,7 +1121,7 @@ ver 0.9.1 features:
         print("""
 ver 0.9.2 features:
     * paginated entry view
-    * expanded menu for viewing your own feels (further 
+    * expanded menu for viewing your own feels (further
       features to be implemented)
         """)
 

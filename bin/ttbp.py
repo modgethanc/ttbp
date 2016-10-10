@@ -45,7 +45,7 @@ import chatter
 import inflect
 import util
 
-__version__ = "0.9.1"
+__version__ = "0.9.2"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals
@@ -87,7 +87,64 @@ RAINBOW = False
 EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
-##
+## ttbp specific utilities
+
+def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
+    '''
+    This menu handler takes an incoming list of options, pagifies to a
+    pre-set value, and queries via the prompt. Calls print_menu() and
+    list_select() as helpers.
+
+    'top' is an optional list topper, to be passed to redraw()
+    '''
+
+    optCount = len(options)
+    page = 0
+    total = optCount / pagify
+
+    # don't display empty pages
+    if optCount % pagify == 0:
+        total = total - 1
+
+    if total < 2:
+        print_menu(options, rainbow)
+        return list_select(options, prompt)
+
+    else:
+        return page_helper(options, prompt, pagify, rainbow, page, total, top)
+
+
+def page_helper(options, prompt, pagify, rainbow, page, total, top):
+    '''
+    A helper to process pagination.
+    '''
+
+    ## make short list
+    x = 0 + page * pagify
+    y = x + pagify
+    optPage = options[x:y]
+
+    util.print_menu(optPage, prompt)
+    print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
+
+    ans = util.list_select(optPage, prompt)
+
+    if ans in util.NAVS:
+        error = ""
+        if ans == 'u':
+            if page == 0:
+                error = "can't scroll up anymore!\n\n> "
+            else:
+                page = page - 1
+        else:
+            if page == total:
+                error = "can't scroll down anymore!\n\n> "
+            else:
+                page = page + 1
+        redraw(error+top)
+        return page_helper(options, prompt, pagify, rainbow, page, total, top)
+
+    return ans
 
 def redraw(leftover=""):
     '''
@@ -161,12 +218,18 @@ def check_init():
     if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
         print(chatter.say("greet")+", "+USER+".\n")
 
+        '''
         ## ttbprc validation
         while not os.path.isfile(TTBPRC):
             setup_repair()
         try:
             SETTINGS = json.load(open(TTBPRC))
         except ValueError:
+            setup_repair()
+        '''
+
+        ## ttbp env validation
+        if not valid_setup():
             setup_repair()
 
         ## version checker
@@ -262,6 +325,33 @@ def gen_header():
     """
     return header
 
+def valid_setup():
+    '''
+    Checks to see if user has a sane ttbp environment.
+    '''
+
+    global SETTINGS
+
+    if not os.path.isfile(TTBPRC):
+        return False
+
+    try:
+        SETTINGS = json.load(open(TTBPRC))
+    except ValueError:
+        return False
+
+    if core.publishing():
+        if not SETTINGS.get("publish dir"):
+            return False
+
+        if not os.path.exists(WWW):
+            return False
+
+        if not os.path.exists(os.path.join(WWW, SETTINGS.get("pubish dir"))):
+            return False
+
+    return True
+
 def setup_repair():
     '''
     setup repair function
@@ -331,17 +421,17 @@ def main_menu():
             "review your feels",
             "check out your neighbors",
             "browse global feels",
-            "scribble some graffiti\t(new!)",
+            "scribble some graffiti",
             "change your settings",
             "send some feedback",
             "see credits",
             "read documentation"]
 
-    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n\n")
+    print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n")
     util.print_menu(menuOptions, RAINBOW)
 
     try:
-        choice = raw_input("\ntell me about your feels (or 'quit' to exit): ")
+        choice = raw_input("\ntell me about your feels (or type 'q' to exit): ")
     except KeyboardInterrupt:
         redraw(EJECT)
         return main_menu()
@@ -352,14 +442,21 @@ def main_menu():
         write_entry(os.path.join(DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        redraw("your recorded feels, listed by date:\n")
-        view_feels(USER)
+        if core.publishing():
+            intro = "here are some options for reviewing your feels:"
+            redraw(intro)
+            review_menu(intro)
+            core.load_files()
+            core.write("index.html")
+        else:
+            redraw("your recorded feels, listed by date:")
+            view_feels(USER)
     elif choice == '2':
         users = core.find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:\n")
+        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:")
         view_neighbors(users)
     elif choice == '3':
-        redraw("most recent global entries\n")
+        redraw("most recent global entries")
         view_feed()
     elif choice == '4':
         graffiti_handler()
@@ -371,7 +468,7 @@ def main_menu():
             redraw(EJECT)
         redraw()
     elif choice == '6':
-        redraw("you're about to send mail to ~endorphant about ttbp\n")
+        redraw("you're about to send mail to ~endorphant about ttbp")
         feedback_menu()
     elif choice == '7':
         redraw()
@@ -412,6 +509,34 @@ press <enter> to open an external text editor. mail will be sent once you save a
         redraw(INVALID)
 
     return feedback_menu()
+
+def review_menu(intro=""):
+    '''
+    submenu for reviewing feels.
+    '''
+
+    menuOptions = [
+            "read over feels",
+            "modify feels publishing"
+            ]
+
+    util.print_menu(menuOptions, RAINBOW)
+
+    choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
+
+    if choice is not False:
+        if choice == 0:
+            redraw("your recorded feels, listed by date:")
+            view_feels(USER)
+        elif choice == 1:
+            redraw("here's your current nopub status:")
+            set_nopubs()
+    else:
+        redraw()
+        return
+
+    redraw(intro)
+    return review_menu()
 
 def view_neighbors(users):
     '''
@@ -471,7 +596,7 @@ def view_neighbors(users):
     util.print_menu(sortedUsers, RAINBOW)
 
     #raw_input("\n\npress <enter> to go back home.\n\n")
-    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' to go home: ")
+    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ")
 
     if choice is not False:
         redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
@@ -490,10 +615,13 @@ def view_feels(townie):
     '''
 
     filenames = []
+    showpub = False
 
     if townie == USER:
         entryDir = DATA
         owner = "your"
+        if core.publishing():
+            showpub = True
     else:
         owner = "~"+townie+"'s"
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
@@ -507,9 +635,12 @@ def view_feels(townie):
     if len(filenames) > 0:
         entries = []
         for entry in metas:
-            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") ")
+            pub = ""
+            if core.nopub(entry[0]):
+                pub = "(nopub)"
+            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-        return list_entries(metas, entries, owner+" recorded feels, listed by date: \n")
+        return list_entries(metas, entries, owner+" recorded feels, listed by date: ")
     else:
         redraw("no feels recorded by ~"+townie)
 
@@ -576,6 +707,13 @@ editor.
 
     return
 
+def set_nopubs():
+    '''
+    handler for toggling nopub on individual entries
+    '''
+
+    raw_input(DUST)
+
 def send_feedback(entered, subject="none"):
     '''
     main feedback/bug report handler
@@ -591,28 +729,39 @@ def send_feedback(entered, subject="none"):
     subprocess.call([SETTINGS["editor"], temp.name])
     message = open(temp.name, 'r').read()
 
-    id = "#"+util.genID(3)
-    mail = MIMEText(message)
-    mail['To'] = FEEDBOX
-    mail['From'] = USER+"@tilde.town"
-    mail['Subject'] = " ".join(["[ttbp]", subject, id])
-    m = os.popen("/usr/sbin/sendmail -t -oi", 'w')
-    m.write(mail.as_string())
-    m.close()
+    if message:
+        id = "#"+util.genID(3)
+        mail = MIMEText(message)
+        mail['To'] = FEEDBOX
+        mail['From'] = USER+"@tilde.town"
+        mail['Subject'] = " ".join(["[ttbp]", subject, id])
+        m = os.popen("/usr/sbin/sendmail -t -oi", 'w')
+        m.write(mail.as_string())
+        m.close()
 
-    return """\
+        exit = """\
 thanks for writing! for your reference, it's been recorded
 > as """+ " ".join([subject, id])+""". i'll try to respond to you soon.\
-    """
+        """
+    else:
+        exit = """\
+i didn't send your blank message. if you made a mistake, please try
+running through the feedback option again!\
+        """
+
+    return exit
 
 def list_entries(metas, entries, prompt):
     '''
     displays a list of entries for reading selection
     '''
 
+    '''
     util.print_menu(entries, RAINBOW)
+    choice = util.list_select(entries, "pick an entry from the list, or type 'back' or 'q' to go back: ")
+    '''
 
-    choice = util.list_select(entries, "pick an entry from the list, or type 'back' to go back: ")
+    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW, prompt)
 
     if choice is not False:
 
@@ -663,7 +812,7 @@ def view_feed():
 
         entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
 
-    list_entries(metas, entries, "most recent global entries: \n\n")
+    list_entries(metas, entries, "most recent global entries:")
 
     redraw()
 
@@ -675,7 +824,7 @@ def graffiti_handler():
     '''
 
     if os.path.isfile(WALL_LOCK):
-        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!\n")
+        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!")
     else:
         subprocess.call(["touch", WALL_LOCK])
         redraw()
@@ -705,9 +854,11 @@ def select_editor():
     '''
 
     util.print_menu(EDITORS, RAINBOW)
-    choice = raw_input("\npick your favorite text editor: ")
-    while choice  not in ['0', '1', '2', '3', '4', '5']:
-        choice = raw_input("\nplease pick a number from the list: ")
+    choice = util.list_select(EDITORS, "pick your favorite text editor: ")
+
+    if choice is False:
+        redraw("please pick a text editor!")
+        select_editor()
 
     return EDITORS[int(choice)]
 
@@ -770,7 +921,7 @@ please enter\
 
 def unpublish():
     '''
-    remove user's published directory, if it exists
+    remove user's published directory, if it exists. this should only remove the symlink in public_html.
     '''
 
     dir = SETTINGS.get("publish dir")
@@ -948,7 +1099,8 @@ somehing strange happened to you during this update.
 """)
 
     # show patch notes
-    if userVersion != "0.9.0" and userVersion != "0.9.0b":
+    #if userVersion != "0.9.0" and userVersion != "0.9.0b":
+    if userVersion[0:5] < "0.9.0":
         # version 0.9.0 patch notes:
         print("""
 ver. 0.9.0 features:
@@ -956,11 +1108,21 @@ ver. 0.9.0 features:
     * documentation browser
         """)
 
-    # version 0.9.1 patch notes
-    print("""
+    if userVersion[0:5] < "0.9.1":
+        # version 0.9.1 patch notes
+        print("""
 ver 0.9.1 features:
     * graffiti wall
-    """)
+        """)
+
+    if userVersion[0:5] < "0.9.2":
+        # version 0.9.2 patch notes
+        print("""
+ver 0.9.2 features:
+    * paginated entry view
+    * expanded menu for viewing your own feels (further
+      features to be implemented)
+        """)
 
 #####
 
