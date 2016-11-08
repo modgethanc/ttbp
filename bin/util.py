@@ -158,7 +158,7 @@ def print_menu(menu, rainbow=False):
     i = 0
     for x in menu:
         line = []
-        if rainbow:
+        if rainbow is not False:
             line.append(attach_rainbow())
         line.append("\t[ ")
         if i < 10:

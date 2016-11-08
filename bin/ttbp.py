@@ -107,8 +107,8 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
         total = total - 1
 
     if total < 2:
-        print_menu(options, rainbow)
-        return list_select(options, prompt)
+        util.print_menu(options, RAINBOW)
+        return util.list_select(options, prompt)
 
     else:
         return page_helper(options, prompt, pagify, rainbow, page, total, top)
@@ -117,6 +117,11 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
 def page_helper(options, prompt, pagify, rainbow, page, total, top):
     '''
     A helper to process pagination.
+
+    'pagify' is the number of entries per page of display
+    'page' is the current page number
+    'total' is the total number of pages
+    'top' is displyed after the banner redraw
     '''
 
     ## make short list
@@ -124,7 +129,7 @@ def page_helper(options, prompt, pagify, rainbow, page, total, top):
     y = x + pagify
     optPage = options[x:y]
 
-    util.print_menu(optPage, prompt)
+    util.print_menu(optPage, RAINBOW)
     print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
 
     ans = util.list_select(optPage, prompt)
@@ -144,7 +149,14 @@ def page_helper(options, prompt, pagify, rainbow, page, total, top):
         redraw(error+top)
         return page_helper(options, prompt, pagify, rainbow, page, total, top)
 
-    return ans
+    elif ans is False:
+        return ans
+
+    else:
+        # shift answer to refer to index from original list
+        ans = ans + page * pagify
+
+        return ans
 
 def redraw(leftover=""):
     '''
@@ -453,8 +465,9 @@ def main_menu():
             view_feels(USER)
     elif choice == '2':
         users = core.find_ttbps()
-        redraw("the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:")
-        view_neighbors(users)
+        prompt = "the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:"
+        redraw(prompt)
+        view_neighbors(users, prompt)
     elif choice == '3':
         redraw("most recent global entries")
         view_feed()
@@ -538,7 +551,7 @@ def review_menu(intro=""):
     redraw(intro)
     return review_menu()
 
-def view_neighbors(users):
+def view_neighbors(users, prompt):
     '''
     generates list of all users on ttbp, sorted by most recent post
 
@@ -593,15 +606,12 @@ def view_neighbors(users):
         sortedUsers.append(user[0])
         userIndex.append(user[2])
 
-    util.print_menu(sortedUsers, RAINBOW)
-
-    #raw_input("\n\npress <enter> to go back home.\n\n")
-    choice = util.list_select(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ")
+    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ", 15, RAINBOW, prompt)
 
     if choice is not False:
         redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
         view_feels(userIndex[choice])
-        view_neighbors(users)
+        view_neighbors(users, prompt)
     else:
         redraw()
         return
@@ -1120,6 +1130,8 @@ ver 0.9.1 features:
         print("""
 ver 0.9.2 features:
     * paginated entry view
+    * improved entry listing performance so it should
+      be less sluggish (for now)
     * expanded menu for viewing your own feels (further
       features to be implemented)
         """)
