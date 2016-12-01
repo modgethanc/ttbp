@@ -25,6 +25,8 @@ TO-DO:
 ------
 
 CHANGELOG:
+ver 0.9.2
+	-paginated scrolling
 
 ver 0.9.1
 	-graffiti wall!!!
