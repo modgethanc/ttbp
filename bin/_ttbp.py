@@ -39,6 +39,7 @@ import subprocess
 import time
 import json
 from email.mime.text import MIMEText;
+import re
 
 import core
 import chatter
@@ -808,7 +809,8 @@ def view_feed():
         filenames = os.listdir(entryDir)
 
         for entry in filenames:
-            if core.valid(entry):
+            ## hardcoded bs
+            if core.valid(entry) and re.search("201612", entry):
                 feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
