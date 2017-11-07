@@ -809,8 +809,9 @@ def view_feed():
 
         for entry in filenames:
             ## hardcoded bs
-            if core.valid(entry) and re.search("201612", entry):
-                feedList.append(os.path.join(entryDir, entry))
+            if core.valid(entry):
+                if re.search("2017", entry):
+                    feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
     metas.sort(key = lambda entry:entry[3])
