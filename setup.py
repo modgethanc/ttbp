@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='ttbp',
-    version='0.10.0',
+    version='0.9.3',
     description='command line social blogging tool used on tilde.town',
     url='https://github.com/modgethanc/ttbp',
     author='~endorphant',

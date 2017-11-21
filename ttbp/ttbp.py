@@ -49,7 +49,7 @@ from . import core
 from . import chatter
 from . import util
 
-__version__ = "0.10.0"
+__version__ = "0.9.3"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -1099,6 +1099,9 @@ you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant
 somehing strange happened to you during this update.
 """)
 
+    # TODO these conditionals will need to change if we increment the Y level
+    # to 10.
+
     # show patch notes
     #if userVersion != "0.9.0" and userVersion != "0.9.0b":
     if userVersion[0:5] < "0.9.0":
@@ -1126,6 +1129,16 @@ ver 0.9.2 features:
     * expanded menu for viewing your own feels (further
       features to be implemented)
         """)
+    if userVersion[0:5] < "0.9.3":
+        # version 0.9.3 patch notes
+        print()
+        print("""
+        version 0.9.3 features:
+        * ttbp is now packaged, making it easier to contribute to.
+        * things should otherwise be the same!
+        * check out https://github.com/modgethanc/ttbp if you'd like to contribute.
+        * takes advantage of new /var/global
+        """.ltrim())
 
 #####
 
