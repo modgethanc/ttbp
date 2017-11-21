@@ -122,6 +122,10 @@ instance of this yourself)
 
 ### contributing
 
-if you're interested in helping with the code, please drop me some tildemail!
+please check out my contributor guidelines on github if you'd like to get
+involved with development!
 
-unsolicited pull requests for bug-swatting are greatly appreciated.
+if you find any bugs or strange behavior, please message me locally on tildemail
+or open a github issue and i'll get back to you as soon as i can.
+
+if you're interested in helping with the code, please drop me some tildemail!
