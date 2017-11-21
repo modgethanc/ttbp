@@ -31,6 +31,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 the complete codebase is available at:
 https://github.com/modgethanc/ttbp
 '''
+from __future__ import absolute_import
 
 import os
 import random
@@ -41,12 +42,13 @@ import json
 from email.mime.text import MIMEText;
 import re
 
-import core
-import chatter
 import inflect
-import util
 
-__version__ = "0.9.2"
+from . import core
+from . import chatter
+from . import util
+
+__version__ = "0.10.0"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 ## system globals
