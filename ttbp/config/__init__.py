@@ -1,13 +1,14 @@
 from __future__ import absolute_import
 import os
+import sys
 
-from . import util
+from .. import util
 
 ## System config
 
 # We refer to some package files (ie .css stuff), so we save a reference to the
 # path.
-INSTALL_PATH = dirname(sys.modules['ttbp'].__file__)
+INSTALL_PATH = os.path.dirname(sys.modules['ttbp'].__file__)
 
 # We use this to store any persisted, global state.
 VAR = '/var/global/ttbp'
@@ -29,6 +30,9 @@ GRAFF_DIR = os.path.join(VAR, "graffiti")
 WALL = os.path.join(GRAFF_DIR, "wall.txt")
 WALL_LOCK = os.path.join(GRAFF_DIR, ".lock")
 
+if not os.path.isdir(GRAFF_DIR):
+    os.mkdir(GRAFF_DIR)
+
 ## Defaults
 
 DEFAULT_HEADER = '''
@@ -44,13 +48,13 @@ DEFAULT_HEADER = '''
     </div>
 
     <div id="tlogs">
-'''.ltrim()
+'''.lstrip()
 
 DEFAULT_FOOTER = '''
     </div>
   </body>
 </html>
-'''.ltrim()
+'''.lstrip()
 
 with open(os.path.join(INSTALL_PATH, 'config', 'defaults', 'style.css')) as f:
     DEFAULT_STYLE = f.read()
@@ -79,4 +83,4 @@ __________________________________________________________
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
 |                               ver 0.10.0 (almost stable) |
 |__________________________________________________________|
-'''.ltrim()
+'''.lstrip()

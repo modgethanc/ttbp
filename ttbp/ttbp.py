@@ -285,9 +285,9 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     headerfile.close()
 
     ## copy footer and default stylesheet
-    with open(os.path.join(config.USER_CONFIG, 'footer.txt', 'w')) as f:
+    with open(os.path.join(config.USER_CONFIG, 'footer.txt'), 'w') as f:
         f.write(config.DEFAULT_FOOTER)
-    with open(os.path.join(config.USER_CONFIG, 'style.css', 'w')) as f:
+    with open(os.path.join(config.USER_CONFIG, 'style.css'), 'w') as f:
         f.write(config.DEFAULT_STYLE)
 
     ## run user-interactive setup and load core engine
@@ -924,9 +924,8 @@ def unpublish():
     '''
     remove user's published directory, if it exists. this should only remove the symlink in public_html.
     '''
-
     directory = SETTINGS.get("publish dir")
-    if dir:
+    if directory:
         publishDir = os.path.join(config.PUBLIC, directory)
         subprocess.call(["rm", publishDir])
 
@@ -1138,7 +1137,7 @@ ver 0.9.2 features:
         * things should otherwise be the same!
         * check out https://github.com/modgethanc/ttbp if you'd like to contribute.
         * takes advantage of new /var/global
-        """.ltrim())
+        """.lstrip())
 
 #####
 
