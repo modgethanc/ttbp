@@ -122,8 +122,9 @@ instance of this yourself)
 
 ### contributing
 
-please check out my contributor guidelines on github if you'd like to get
-involved with development!
+please check out my [contributor
+guidelines](https://github.com/modgethanc/ttbp/blob/master/.github/CONTRIBUTING.md)
+on github if you'd like to get involved with development!
 
 if you find any bugs or strange behavior, please message me locally on tildemail
 or open a github issue and i'll get back to you as soon as i can.
