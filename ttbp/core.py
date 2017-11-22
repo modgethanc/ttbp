@@ -259,6 +259,7 @@ def write_global_feed(blogList):
 """)
 
     outfile.close()
+    subprocess.call(['chmod', 'a+w', FEED])
 
 ## misc helpers
 
