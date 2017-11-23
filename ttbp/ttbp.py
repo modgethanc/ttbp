@@ -656,10 +656,10 @@ publicly available on github at https://github.com/modgethanc/ttbp
 
 for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
-if you have ideas for ttbp, you are welcome to fork the repo and
-work on it. i'm only a neophyte dev, so i apologize for any
-bad style and practices of mine; i'm always open to suggestions for
-improvement.
+if you have ideas for ttbp, you are welcome to contact me to discuss them;
+please send me tildemail or open a github issue. i am not a very experienced
+developer, and ttbp is one of my first public-facing projects, so i appreciate
+your patience while i learn how to be a better developer!
 
 i'd love to hear about your ideas and brainstorm about new features!
 

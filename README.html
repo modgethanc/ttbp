@@ -1,6 +1,6 @@
 <p><em>a command-line based blogging platform running on tilde.town</em></p>
 
-<p><code>ttbp</code> stands for &ldquo;tilde.town blogging platform&rdquo;, the original working name for
+<p><code>ttbp</code> stands for "tilde.town blogging platform", the original working name for
 this project.</p>
 
 <p><img src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-main.png" alt="ttbp main menu screenshot" /></p>
@@ -10,36 +10,35 @@ this project.</p>
 <p><img src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-compose.png" alt="ttbp compose view screenshot" /></p>
 
 <p><code>ttbp</code> runs from the command line, providing a hub for writing personal blog
-posts and reading posts written by other users of tilde.town. it&rsquo;s a little bit
+posts and reading posts written by other users of tilde.town. it's a little bit
 like livejournal or dreamwidth or tumblr. you can opt to publish your posts to
 a public html file hosted on your tilde page, or keep all your entries private
 to the tilde.town server.</p>
 
-<p>to use, run <code>~endorphant/bin/ttbp</code> while logged in to tilde.town</p>
+<p>to use, run <code>feels</code> while logged in to tilde.town</p>
 
-<p>you can also try <code>~endorphant/bin/ttbp-beta</code> for a more colorful, but
-potentially volatile experience; i sometimes announce in irc or on twitter when
-i&rsquo;m testing a new feature.</p>
+<p>(<code>feels</code> is a tilde.town specific command; if you're running this locally, or on
+a different server, run <code>ttbp</code> from the command line)</p>
 
-<h3>QUICK START</h3>
+<h3 id="quickstart">QUICK START</h3>
 
 <p>no coding or html experience is necessary to get started. just log in to your
 tilde.town account and enter:</p>
 
-<p><code>~endorphant/bin/ttbp</code></p>
+<p><code>feels</code></p>
 
 <p>ttbp will ask you a few questions to get you started. after that, writing and
 reading entries all happen within the program.</p>
 
-<p>that&rsquo;s it!</p>
+<p>that's it!</p>
 
-<h3>SUPPORT</h3>
+<h3 id="support">SUPPORT</h3>
 
-<p>if you&rsquo;re having trouble getting started, or run into program errors or strange
-behavior, please send internal tilde.town mail to ~endorphant and i&rsquo;ll try to
+<p>if you're having trouble getting started, or run into program errors or strange
+behavior, please send internal tilde.town mail to ~endorphant and i'll try to
 sort things out!</p>
 
-<h3>writing entries</h3>
+<h3 id="writingentries">writing entries</h3>
 
 <p>entries are recorded as plaintext files in your ~/.ttbp/entries
 directory. you can edit them there directly, or fix old entries, or
@@ -49,21 +48,22 @@ delete entries.</p>
 happen with timestamps. the main program looks at the filename
 first for setting the date, then the last modified time to sort
 recent posts. it expects YYYMMDD.txt as the filename; anything else
-won&rsquo;t show up as a valid entry. yes, this means you can post things out
+won't show up as a valid entry. yes, this means you can post things out
 of date order by creating files with any date you want.</p>
 
-<h4>general entry-writing notes</h4>
+<h4 id="generalentrywritingnotes">general entry-writing notes</h4>
 
 <ul>
 <li>you can use <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a></li>
+
 <li>you can use html</li>
+
 <li>you can also put things between <code>&lt;!-- comments --&gt;</code> to have them show up
 in the feed but not render in a browser (but people can still read
 them with view-source)</li>
 </ul>
 
-
-<h3>privacy</h3>
+<h3 id="privacy">privacy</h3>
 
 <p>when you start your ttbp, you have the option of publishing or not publishing
 your blog.</p>
@@ -81,7 +81,7 @@ your entries through the ttbp interface, or by directly accessing your
 <p>if you want to further protect your entries, you can <code>chmod 700</code> your entries
 directory.</p>
 
-<h3>changing your page layout</h3>
+<h3 id="changingyourpagelayout">changing your page layout</h3>
 
 <p>you can modify how your blog looks by editing the stylesheet or
 header and footer files. the program sets you up with basic
@@ -93,58 +93,68 @@ this.</strong></p>
 <ul>
 <li>to modify your stylesheet, edit your ~/.ttbp/config/style.css
 
-<ul>
-<li>(future feature: having multiple stylesheets you can select)</li>
-</ul>
-</li>
-<li>to modify the page header, edit your ~/.ttbp/config/header.txt
 
 <ul>
-<li>you might note that there&rsquo;s a place marked off in the default header where
-you can safely put custom HTML elements!</li>
-</ul>
+<li>(future feature: having multiple stylesheets you can select)</li></ul>
 </li>
+
+<li>to modify the page header, edit your ~/.ttbp/config/header.txt
+
+
+<ul>
+<li>you might note that there's a place marked off in the default header where
+you can safely put custom HTML elements!</li></ul>
+</li>
+
 <li>to modify the page footer, edit your ~/.ttbp/config/footer.txt</li>
 </ul>
 
-
-<h3>general tips/troubleshooting</h3>
+<h3 id="generaltipstroubleshooting">general tips/troubleshooting</h3>
 
 <ul>
 <li>add <code>alias ttbp="~endorphant/bin/ttbp"</code> to your .bash_aliases for fewer keystrokes</li>
+
 <li>(similarly, <code>alias ttbp-beta="~endorphant/bin/ttbp-beta"</code>)</li>
-<li>if the date looks like it&rsquo;s ahead or behind, it&rsquo;s because you haven&rsquo;t set
+
+<li>if the date looks like it's ahead or behind, it's because you haven't set
 your local timezone yet.  here are some
 <a href="http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/">timezone setting instructions</a></li>
 </ul>
 
-
-<h3>future features</h3>
+<h3 id="futurefeatures">future features</h3>
 
 <p>these are a few ideas being kicked around, or under active development:</p>
 
 <ul>
 <li>better entry privacy/publish control options</li>
+
 <li>stylesheet/theme selector</li>
+
 <li>responding to entries</li>
+
 <li>paginated list view</li>
+
 <li>better entry display within ttbp</li>
 </ul>
 
-
-<h3>dependencies</h3>
+<h3 id="dependencies">dependencies</h3>
 
 <p>(this section is only relevant if you plan on forking the repo and running an
 instance of this yourself)</p>
 
 <ul>
 <li><a href="https://pypi.python.org/pypi/mistune">mistune</a></li>
+
 <li><a href="https://pypi.python.org/pypi/inflect">inflect</a></li>
 </ul>
 
+<h3 id="contributing">contributing</h3>
 
-<h3>contributing</h3>
+<p>please check out my <a href="https://github.com/modgethanc/ttbp/blob/master/.github/CONTRIBUTING.md">contributor
+guidelines</a>
+on github if you'd like to get involved with development!</p>
 
-<p>if you&rsquo;re interested in helping with the code, please drop me some tildemail!</p>
+<p>if you find any bugs or strange behavior, please message me locally on tildemail
+or open a github issue and i'll get back to you as soon as i can.</p>
 
-<p>unsolicited pull requests for bug-swatting are greatly appreciated.</p>
+<p>if you're interested in helping with the code, please drop me some tildemail!</p>

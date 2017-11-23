@@ -15,18 +15,17 @@ like livejournal or dreamwidth or tumblr. you can opt to publish your posts to
 a public html file hosted on your tilde page, or keep all your entries private
 to the tilde.town server.
 
-to use, run `~endorphant/bin/ttbp` while logged in to tilde.town
+to use, run `feels` while logged in to tilde.town
 
-you can also try `~endorphant/bin/ttbp-beta` for a more colorful, but
-potentially volatile experience; i sometimes announce in irc or on twitter when
-i'm testing a new feature.
+(`feels` is a tilde.town specific command; if you're running this locally, or on
+a different server, run `ttbp` from the command line)
 
 ### QUICK START
 
 no coding or html experience is necessary to get started. just log in to your
 tilde.town account and enter:
 
-`~endorphant/bin/ttbp`
+`feels`
 
 ttbp will ask you a few questions to get you started. after that, writing and
 reading entries all happen within the program.
