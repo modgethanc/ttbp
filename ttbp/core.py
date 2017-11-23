@@ -401,8 +401,7 @@ def www_neighbors():
     for user in userList:
         sortedUsers.append(user[0])
 
-    # currently disabled due to /var/global/permissions issues
-    #write_global_feed(sortedUsers)
+    write_global_feed(sortedUsers)
 
 def nopub(filename):
     '''
