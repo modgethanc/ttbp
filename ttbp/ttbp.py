@@ -41,6 +41,7 @@ import time
 import json
 from email.mime.text import MIMEText;
 import re
+import datetime
 
 import inflect
 
@@ -800,7 +801,14 @@ def view_feed():
         for entry in filenames:
             ## hardcoded bs
             if core.valid(entry):
-                if re.search("2017", entry):
+                year = int(entry[0:4])
+                month = int(entry[4:6])
+                day = int(entry[6:8])
+                datecheck = datetime.date(year, month, day)
+                displayCutoff = datetime.date.today() - datetime.timedelta(days=30)
+
+                if datecheck > displayCutoff:
+                #if re.search("2017", entry):
                     feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
