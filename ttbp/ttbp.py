@@ -270,7 +270,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     users.write(config.USER+"\n")
     users.close()
 
-    subprocess.call(['chmod', 'a+w', config.USERFILE])
+    #subprocess.call(['chmod', 'a+w', config.USERFILE])
 
     ## make .ttbp directory structure
     subprocess.call(["mkdir", config.PATH])
