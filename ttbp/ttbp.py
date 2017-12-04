@@ -77,7 +77,7 @@ RAINBOW = False
 
 ## ref
 
-EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
+EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed", "micro"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ## ttbp specific utilities
