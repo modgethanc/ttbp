@@ -30,11 +30,6 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 the complete codebase is available at:
 https://github.com/modgethanc/ttbp
-
-
-TODO ability to opt into gopher publishing
-TODO check for existing public_gopher / gophermap
-TODO write out files
 '''
 from __future__ import absolute_import
 
