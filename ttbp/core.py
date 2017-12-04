@@ -73,6 +73,28 @@ def reload_ttbprc(ttbprc={}):
 
     SETTINGS = ttbprc
 
+
+def get_files():
+    """Returns a list of user's feels."""
+    files = []
+    for filename in os.listdir(config.USER_DATA):
+        if nopub(filename):
+            link = os.path.join(config.WWW,
+                                os.path.splitext(
+                                    os.path.basename(filename))[0]+".html")
+            if os.path.exists(link):
+                subprocess.call(["rm", link])
+            continue
+        filename = os.path.join(config.USER_DATA, filename)
+        if os.path.isfile(filename) and valid(filename):
+            files.append(filename)
+
+    files.sort()
+    files.reverse()
+
+    return files
+
+
 def load_files():
     '''
     file loader
@@ -83,20 +105,7 @@ def load_files():
 
     global FILES
 
-    FILES = []
-
-    for filename in os.listdir(config.USER_DATA):
-        if nopub(filename):
-            link = os.path.join(config.WWW, os.path.splitext(os.path.basename(filename))[0]+".html")
-            if os.path.exists(link):
-                subprocess.call(["rm", link])
-            continue
-        filename = os.path.join(config.USER_DATA, filename)
-        if os.path.isfile(filename) and valid(filename):
-            FILES.append(filename)
-
-    FILES.sort()
-    FILES.reverse()
+    FILES = get_files()
 
 
 ## html outputting

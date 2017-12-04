@@ -30,6 +30,11 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 the complete codebase is available at:
 https://github.com/modgethanc/ttbp
+
+
+TODO ability to opt into gopher publishing
+TODO check for existing public_gopher / gophermap
+TODO write out files
 '''
 from __future__ import absolute_import
 
@@ -46,6 +51,7 @@ import inflect
 from . import config
 from . import core
 from . import chatter
+from . import gopher
 from . import util
 
 __version__ = "0.9.3"
@@ -56,7 +62,8 @@ p = inflect.engine()
 ## user globals
 SETTINGS = {
         "editor": "none",
-        "publish dir": False
+        "publish dir": False,
+        "gopher": False,
     }
 
 ## ui globals
@@ -401,6 +408,13 @@ def setup():
     if core.publishing():
         print("publish directory: ~"+config.USER+"/public_html/"+SETTINGS.get("publish dir"))
 
+    # gopher opt-in
+    SETTINGS.update({'gopher': gopher.select_gopher()})
+    redraw('opting into gopher: ' + SETTINGS['gopher'])
+    # TODO for now i'm hardcoding where people's gopher stuff is generated. if
+    # there is demand for this to be configurable we can expose that.
+    gopher.setup_gopher('feels')
+
     # save settings
     ttbprc = open(config.TTBPRC, "w")
     ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
@@ -703,6 +717,9 @@ editor.
         core.load_files()
         core.write("index.html")
         left = "posted to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
+
+    if SETTINGS['gopher']:
+        gopher.publish_gopher('feels', core.get_files())
     redraw(left + " thanks for sharing your feels!")
 
     return
