@@ -43,7 +43,7 @@ import tempfile
 import subprocess
 import time
 import json
-from email.mime.text import MIMEText;
+from email.mime.text import MIMEText
 import datetime
 
 import inflect

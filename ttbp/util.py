@@ -212,8 +212,4 @@ def input_yn(query):
     while ans not in ["y", "n"]:
         ans = raw_input("'y' or 'n' please: ")
 
-    if ans == "y":
-        return True
-    else:
-        return False
-
+    return ans == "y"
