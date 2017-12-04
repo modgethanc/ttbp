@@ -17,17 +17,17 @@ If you don't know what it is or don't want it that is totally ok!
 You can always change this later.""".lstrip()
 
 GOPHERMAP_HEADER = """
-welcome to {user}'s feels on gopher.
+ welcome to {user}'s feels on gopher.
 
-    .::                     .::
-  .:                        .::
-.:.: .:   .::       .::     .:: .::::
-  .::   .:   .::  .:   .::  .::.::
-  .::  .::::: .::.::::: .:: .::  .:::
-  .::  .:        .:         .::    .::
-  .::    .::::     .::::   .:::.:: .::
+     .::                     .::
+   .:                        .::
+ .:.: .:   .::       .::     .:: .::::
+   .::   .:   .::  .:   .::  .::.::
+   .::  .::::: .::.::::: .:: .::  .:::
+   .::  .:        .:         .::    .::
+   .::    .::::     .::::   .:::.:: .::
 
-this file was created on their behalf by ttbp.
+ this file was created on their behalf by ttbp.
 
 """
 
@@ -53,12 +53,14 @@ def publish_gopher(gopher_path, entry_filenames):
         gophermap.write(GOPHERMAP_HEADER.format(
                         user=getpass.getuser()))
         for entry_filename in entry_filenames:
-            gophermap.write('0{file_label}\t{filename}'.format(
-                file_label=os.path.basename(entry_filename),
-                filename=entry_filename))
-            with open(os.path.join(ttbp_gopher, entry_filename), 'w') as gopher_entry:
+            filename = os.path.basename(entry_filename)
+
+            with open(os.path.join(ttbp_gopher, filename), 'w') as gopher_entry:
                 with open(entry_filename, 'r') as source_entry:
                     gopher_entry.write(source_entry.read())
+            gophermap.write('0{file_label}\t{filename}'.format(
+                file_label=os.path.basename(entry_filename),
+                filename=filename))
 
 
 def setup_gopher(gopher_path):
@@ -71,9 +73,13 @@ def setup_gopher(gopher_path):
     function.
     """
     public_gopher = os.path.expanduser('~/public_gopher')
-    if not os.path.is_dir(public_gopher):
+    if not os.path.isdir(public_gopher):
         print("\n\tERROR: you don't seem to have gopher set up (no public_gopher directory)")
         return
 
     ttbp_gopher = os.path.join(public_gopher, gopher_path)
-    os.mkdirs(ttbp_gopher)
+    if os.path.isdir(ttbp_gopher):
+        print("\n\tERROR: gopher path is already set up. quitting so we don't overwrite anything.")
+        return
+
+    os.makedirs(ttbp_gopher)

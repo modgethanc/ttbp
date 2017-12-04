@@ -393,7 +393,9 @@ def setup():
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
     if core.publishing():
         print("\tpublish dir:\t" +os.path.join(config.PUBLIC, str(SETTINGS.get("publish dir"))))
-    print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
+    print("\tpublishing:\t"+str(SETTINGS.get("publishing")))
+    print("\tgopher:\t"+str(SETTINGS.get('gopher')))
+    print("")
 
     # editor selection
     SETTINGS.update({"editor": select_editor()})
@@ -410,7 +412,7 @@ def setup():
 
     # gopher opt-in
     SETTINGS.update({'gopher': gopher.select_gopher()})
-    redraw('opting into gopher: ' + SETTINGS['gopher'])
+    redraw('opting into gopher: ' + str(SETTINGS['gopher']))
     # TODO for now i'm hardcoding where people's gopher stuff is generated. if
     # there is demand for this to be configurable we can expose that.
     gopher.setup_gopher('feels')
