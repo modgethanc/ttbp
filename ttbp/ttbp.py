@@ -34,13 +34,11 @@ https://github.com/modgethanc/ttbp
 from __future__ import absolute_import
 
 import os
-import random
 import tempfile
 import subprocess
 import time
 import json
 from email.mime.text import MIMEText;
-import re
 import datetime
 
 import inflect
