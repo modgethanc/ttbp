@@ -34,13 +34,11 @@ https://github.com/modgethanc/ttbp
 from __future__ import absolute_import
 
 import os
-import random
 import tempfile
 import subprocess
 import time
 import json
-from email.mime.text import MIMEText;
-import re
+from email.mime.text import MIMEText
 import datetime
 
 import inflect
@@ -48,6 +46,7 @@ import inflect
 from . import config
 from . import core
 from . import chatter
+from . import gopher
 from . import util
 
 __version__ = "0.9.3"
@@ -58,7 +57,8 @@ p = inflect.engine()
 ## user globals
 SETTINGS = {
         "editor": "none",
-        "publish dir": False
+        "publish dir": False,
+        "gopher": False,
     }
 
 ## ui globals
@@ -72,7 +72,7 @@ RAINBOW = False
 
 ## ref
 
-EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed"]
+EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed", "micro"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ## ttbp specific utilities
@@ -388,7 +388,9 @@ def setup():
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
     if core.publishing():
         print("\tpublish dir:\t" +os.path.join(config.PUBLIC, str(SETTINGS.get("publish dir"))))
-    print("\tpubishing:\t"+str(SETTINGS.get("publishing"))+"\n")
+    print("\tpublishing:\t"+str(SETTINGS.get("publishing")))
+    print("\tgopher:\t"+str(SETTINGS.get('gopher')))
+    print("")
 
     # editor selection
     SETTINGS.update({"editor": select_editor()})
@@ -402,6 +404,13 @@ def setup():
 
     if core.publishing():
         print("publish directory: ~"+config.USER+"/public_html/"+SETTINGS.get("publish dir"))
+
+    # gopher opt-in
+    SETTINGS.update({'gopher': gopher.select_gopher()})
+    redraw('opting into gopher: ' + str(SETTINGS['gopher']))
+    # TODO for now i'm hardcoding where people's gopher stuff is generated. if
+    # there is demand for this to be configurable we can expose that.
+    gopher.setup_gopher('feels')
 
     # save settings
     ttbprc = open(config.TTBPRC, "w")
@@ -705,6 +714,9 @@ editor.
         core.load_files()
         core.write("index.html")
         left = "posted to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
+
+    if SETTINGS['gopher']:
+        gopher.publish_gopher('feels', core.get_files())
     redraw(left + " thanks for sharing your feels!")
 
     return
