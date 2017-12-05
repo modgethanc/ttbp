@@ -3,8 +3,10 @@ This module contains gopher-related stuff.
 """
 import getpass
 import os
+import time
 
 from . import util
+from .core import parse_date
 
 GOPHER_PROMPT = """
 Would you like to publish your feels to gopher?
@@ -29,6 +31,11 @@ GOPHERMAP_HEADER = """
 
  this file was created on their behalf by ttbp.
 
+0(about ttbp)\t/~endorphant/ttbp.txt\ttilde.town\t70
+1(back to user's home)\t/~{user}
+
+ entries:
+
 """
 
 
@@ -40,7 +47,7 @@ def publish_gopher(gopher_path, entry_filenames):
     """This function (re)generates a user's list of feels posts in their gopher
     directory and their gophermap."""
     entry_filenames = entry_filenames[:]  # force a copy since this might be shared state in core.py
-    entry_filenames.reverse()
+    #entry_filenames.reverse()
     ttbp_gopher = os.path.join(
         os.path.expanduser('~/public_gopher'),
         gopher_path)
@@ -49,7 +56,7 @@ def publish_gopher(gopher_path, entry_filenames):
         print('\n\tERROR: something is wrong. your gopher directory is missing. re-enable gopher publishing.')
         return
 
-    with open(os.path.join(ttbp_gopher, 'gophermap'), 'w') as gophermap: 
+    with open(os.path.join(ttbp_gopher, 'gophermap'), 'w') as gophermap:
         gophermap.write(GOPHERMAP_HEADER.format(
                         user=getpass.getuser()))
         for entry_filename in entry_filenames:
@@ -58,8 +65,11 @@ def publish_gopher(gopher_path, entry_filenames):
             with open(os.path.join(ttbp_gopher, filename), 'w') as gopher_entry:
                 with open(entry_filename, 'r') as source_entry:
                     gopher_entry.write(source_entry.read())
-            gophermap.write('0{file_label}\t{filename}'.format(
-                file_label=os.path.basename(entry_filename),
+
+            #label = time.strftime("%Y-%m-%d at %H:%M", time.localtime(os.path.getmtime(entry_filename)))
+            label = "-".join(parse_date(entry_filename))
+            gophermap.write('0{file_label}\t{filename}\n'.format(
+                file_label=label,
                 filename=filename))
 
 
