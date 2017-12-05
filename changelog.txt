@@ -9,7 +9,6 @@ TO-DO:
 		-and make a couple more custom stylesheets
 	-replying to entries??
 		-direct mail to author
-	-paginate entry/neighbor list
 	-make a nicer entry view wrapper
 		-maybe with a box? and a nicer feed view?
 
@@ -20,12 +19,11 @@ TO-DO:
 		-shortcut to most recent feels, writing entry, seeing own entry
 	-#hashtags
 	-rainbow menu selection
-	-break out hardcoded globals into config files
 
 ------
 
 CHANGELOG:
-ver 0.9.3
+ver 0.9.3 (by ~vilmibm)
 	-packaging
 	-easier to contribute to
 

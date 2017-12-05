@@ -47,7 +47,6 @@ def publish_gopher(gopher_path, entry_filenames):
     """This function (re)generates a user's list of feels posts in their gopher
     directory and their gophermap."""
     entry_filenames = entry_filenames[:]  # force a copy since this might be shared state in core.py
-    #entry_filenames.reverse()
     ttbp_gopher = os.path.join(
         os.path.expanduser('~/public_gopher'),
         gopher_path)

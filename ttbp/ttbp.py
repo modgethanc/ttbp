@@ -49,7 +49,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.9.3"
+__version__ = "0.10.1"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -407,7 +407,7 @@ def setup():
 
     # gopher opt-in
     SETTINGS.update({'gopher': gopher.select_gopher()})
-    redraw('opting into gopher: ' + str(SETTINGS['gopher']))
+    #redraw('opting into gopher: ' + str(SETTINGS['gopher']))
     # TODO for now i'm hardcoding where people's gopher stuff is generated. if
     # there is demand for this to be configurable we can expose that.
     gopher.setup_gopher('feels')
@@ -663,6 +663,10 @@ def show_credits():
     print("""
 ttbp was written by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
+
+other contributors:
+    ~vilmibm, packaging help and gopher support
+    ~sanqui, the bug swatter
 
 for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
@@ -1024,9 +1028,11 @@ def switch_build(ver):
         ver = ver[0:-1]
 
     # write user versionfile
+    '''
     print("\nswitching you over to the "+build+" version...\n")
     time.sleep(1)
     print("...")
+    '''
     versionFile = os.path.join(config.PATH, "version")
     open(versionFile, "w").write(ver)
     time.sleep(1)
@@ -1063,7 +1069,7 @@ def update_version():
 
     time.sleep(1)
     print("...")
-    time.sleep(2)
+    time.sleep(1)
 
     userVersion = ""
 
@@ -1113,6 +1119,21 @@ def update_version():
             ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
             ttbprc.close()
 
+        # from earlier than 0.10.1
+
+        if int(userVersion.split(".")[1]) < 10:
+            #  select gopher
+            print("[ NEW FEATURE ]")
+            print("""
+    * thanks to help from ~vilmibm, ttbp now supports publishing to gopher!
+    * if you enable gopher publishing, feels will automatically publish to
+        gopher://tilde.town/1/~"""+config.USER+"""/feels
+
+            """)
+            SETTINGS.update({'gopher': gopher.select_gopher()})
+            print("opting into gopher: " + str(SETTINGS['gopher']))
+            gopher.setup_gopher('feels')
+
     # increment user versionfile
     open(versionFile, "w").write(__version__)
     print("""
@@ -1120,11 +1141,11 @@ you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant
 somehing strange happened to you during this update.
 """)
 
+    '''
     # TODO these conditionals will need to change if we increment the Y level
     # to 10.
 
     # show patch notes
-    #if userVersion != "0.9.0" and userVersion != "0.9.0b":
     if userVersion[0:5] < "0.9.0":
         # version 0.9.0 patch notes:
         print("""
@@ -1152,14 +1173,25 @@ ver 0.9.2 features:
         """)
     if userVersion[0:5] < "0.9.3":
         # version 0.9.3 patch notes
-        print()
         print("""
-        version 0.9.3 features:
+version 0.9.3 features:
         * ttbp is now packaged, making it easier to contribute to.
         * things should otherwise be the same!
         * check out https://github.com/modgethanc/ttbp if you'd like to contribute.
         * takes advantage of new /var/global
         """.lstrip())
+    #if userVersion[0:5] < "0.10.1":
+    # todo: write a better updating function
+    if 1:
+        # version 0.10.1 patch notes
+        print("""
+
+~[version 0.10.1 features]~
+        * thanks to help from ~vilmibm, ttbp now supports publishing to gopher!
+        * if you enable gopher publishing, feels will automatically publish to
+            gopher://tilde.town/1/~{user}/feels
+        """.lstrip())
+'''
 
 #####
 
