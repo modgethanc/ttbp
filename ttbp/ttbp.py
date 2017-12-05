@@ -354,6 +354,9 @@ def valid_setup():
         if not os.path.exists(os.path.join(config.WWW, SETTINGS.get("pubish dir"))):
             return False
 
+    if not SETTINGS.get("gopher"):
+        return False
+
     return True
 
 def setup_repair():
@@ -376,9 +379,9 @@ def setup():
     master setup function
 
     * editor selection
-    * publishing toggle
-    * publish/unpublish as needed
+    * publishing toggle (publish/unpublish as needed)
     * directory selection
+    * gopher opt in/out
 
     TODO: break this out better?
     '''
@@ -661,14 +664,12 @@ def show_credits():
     '''
 
     print("""
-ttbp was written by ~endorphant in python. the codebase is
+ttbp was written for tilde.town by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
 
 other contributors:
     ~vilmibm, packaging help and gopher support
     ~sanqui, the bug swatter
-
-for the full changelog, see ~endorphant/projects/ttbp/changelog.txt
 
 if you have ideas for ttbp, you are welcome to contact me to discuss them;
 please send me tildemail or open a github issue. i am not a very experienced
@@ -719,8 +720,9 @@ editor.
         core.write("index.html")
         left = "posted to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
 
-    if SETTINGS['gopher']:
+    if SETTINGS.get('gopher'):
         gopher.publish_gopher('feels', core.get_files())
+        left += "also posted to your ~/public_gopher!"
     redraw(left + " thanks for sharing your feels!")
 
     return
