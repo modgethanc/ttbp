@@ -74,7 +74,9 @@ def publish_gopher(gopher_path, entry_filenames):
             '''
             # symlink instead
 
-            subprocess.call(["ln", "-s", entry_filename, os.path.join(ttbp_gopher, os.path.basename(entry_fileNAME))])
+            gopher_entry_symlink = os.path.join(ttbp_gopher, os.path.basename(entry_filename))
+            if not os.path.exists(gopher_entry_symlink):
+                subprocess.call(["ln", "-s", entry_filename, gopher_entry_symlink])
 
             label = "-".join(parse_date(entry_filename))
             gophermap.write('0{file_label}\t{filename}\n'.format(

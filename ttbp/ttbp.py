@@ -72,7 +72,7 @@ RAINBOW = False
 
 ## ref
 
-EDITORS = ["vim", "vi", "emacs", "pico", "nano", "ed", "micro"]
+EDITORS = ["nano", "vim", "vi", "emacs", "pico", "ed", "micro"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 
 ## ttbp specific utilities
@@ -354,7 +354,7 @@ def valid_setup():
         if not os.path.exists(os.path.join(config.WWW, SETTINGS.get("pubish dir"))):
             return False
 
-    if not SETTINGS.get("gopher"):
+    if isinstance(SETTINGS.get("gopher"), type(None)):
         return False
 
     return True
@@ -388,42 +388,79 @@ def setup():
 
     global SETTINGS
 
+    menuOptions = []
+    settingList = sorted(list(SETTINGS))
+
+    for setting in settingList:
+        menuOptions.append(setting + ": \t" + str(SETTINGS.get(setting)))
+    util.print_menu(menuOptions, RAINBOW)
+
+    try:
+        choice = raw_input("\npick a setting to change (or type 'q' to exit): ")
+    except KeyboardInterrupt:
+        redraw(EJECT)
+        return SETTINGS
+    """
     print("\n\ttext editor:\t" +SETTINGS.get("editor"))
     if core.publishing():
         print("\tpublish dir:\t" +os.path.join(config.PUBLIC, str(SETTINGS.get("publish dir"))))
     print("\tpublishing:\t"+str(SETTINGS.get("publishing")))
     print("\tgopher:\t"+str(SETTINGS.get('gopher')))
     print("")
+    """
+
+    if choice in QUITS:
+        redraw()
+        return SETTINGS
 
     # editor selection
-    SETTINGS.update({"editor": select_editor()})
-    redraw("text editor set to: "+SETTINGS["editor"])
+    if settingList[int(choice)] == "editor":
+        SETTINGS.update({"editor": select_editor()})
+        redraw("text editor set to: "+SETTINGS["editor"])
+        save_settings()
+        return setup()
 
     # publishing selection
-    SETTINGS.update({"publishing":select_publishing()})
-    core.reload_ttbprc(SETTINGS)
-    update_publishing()
-    redraw("blog publishing: "+str(core.publishing()))
+    elif settingList[int(choice)] == "publishing":
+        SETTINGS.update({"publishing":select_publishing()})
+        core.reload_ttbprc(SETTINGS)
+        #update_publishing()
+        #print("blog publishing: "+str(core.publishing()))
+        redraw("publishing set to "+str(SETTINGS.get("publishing")))
+        save_settings()
+        return setup()
 
-    if core.publishing():
-        print("publish directory: ~"+config.USER+"/public_html/"+SETTINGS.get("publish dir"))
+    # publish dir selection
+    elif settingList[int(choice)] == "publish dir":
+        update_publishing()
+        redraw("publishing your entries to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html")
+        save_settings()
+        return setup()
 
     # gopher opt-in
-    SETTINGS.update({'gopher': gopher.select_gopher()})
-    #redraw('opting into gopher: ' + str(SETTINGS['gopher']))
-    # TODO for now i'm hardcoding where people's gopher stuff is generated. if
-    # there is demand for this to be configurable we can expose that.
-    gopher.setup_gopher('feels')
-
-    # save settings
-    ttbprc = open(config.TTBPRC, "w")
-    ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
-    ttbprc.close()
+    elif settingList[int(choice)] == "gopher":
+        SETTINGS.update({'gopher': gopher.select_gopher()})
+        #redraw('opting into gopher: ' + str(SETTINGS['gopher']))
+        # TODO for now i'm hardcoding where people's gopher stuff is generated. if
+        # there is demand for this to be configurable we can expose that.
+        gopher.setup_gopher('feels')
+        redraw("gopher publishing set to "+str(SETTINGS.get("gopher")))
+        save_settings()
+        return setup()
 
     raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     redraw()
 
     return SETTINGS
+
+def save_settings():
+    """
+    Save current settings.
+    """
+
+    ttbprc = open(config.TTBPRC, "w")
+    ttbprc.write(json.dumps(SETTINGS, sort_keys=True, indent=2, separators=(',',':')))
+    ttbprc.close()
 
 ## menus
 
@@ -479,11 +516,7 @@ def main_menu():
         graffiti_handler()
     elif choice == '5':
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
-        try:
-            core.load(setup()) # reload settings to core
-        except KeyboardInterrupt():
-            redraw(EJECT)
-        redraw()
+        core.load(setup()) # reload settings to core
     elif choice == '6':
         redraw("you're about to send mail to ~endorphant about ttbp")
         feedback_menu()
@@ -722,7 +755,7 @@ editor.
 
     if SETTINGS.get('gopher'):
         gopher.publish_gopher('feels', core.get_files())
-        left += "also posted to your ~/public_gopher!"
+        left += " also posted to your ~/public_gopher!\n"
     redraw(left + " thanks for sharing your feels!")
 
     return
@@ -882,13 +915,14 @@ def select_editor():
     setup helper for editor selection
     '''
 
+    print("")
+    print("your current editor is: "+SETTINGS.get("editor"))
     util.print_menu(EDITORS, RAINBOW)
-    choice = util.list_select(EDITORS, "pick your favorite text editor: ")
+    choice = util.list_select(EDITORS, "pick your favorite text editor, or type 'q' to go back: ")
 
     if choice is False:
-        redraw("please pick a text editor!")
-        select_editor()
-
+        # if selection is canceled, return either previously set editor or default
+        return SETTINGS.get("editor", EDITORS[0])
     return EDITORS[int(choice)]
 
 def select_publish_dir():
