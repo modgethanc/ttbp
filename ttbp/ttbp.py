@@ -443,7 +443,8 @@ def setup():
         #redraw('opting into gopher: ' + str(SETTINGS['gopher']))
         # TODO for now i'm hardcoding where people's gopher stuff is generated. if
         # there is demand for this to be configurable we can expose that.
-        gopher.setup_gopher('feels')
+        if SETTINGS.get("gopher"):
+            gopher.setup_gopher('feels')
         redraw("gopher publishing set to "+str(SETTINGS.get("gopher")))
         save_settings()
         return setup()
@@ -1167,8 +1168,11 @@ def update_version():
 
             """)
             SETTINGS.update({'gopher': gopher.select_gopher()})
-            print("opting into gopher: " + str(SETTINGS['gopher']))
-            gopher.setup_gopher('feels')
+            if SETTINGS.get('gopher'):
+                print("opting into gopher: " + str(SETTINGS['gopher']))
+                gopher.setup_gopher('feels')
+            else:
+                print("okay, passing on gopher for now. this option is available in settings if you change\nyour mind!")
 
     # increment user versionfile
     open(versionFile, "w").write(__version__)
@@ -1218,6 +1222,7 @@ version 0.9.3 features:
         """.lstrip())
     #if userVersion[0:5] < "0.10.1":
     # todo: write a better updating function
+'''
     if 1:
         # version 0.10.1 patch notes
         print("""
@@ -1226,8 +1231,10 @@ version 0.9.3 features:
         * thanks to help from ~vilmibm, ttbp now supports publishing to gopher!
         * if you enable gopher publishing, feels will automatically publish to
             gopher://tilde.town/1/~{user}/feels
+        * if you don't know what gopher is, it's fine to opt-out; ask around on
+            irc if you'd like to learn more!
+        * the settings menu has been reworked to be less clunky
         """.lstrip())
-'''
 
 #####
 
