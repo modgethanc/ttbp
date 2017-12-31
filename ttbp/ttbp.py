@@ -1245,7 +1245,7 @@ something strange happened to you during this update.
 
     confirm = ""
 
-    while confirm != "x":
+    while confirm not in ("x", "<x>", "X", "<X>"):
         confirm = raw_input("\nplease type <x> when you've finished reading about the updates! ")
 
     open(versionFile, "w").write(__version__)
