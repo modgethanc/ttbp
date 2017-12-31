@@ -233,9 +233,9 @@ def check_init():
         '''
         if not updated():
             update_version()
+        else:
+            raw_input("press <enter> to explore your feels.\n\n")
 
-        ## when ready, enter main program and load core engine
-        raw_input("press <enter> to explore your feels.\n\n")
         core.load(SETTINGS)
 
         return ""
@@ -1242,6 +1242,11 @@ something strange happened to you during this update.
     if int(userVersion.split(".")[2]) < 2:
         # version 0.10.2 patch notes
         print(config.UPDATES["0.10.2"])
+
+    confirm = ""
+
+    while confirm != "x":
+        confirm = raw_input("\nplease type <x> when you've finished reading about the updates! ")
 
     open(versionFile, "w").write(__version__)
 
