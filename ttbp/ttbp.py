@@ -49,17 +49,13 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.10.1"
+__version__ = "0.10.2"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
 
 ## user globals
-SETTINGS = {
-        "editor": "none",
-        "publish dir": False,
-        "gopher": False,
-    }
+SETTINGS = { }
 
 ## ui globals
 BANNER = util.attach_rainbow() + config.BANNER + util.attach_reset()
@@ -74,6 +70,12 @@ RAINBOW = False
 
 EDITORS = ["nano", "vim", "vi", "emacs", "pico", "ed", "micro"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
+DEFAULT_SETTINGS = {
+        "editor": "nano",
+        "publish dir": None,
+        "gopher": False,
+        "publishing": False
+    }
 
 ## ttbp specific utilities
 
@@ -157,9 +159,9 @@ def redraw(leftover=""):
     print(BANNER)
     print(SPACER)
     if leftover:
-        print("> "+leftover+"\n")
+        print("> {leftover}\n".format(leftover=leftover))
 
-def start():
+def main():
     '''
     main engine head
 
@@ -216,26 +218,19 @@ def check_init():
 
     print("\n\n")
     if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
-        print(chatter.say("greet")+", "+config.USER+".\n")
-
-        '''
-        ## ttbprc validation
-        while not os.path.isfile(config.TTBPRC):
-            setup_repair()
-        try:
-            SETTINGS = json.load(open(config.TTBPRC))
-        except ValueError:
-            setup_repair()
-        '''
+        print("{greeting}, {user}".format(greeting=chatter.say("greet"),
+            user=config.USER))
 
         ## ttbp env validation
         if not valid_setup():
             setup_repair()
 
         ## version checker
+        '''
         mismatch = build_mismatch()
         if mismatch is not False:
             switch_build(mismatch)
+        '''
         if not updated():
             update_version()
 
@@ -331,7 +326,7 @@ def gen_header():
 
 def valid_setup():
     '''
-    Checks to see if user has a sane ttbp environment.
+    Checks to see if user has a valid ttbp environment.
     '''
 
     global SETTINGS
@@ -344,18 +339,23 @@ def valid_setup():
     except ValueError:
         return False
 
+    core.load(SETTINGS)
+
+    for option in iter(DEFAULT_SETTINGS):
+        if option != "publish dir" and SETTINGS.get(option, None) is None:
+            return False
+
     if core.publishing():
-        if not SETTINGS.get("publish dir"):
+        if SETTINGS.get("publish dir", None) is None:
+            print("CONFIG ERROR! publishing is enabled but no directory is set")
             return False
 
-        if not os.path.exists(config.WWW):
-            return False
+        if (not os.path.exists(config.WWW) or 
+                not os.path.exists(os.path.join(config.PUBLIC,
+                    SETTINGS.get("publish dir")))):
+            print("something's weird with your publishing directories. let's try rebuilding them!")
 
-        if not os.path.exists(os.path.join(config.WWW, SETTINGS.get("pubish dir"))):
-            return False
-
-    if isinstance(SETTINGS.get("gopher"), type(None)):
-        return False
+            update_publishing()
 
     return True
 
@@ -367,12 +367,49 @@ def setup_repair():
     * handles ^c
     '''
 
+    global SETTINGS
+
     print("\nyour ttbp configuration doesn't look right. let's make you a fresh copy.\n\n")
+
+    settings_map = {
+            "editor": select_editor,
+            "publishing": select_publishing,
+            "publish dir": select_publish_dir,
+            "gopher": gopher.select_gopher
+            }
+
+    for option in iter(settings_map):
+        if SETTINGS.get(option, None) is None:
+            SETTINGS.update({option: "NOT SET"})
+            SETTINGS.update({option: settings_map[option]()})
+
+    update_publishing()
+    core.reload_ttbprc(SETTINGS)
+    save_settings()
+    '''
+    if SETTINGS.get("editor", None) is None:
+        SETTINGS.update({"editor": "not set"})
+        SETTINGS.update({"editor": select_editor()})
+
+    if SETTINGS.get("publishing", None) is None:
+        SETTINGS.update({"publishing": "not set"})
+        SETTINGS.update({"publishing": select_publishing()})
+    '''
+
+    '''
+    SETTINGS = {
+            "editor": "none",
+            "publish dir": False,
+            "publishing": False,
+            "gopher": False,
+        }
+
     try:
         setup()
     except KeyboardInterrupt:
         print("\n\nsorry, trying again.\n\n")
         setup()
+    '''
 
 def setup():
     '''
@@ -400,14 +437,6 @@ def setup():
     except KeyboardInterrupt:
         redraw(EJECT)
         return SETTINGS
-    """
-    print("\n\ttext editor:\t" +SETTINGS.get("editor"))
-    if core.publishing():
-        print("\tpublish dir:\t" +os.path.join(config.PUBLIC, str(SETTINGS.get("publish dir"))))
-    print("\tpublishing:\t"+str(SETTINGS.get("publishing")))
-    print("\tgopher:\t"+str(SETTINGS.get('gopher')))
-    print("")
-    """
 
     if choice in QUITS:
         redraw()
@@ -416,7 +445,7 @@ def setup():
     # editor selection
     if settingList[int(choice)] == "editor":
         SETTINGS.update({"editor": select_editor()})
-        redraw("text editor set to: "+SETTINGS["editor"])
+        redraw("text editor set to: {editor}".format(editor=SETTINGS["editor"]))
         save_settings()
         return setup()
 
@@ -424,32 +453,35 @@ def setup():
     elif settingList[int(choice)] == "publishing":
         SETTINGS.update({"publishing":select_publishing()})
         core.reload_ttbprc(SETTINGS)
-        #update_publishing()
-        #print("blog publishing: "+str(core.publishing()))
-        redraw("publishing set to "+str(SETTINGS.get("publishing")))
+        update_publishing()
+        redraw("publishing set to {publishing}".format(publishing=SETTINGS.get("publishing")))
         save_settings()
         return setup()
 
     # publish dir selection
     elif settingList[int(choice)] == "publish dir":
-        update_publishing()
-        redraw("publishing your entries to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html")
+        publish_dir = select_publish_dir()
+        SETTINGS.update({"publish dir": publish_dir})
+        #update_publishing()
+
+        if publish_dir is None:
+            redraw("sorry, i can't set a publish directory for you if you don't have html publishing enabled. please enable publishing to continue.")
+        else:
+            redraw("publishing your entries to {url}/index.html".format(
+                url="/".join([config.LIVE+config.USER,
+                        str(SETTINGS.get("publish dir"))])))
         save_settings()
         return setup()
 
     # gopher opt-in
     elif settingList[int(choice)] == "gopher":
         SETTINGS.update({'gopher': gopher.select_gopher()})
-        #redraw('opting into gopher: ' + str(SETTINGS['gopher']))
-        # TODO for now i'm hardcoding where people's gopher stuff is generated. if
-        # there is demand for this to be configurable we can expose that.
-        if SETTINGS.get("gopher"):
-            gopher.setup_gopher('feels')
-        redraw("gopher publishing set to "+str(SETTINGS.get("gopher")))
+        redraw('gopher publishing set to: {gopher}'.format(gopher=SETTINGS['gopher']))
+        update_gopher()
         save_settings()
         return setup()
 
-    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    raw_input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
     redraw()
 
     return SETTINGS
@@ -507,7 +539,9 @@ def main_menu():
             view_feels(config.USER)
     elif choice == '2':
         users = core.find_ttbps()
-        prompt = "the following "+p.no("user", len(users))+" "+p.plural("is", len(users))+" recording feels on ttbp:"
+        prompt = "the following {usercount} {are} recording feels on ttbp:".format(
+                usercount=p.no("user", len(users)),
+                are=p.plural("is", len(users)))
         redraw(prompt)
         view_neighbors(users, prompt)
     elif choice == '3':
@@ -549,11 +583,11 @@ def feedback_menu():
     if choice in ['0', '1', '2', '3']:
         cat = SUBJECTS[int(choice)]
         entered = raw_input("""
-composing a """+cat+""" to ~endorphant.
+composing a {mail_category} to ~endorphant.
 
 press <enter> to open an external text editor. mail will be sent once you save and quit.
 
-""")
+""".format(mail_category=cat))
         redraw(send_feedback(entered, cat))
         return
     else:
@@ -633,7 +667,8 @@ def view_neighbors(users, prompt):
         if len(user) < 7:
             userpad = "\t"
 
-        userList.append(["\t~"+user+userpad+"\t("+ago+")"+urlpad+"\t"+url, last, user])
+        userList.append(["\t~{user}{userpad}\t({ago}){urlpad}\t{url}".format(user=user,
+            userpad=userpad, ago=ago, urlpad=urlpad, url=url), last, user])
 
     # sort user by most recent entry for display
     userList.sort(key = lambda userdata:userdata[1])
@@ -647,7 +682,7 @@ def view_neighbors(users, prompt):
     choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ", 15, RAINBOW, prompt)
 
     if choice is not False:
-        redraw("~"+userIndex[choice]+"'s recorded feels, listed by date: \n")
+        redraw("~{user}'s recorded feels, listed by date: \n".format(user=userIndex[choice]))
         view_feels(userIndex[choice])
         view_neighbors(users, prompt)
     else:
@@ -728,7 +763,7 @@ def write_entry(entry=os.path.join(config.USER_DATA, "test.txt")):
     '''
 
     entered = raw_input("""
-feels will be recorded for today, """+time.strftime("%d %B %Y")+""".
+feels will be recorded for today, {today}.
 
 if you've already started recording feels for this day, you
 can pick up where you left off.
@@ -739,7 +774,7 @@ these.
 press <enter> to begin recording your feels in your chosen text
 editor.
 
-""")
+""".format(today=time.strftime("%d %B %Y")))
 
     if entered:
         entryFile = open(entry, "a")
@@ -752,7 +787,10 @@ editor.
     if core.publishing():
         core.load_files()
         core.write("index.html")
-        left = "posted to "+config.LIVE+config.USER+"/"+str(SETTINGS.get("publish dir"))+"/index.html\n\n>"
+        left = "posted to {url}/index.html\n\n>".format(
+            url="/".join(
+                [config.LIVE+config.USER,
+                    str(SETTINGS.get("publish dir"))]))
 
     if SETTINGS.get('gopher'):
         gopher.publish_gopher('feels', core.get_files())
@@ -810,16 +848,12 @@ def list_entries(metas, entries, prompt):
     displays a list of entries for reading selection
     '''
 
-    '''
-    util.print_menu(entries, RAINBOW)
-    choice = util.list_select(entries, "pick an entry from the list, or type 'back' or 'q' to go back: ")
-    '''
-
     choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW, prompt)
 
     if choice is not False:
 
-        redraw("now reading ~"+metas[choice][5]+"'s feels on "+metas[choice][4]+"\n> press <q> to return to feels list.\n\n")
+        redraw("now reading ~{user}'s feels on {date}\n> press <q> to return to feels list.\n\n".format(user=metas[choice][5],
+                    date=metas[choice][4]))
 
         show_entry(metas[choice][0])
         redraw(prompt)
@@ -851,7 +885,7 @@ def view_feed():
         filenames = os.listdir(entryDir)
 
         for entry in filenames:
-            ## hardcoded bs
+            ## hardcoded display cutoff at 30 days
             if core.valid(entry):
                 year = int(entry[0:4])
                 month = int(entry[4:6])
@@ -860,7 +894,6 @@ def view_feed():
                 displayCutoff = datetime.date.today() - datetime.timedelta(days=30)
 
                 if datecheck > displayCutoff:
-                #if re.search("2017", entry):
                     feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
@@ -873,7 +906,9 @@ def view_feed():
         if len(entry[5]) < 8:
             pad = "\t"
 
-        entries.append("~"+entry[5]+pad+"\ton "+entry[3]+" ("+p.no("word", entry[2])+") ")
+        entries.append("~{user}{pad}\ton {date} ({wordcount})".format(
+                user=entry[5], pad=pad, date=entry[3], 
+                wordcount=p.no("word", entry[2])))
 
     list_entries(metas, entries, "most recent global entries:")
 
@@ -887,7 +922,7 @@ def graffiti_handler():
     '''
 
     if os.path.isfile(config.WALL_LOCK):
-        redraw("sorry, "+chatter.say("friend")+", but someone's there right now. try again in a few!")
+        redraw("sorry, {friend}, but someone's there right now. try again in a few!".format(friend=chatter.say("friend")))
     else:
         subprocess.call(["touch", config.WALL_LOCK])
         redraw()
@@ -916,7 +951,7 @@ def select_editor():
     setup helper for editor selection
     '''
 
-    print("")
+    print("\nTEXT EDITOR SELECTION")
     print("your current editor is: "+SETTINGS.get("editor"))
     util.print_menu(EDITORS, RAINBOW)
     choice = util.list_select(EDITORS, "pick your favorite text editor, or type 'q' to go back: ")
@@ -931,8 +966,13 @@ def select_publish_dir():
     setup helper for publish directory selection
     '''
 
+    if not core.publishing():
+        return None
+
     current = SETTINGS.get("publish dir")
     republish = False
+
+    print("\nUPDATING HTML PATH")
 
     if current:
         print("\ncurrent publish dir:\t"+os.path.join(config.PUBLIC, SETTINGS["publish dir"]))
@@ -966,6 +1006,9 @@ def select_publishing():
     '''
 
     publish = util.input_yn("""\
+
+SETTING UP PUBLISHING
+
 do you want to publish your feels online?
 
 if yes, your feels will be published to a directory of your choice in
@@ -1035,6 +1078,16 @@ def make_publish_dir(dir):
 
     print("\n\tpublishing to "+config.LIVE+config.USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
+def update_gopher():
+    '''
+    helper for toggling gopher settings
+    '''
+    # TODO for now i'm hardcoding where people's gopher stuff is generated. if
+    # there is demand for this to be configurable we can expose that.
+    if SETTINGS.get("gopher"):
+        gopher.setup_gopher('feels')
+    redraw("gopher publishing set to {gopher}".format(gopher=SETTINGS.get("gopher")))
+
 ##### PATCHING UTILITIES
 
 def build_mismatch():
@@ -1052,6 +1105,7 @@ def build_mismatch():
 
     return ver
 
+"""
 def switch_build(ver):
     '''
     switches user between beta and stable builds
@@ -1074,6 +1128,7 @@ def switch_build(ver):
     open(versionFile, "w").write(ver)
     time.sleep(1)
     #print("\nall good!\n")
+"""
 
 def updated():
     '''
@@ -1093,7 +1148,8 @@ def updated():
 
 def update_version():
     '''
-    updates user to current version
+    updates user to current version, printing relevant release notes and
+    stepping through new features.
     '''
 
     global SETTINGS
@@ -1174,14 +1230,12 @@ def update_version():
             else:
                 print("okay, passing on gopher for now. this option is available in settings if you change\nyour mind!")
 
-    # increment user versionfile
-    open(versionFile, "w").write(__version__)
     print("""
 you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
-somehing strange happened to you during this update.
+something strange happened to you during this update.
 """)
 
-    '''
+    ''' LEGACY UPDATE MESSAGES HERE
     # TODO these conditionals will need to change if we increment the Y level
     # to 10.
 
@@ -1223,7 +1277,7 @@ version 0.9.3 features:
     #if userVersion[0:5] < "0.10.1":
     # todo: write a better updating function
 '''
-    if 1:
+    if int(userVersion.split(".")[1]) < 10:
         # version 0.10.1 patch notes
         print("""
 
@@ -1234,10 +1288,30 @@ version 0.9.3 features:
         * if you don't know what gopher is, it's fine to opt-out; ask around on
             irc if you'd like to learn more!
         * the settings menu has been reworked to be less clunky
-        """.lstrip())
+        """)
+
+    if int(userVersion.split(".")[2]) < 2:
+        # version 0.10.2 patch notes
+        print("""
+
+~[version 0.10.2 update]~
+
+    * some errors in selecting and validating settings and creating publishing
+        directories have been corrected
+    * please send mail to ~endorphant or ask for help on IRC if you're still
+        having issues with getting your settings sorted out!
+
+    general PSA:
+        * join #ttbp on the local irc network for help and discussion about the
+            feels engine!
+        * ~login created centralfeels, which is an opt-in collection of
+            html-published feels; create a blank file called '.centralfeels' in
+            your home directory if you'd like to be included!
+            """)
+
+    open(versionFile, "w").write(__version__)
 
 #####
 
 if __name__ == '__main__':
-    start()
-    #print("down for maintenance, brb")
+    sys.exit(main())

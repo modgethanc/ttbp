@@ -10,6 +10,9 @@ from . import util
 from .core import parse_date
 
 GOPHER_PROMPT = """
+
+GOPHER SETUP
+
 gopher is a pre-web technology that is text-oriented and primarily used to
 share folders of your files with the world.
 

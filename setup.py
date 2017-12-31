@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='ttbp',
-    version='0.10.1',
+    version='0.10.2',
     description='command line social blogging tool used on tilde.town',
     url='https://github.com/modgethanc/ttbp',
     author='~endorphant',
@@ -24,8 +24,8 @@ setup(
     include_package_data = True,
     entry_points = {
           'console_scripts': [
-              'feels = ttbp.ttbp:start',
-              'ttbp = ttbp.ttbp:start',
+              'feels = ttbp.ttbp:main',
+              'ttbp = ttbp.ttbp:main',
           ]
     },
 )
