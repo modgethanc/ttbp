@@ -70,13 +70,6 @@ def publish_gopher(gopher_path, entry_filenames):
         for entry_filename in entry_filenames:
             filename = os.path.basename(entry_filename)
 
-            ''' old file copying bit
-            with open(os.path.join(ttbp_gopher, filename), 'w') as gopher_entry:
-                with open(entry_filename, 'r') as source_entry:
-                    gopher_entry.write(source_entry.read())
-            '''
-            # symlink instead
-
             gopher_entry_symlink = os.path.join(ttbp_gopher, os.path.basename(entry_filename))
             if not os.path.exists(gopher_entry_symlink):
                 subprocess.call(["ln", "-s", entry_filename, gopher_entry_symlink])
@@ -85,7 +78,6 @@ def publish_gopher(gopher_path, entry_filenames):
             gophermap.write('0{file_label}\t{filename}\n'.format(
                 file_label=label,
                 filename=filename))
-
 
 def setup_gopher(gopher_path):
     """Given a path relative to ~/public_gopher, this function:
@@ -97,11 +89,16 @@ def setup_gopher(gopher_path):
     function.
     """
     public_gopher = os.path.expanduser('~/public_gopher')
+
     if not os.path.isdir(public_gopher):
+        """
         print("\n\tERROR: you don't seem to have gopher set up (no public_gopher directory)")
         return
+        """
+        os.makedirs(public_gopher)
 
     ttbp_gopher = os.path.join(public_gopher, gopher_path)
+
     if os.path.isdir(ttbp_gopher):
         print("\n\tERROR: gopher path is already set up. quitting so we don't overwrite anything.")
         return

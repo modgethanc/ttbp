@@ -1014,13 +1014,20 @@ please enter\
     return publish
 
 def unpublish():
+    '''remove all published entries in html and gopher.
     '''
-    remove user's published directory, if it exists. this should only remove the symlink in public_html.
-    '''
+
+    global SETTINGS
+
     directory = SETTINGS.get("publish dir")
+
     if directory:
         publishDir = os.path.join(config.PUBLIC, directory)
         subprocess.call(["rm", publishDir])
+
+    if SETTINGS.get("gopher"):
+        SETTINGS.update({"gopher": False})
+        subprocess.call(["rm", config.GOPHER_PATH])
 
 def update_publishing():
     '''
