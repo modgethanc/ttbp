@@ -84,3 +84,49 @@ __________________________________________________________
 |                                              ver 0.10.2  |
 |__________________________________________________________|
 '''.lstrip()
+
+## update announcements
+
+UPDATES = {
+        "0.9.0": """
+ver. 0.9.0 features:
+    * browsing other people's feels from neighbor view
+    * documentation browser""",
+        "0.9.1": """
+ver 0.9.1 features:
+    * graffiti wall """,
+        "0.9.2": """
+ver 0.9.2 features:
+    * paginated entry view
+    * improved entry listing performance so it should
+      be less sluggish (for now)
+    * expanded menu for viewing your own feels (further features to be implemented) """,
+        "0.9.3": """
+version 0.9.3 features:
+        * ttbp is now packaged, making it easier to contribute to.
+        * things should otherwise be the same!
+        * check out https://github.com/modgethanc/ttbp if you'd like to contribute.
+        * takes advantage of new /var/global """,
+        "0.10.1": """
+~[version 0.10.1 features]~
+        * thanks to help from ~vilmibm, ttbp now supports publishing to gopher!
+        * if you enable gopher publishing, feels will automatically publish to
+            gopher://tilde.town/1/~{user}/feels
+        * if you don't know what gopher is, it's fine to opt-out; ask around on
+            irc if you'd like to learn more!
+        * the settings menu has been reworked to be less clunky""",
+        "0.10.2": """
+~[version 0.10.2 update]~
+
+    * some errors in selecting and validating settings and creating publishing
+        directories have been corrected
+    * please send mail to ~endorphant or ask for help on IRC if you're still
+        having issues with getting your settings sorted out!
+
+    general PSA:
+        * join #ttbp on the local irc network for help and discussion about the
+            feels engine!
+        * ~login created centralfeels, which is an opt-in collection of
+            html-published feels; create a blank file called '.centralfeels' in
+            your home directory if you'd like to be included!""",
+        }

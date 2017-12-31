@@ -1090,6 +1090,7 @@ def update_gopher():
 
 ##### PATCHING UTILITIES
 
+"""
 def build_mismatch():
     '''
     checks to see if user's last run build is the same as this session
@@ -1105,7 +1106,6 @@ def build_mismatch():
 
     return ver
 
-"""
 def switch_build(ver):
     '''
     switches user between beta and stable builds
@@ -1235,79 +1235,13 @@ you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant
 something strange happened to you during this update.
 """)
 
-    ''' LEGACY UPDATE MESSAGES HERE
-    # TODO these conditionals will need to change if we increment the Y level
-    # to 10.
-
-    # show patch notes
-    if userVersion[0:5] < "0.9.0":
-        # version 0.9.0 patch notes:
-        print("""
-ver. 0.9.0 features:
-    * browsing other people's feels from neighbor view
-    * documentation browser
-        """)
-
-    if userVersion[0:5] < "0.9.1":
-        # version 0.9.1 patch notes
-        print("""
-ver 0.9.1 features:
-    * graffiti wall
-        """)
-
-    if userVersion[0:5] < "0.9.2":
-        # version 0.9.2 patch notes
-        print("""
-ver 0.9.2 features:
-    * paginated entry view
-    * improved entry listing performance so it should
-      be less sluggish (for now)
-    * expanded menu for viewing your own feels (further
-      features to be implemented)
-        """)
-    if userVersion[0:5] < "0.9.3":
-        # version 0.9.3 patch notes
-        print("""
-version 0.9.3 features:
-        * ttbp is now packaged, making it easier to contribute to.
-        * things should otherwise be the same!
-        * check out https://github.com/modgethanc/ttbp if you'd like to contribute.
-        * takes advantage of new /var/global
-        """.lstrip())
-    #if userVersion[0:5] < "0.10.1":
-    # todo: write a better updating function
-'''
     if int(userVersion.split(".")[1]) < 10:
         # version 0.10.1 patch notes
-        print("""
-
-~[version 0.10.1 features]~
-        * thanks to help from ~vilmibm, ttbp now supports publishing to gopher!
-        * if you enable gopher publishing, feels will automatically publish to
-            gopher://tilde.town/1/~{user}/feels
-        * if you don't know what gopher is, it's fine to opt-out; ask around on
-            irc if you'd like to learn more!
-        * the settings menu has been reworked to be less clunky
-        """)
+        print(config.UPDATES["0.10.1"])
 
     if int(userVersion.split(".")[2]) < 2:
         # version 0.10.2 patch notes
-        print("""
-
-~[version 0.10.2 update]~
-
-    * some errors in selecting and validating settings and creating publishing
-        directories have been corrected
-    * please send mail to ~endorphant or ask for help on IRC if you're still
-        having issues with getting your settings sorted out!
-
-    general PSA:
-        * join #ttbp on the local irc network for help and discussion about the
-            feels engine!
-        * ~login created centralfeels, which is an opt-in collection of
-            html-published feels; create a blank file called '.centralfeels' in
-            your home directory if you'd like to be included!
-            """)
+        print(config.UPDATES["0.10.2"])
 
     open(versionFile, "w").write(__version__)
 
