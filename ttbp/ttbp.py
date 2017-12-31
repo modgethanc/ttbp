@@ -54,9 +54,6 @@ __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
 
-## user globals
-SETTINGS = { }
-
 ## ui globals
 BANNER = util.attach_rainbow() + config.BANNER + util.attach_reset()
 SPACER = "\n"
@@ -67,7 +64,6 @@ EJECT = "eject button fired! going home now."
 RAINBOW = False
 
 ## ref
-
 EDITORS = ["nano", "vim", "vi", "emacs", "pico", "ed", "micro"]
 SUBJECTS = ["help request", "bug report", "feature suggestion", "general comment"]
 DEFAULT_SETTINGS = {
@@ -76,6 +72,15 @@ DEFAULT_SETTINGS = {
         "gopher": False,
         "publishing": False
     }
+
+## user globals
+SETTINGS = {
+        "editor": "nano",
+        "publish dir": None,
+        "gopher": False,
+        "publishing": False
+        }
+
 
 ## ttbp specific utilities
 
@@ -224,14 +229,7 @@ def check_init():
         ## ttbp env validation
         if not valid_setup():
             setup_repair()
-
-        ## version checker
-        '''
-        mismatch = build_mismatch()
-        if mismatch is not False:
-            switch_build(mismatch)
-        '''
-        if not updated():
+        elif not updated():
             update_version()
         else:
             raw_input("press <enter> to explore your feels.\n\n")
@@ -254,11 +252,16 @@ def init():
         raw_input("""
 i don't recognize you, stranger. let's make friends.
 
-press <enter> to begin, or <ctrl-c> to get out of here.
-        """)
+press <enter> to begin, or <ctrl-c> to get out of here.""")
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
         quit()
+
+    print("\nokay! gimme a second to get you set up!")
+
+    time.sleep(1)
+    print("...")
+    time.sleep(1)
 
     ## record user in source list
     users = open(config.USERFILE, 'a')
@@ -268,6 +271,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.
     #subprocess.call(['chmod', 'a+w', config.USERFILE])
 
     ## make .ttbp directory structure
+    print("\ngenerating feels at {path}...".format(path=config.PATH).rstrip())
     subprocess.call(["mkdir", config.PATH])
     subprocess.call(["mkdir", config.USER_CONFIG])
     subprocess.call(["mkdir", config.USER_DATA])
@@ -289,10 +293,13 @@ press <enter> to begin, or <ctrl-c> to get out of here.
         f.write(config.DEFAULT_STYLE)
 
     ## run user-interactive setup and load core engine
+    time.sleep(1)
+    print("done setting up feels!")
+    print("\nthese are the default settings. you can change any of them now, or change them later at any time!!")
     setup()
     core.load(SETTINGS)
 
-    #raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
 
 def gen_header():
@@ -369,7 +376,7 @@ def setup_repair():
 
     global SETTINGS
 
-    print("\nyour ttbp configuration doesn't look right. let's make you a fresh copy.\n\n")
+    print("\nyour ttbp configuration doesn't look right. let me try to fix it....\n\n")
 
     settings_map = {
             "editor": select_editor,
@@ -386,30 +393,10 @@ def setup_repair():
     update_publishing()
     core.reload_ttbprc(SETTINGS)
     save_settings()
-    '''
-    if SETTINGS.get("editor", None) is None:
-        SETTINGS.update({"editor": "not set"})
-        SETTINGS.update({"editor": select_editor()})
 
-    if SETTINGS.get("publishing", None) is None:
-        SETTINGS.update({"publishing": "not set"})
-        SETTINGS.update({"publishing": select_publishing()})
-    '''
-
-    '''
-    SETTINGS = {
-            "editor": "none",
-            "publish dir": False,
-            "publishing": False,
-            "gopher": False,
-        }
-
-    try:
-        setup()
-    except KeyboardInterrupt:
-        print("\n\nsorry, trying again.\n\n")
-        setup()
-    '''
+    print("...")
+    time.sleep(1)
+    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
 
 def setup():
     '''
@@ -1089,46 +1076,6 @@ def update_gopher():
     redraw("gopher publishing set to {gopher}".format(gopher=SETTINGS.get("gopher")))
 
 ##### PATCHING UTILITIES
-
-"""
-def build_mismatch():
-    '''
-    checks to see if user's last run build is the same as this session
-    '''
-
-    versionFile = os.path.join(config.PATH, "version")
-    if not os.path.exists(versionFile):
-        return False
-
-    ver = open(versionFile, "r").read().rstrip()
-    if ver[-1] == __version__[-1]:
-        return False
-
-    return ver
-
-def switch_build(ver):
-    '''
-    switches user between beta and stable builds
-    '''
-
-    if __version__[-1] == 'b':
-        build = "beta"
-        ver += "b"
-    else:
-        build = "stable"
-        ver = ver[0:-1]
-
-    # write user versionfile
-    '''
-    print("\nswitching you over to the "+build+" version...\n")
-    time.sleep(1)
-    print("...")
-    '''
-    versionFile = os.path.join(config.PATH, "version")
-    open(versionFile, "w").write(ver)
-    time.sleep(1)
-    #print("\nall good!\n")
-"""
 
 def updated():
     '''
