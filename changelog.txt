@@ -23,6 +23,15 @@ TO-DO:
 ------
 
 CHANGELOG:
+ver 0.10.2
+  -fixing a bunch of things that broke in settings update
+	-announcing centralfeels
+	-general code cleanup pass
+
+ver 0.10.1
+  -gopher support (with help from ~vilmibm)
+	-fixed settings menu
+
 ver 0.9.3 (by ~vilmibm)
 	-packaging
 	-easier to contribute to

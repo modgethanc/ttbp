@@ -19,7 +19,9 @@ If you do not have the skills to contribute to the coding end, I still welcome
 your feedback about your experience using ttbp; please feel free to contact me
 with anything from vague appreciation to gripes about the interface! I'm
 interested in understanding how you feel about this program, and any information
-you give me will help me build a smoother tool for everyone!
+you give me will help me build a smoother tool for everyone! The ["feedback
+wanted"](https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A"feedback+wanted")
+tag is a great place to start.
 
 ## Contacting Me
 
