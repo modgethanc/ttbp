@@ -49,7 +49,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.10.2"
+__version__ = "0.10.3"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -70,7 +70,8 @@ DEFAULT_SETTINGS = {
         "editor": "nano",
         "publish dir": None,
         "gopher": False,
-        "publishing": False
+        "publishing": False,
+        "rainbows": False,
     }
 
 ## user globals
@@ -78,7 +79,8 @@ SETTINGS = {
         "editor": "nano",
         "publish dir": None,
         "gopher": False,
-        "publishing": False
+        "publishing": False,
+        "rainbows": False
         }
 
 
@@ -102,7 +104,7 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
         total = total - 1
 
     if total < 2:
-        util.print_menu(options, RAINBOW)
+        util.print_menu(options, SETTINGS.get("rainbows", False))
         return util.list_select(options, prompt)
 
     else:
@@ -124,7 +126,7 @@ def page_helper(options, prompt, pagify, rainbow, page, total, top):
     y = x + pagify
     optPage = options[x:y]
 
-    util.print_menu(optPage, RAINBOW)
+    util.print_menu(optPage, SETTINGS.get("rainbows", False))
     print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
 
     ans = util.list_select(optPage, prompt)
@@ -227,10 +229,10 @@ def check_init():
             user=config.USER))
 
         ## ttbp env validation
-        if not valid_setup():
+        if not user_up_to_date():
+            update_user_version()
+        elif not valid_setup():
             setup_repair()
-        elif not updated():
-            update_version()
         else:
             raw_input("press <enter> to explore your feels.\n\n")
 
@@ -378,11 +380,14 @@ def setup_repair():
 
     print("\nyour ttbp configuration doesn't look right. let me try to fix it....\n\n")
 
+    time.sleep(1)
+
     settings_map = {
             "editor": select_editor,
             "publishing": select_publishing,
             "publish dir": select_publish_dir,
-            "gopher": gopher.select_gopher
+            "gopher": gopher.select_gopher,
+            "rainbows": toggle_rainbows
             }
 
     for option in iter(settings_map):
@@ -417,7 +422,7 @@ def setup():
 
     for setting in settingList:
         menuOptions.append(setting + ": \t" + str(SETTINGS.get(setting)))
-    util.print_menu(menuOptions, RAINBOW)
+    util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     try:
         choice = raw_input("\npick a setting to change (or type 'q' to exit): ")
@@ -468,6 +473,13 @@ def setup():
         save_settings()
         return setup()
 
+    # rainbow menu selection
+    elif settingList[int(choice)] == "rainbows":
+        SETTINGS.update({"rainbows": toggle_rainbows()})
+        redraw("rainbow menus set to {rainbow}".format(rainbow=SETTINGS.get("rainbows")))
+        save_settings()
+        return setup()
+
     raw_input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
     redraw()
 
@@ -501,7 +513,7 @@ def main_menu():
             "read documentation"]
 
     print("you're at ttbp home. remember, you can always press <ctrl-c> to come back here.\n")
-    util.print_menu(menuOptions, RAINBOW)
+    util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     try:
         choice = raw_input("\ntell me about your feels (or type 'q' to exit): ")
@@ -563,7 +575,7 @@ def feedback_menu():
     * calls feedback writing function
     '''
 
-    util.print_menu(SUBJECTS, RAINBOW)
+    util.print_menu(SUBJECTS, SETTINGS.get("rainbows", False))
     choice = raw_input("\npick a category for your feedback: ")
 
     cat = ""
@@ -592,7 +604,7 @@ def review_menu(intro=""):
             "modify feels publishing"
             ]
 
-    util.print_menu(menuOptions, RAINBOW)
+    util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
 
@@ -666,7 +678,7 @@ def view_neighbors(users, prompt):
         sortedUsers.append(user[0])
         userIndex.append(user[2])
 
-    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ", 15, RAINBOW, prompt)
+    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ", 15, SETTINGS.get("rainbows", False), prompt)
 
     if choice is not False:
         redraw("~{user}'s recorded feels, listed by date: \n".format(user=userIndex[choice]))
@@ -835,7 +847,7 @@ def list_entries(metas, entries, prompt):
     displays a list of entries for reading selection
     '''
 
-    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, RAINBOW, prompt)
+    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
 
     if choice is not False:
 
@@ -932,6 +944,26 @@ your changes by exiting without saving.
 
 ## misc helpers
 
+def toggle_rainbows():
+    """setup helper for rainbow toggling
+    """
+
+    if SETTINGS.get("rainbows", False) is True:
+        status = "enabled"
+    else:
+        status = "disabled"
+
+    print("\nRAINBOW MENU TOGGLING")
+    print("rainbow menus are currently {status}".format(status=status))
+
+    publish = util.input_yn("""\
+
+would you like to have rainbow menus?
+
+please enter\
+""")
+
+    return publish
 
 def select_editor():
     '''
@@ -940,7 +972,7 @@ def select_editor():
 
     print("\nTEXT EDITOR SELECTION")
     print("your current editor is: "+SETTINGS.get("editor"))
-    util.print_menu(EDITORS, RAINBOW)
+    util.print_menu(EDITORS, SETTINGS.get("rainbows", False))
     choice = util.list_select(EDITORS, "pick your favorite text editor, or type 'q' to go back: ")
 
     if choice is False:
@@ -1084,7 +1116,7 @@ def update_gopher():
 
 ##### PATCHING UTILITIES
 
-def updated():
+def user_up_to_date():
     '''
     checks to see if current user is up to the same version as system
     '''
@@ -1100,7 +1132,7 @@ def updated():
 
     return False
 
-def update_version():
+def update_user_version():
     '''
     updates user to current version, printing relevant release notes and
     stepping through new features.
@@ -1119,9 +1151,10 @@ def update_version():
     time.sleep(1)
 
     userVersion = ""
+    (x, y, z) = [0, 0, 0]
 
     if not os.path.isfile(versionFile):
-        # from 0.8.5 to 0.8.6:
+        # updates from 0.8.5 to 0.8.6, before versionfile existed
 
         # change style.css location
         if core.publishing():
@@ -1156,6 +1189,7 @@ def update_version():
 
     else: # version at least 0.8.6
         userVersion = open(versionFile, "r").read().rstrip()
+        x, y, z = [int(num) for num in userVersion.split(".")]
 
         # from 0.8.6
         if userVersion == "0.8.6":
@@ -1168,7 +1202,7 @@ def update_version():
 
         # from earlier than 0.10.1
 
-        if int(userVersion.split(".")[1]) < 10:
+        if y < 10:
             #  select gopher
             print("[ NEW FEATURE ]")
             print("""
@@ -1184,18 +1218,27 @@ def update_version():
             else:
                 print("okay, passing on gopher for now. this option is available in settings if you change\nyour mind!")
 
+        if z < 3 or y < 10:
+            # set rainbow menu for 0.10.3
+            print("[ NEW FEATURE ]")
+            SETTINGS.update({"rainbows": toggle_rainbows()})
+
     print("""
 you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
 something strange happened to you during this update.
 """)
 
-    if int(userVersion.split(".")[1]) < 10:
+    if z < 1 or y < 10:
         # version 0.10.1 patch notes
         print(config.UPDATES["0.10.1"])
 
-    if int(userVersion.split(".")[2]) < 2:
+    if z < 2 or y < 10:
         # version 0.10.2 patch notes
         print(config.UPDATES["0.10.2"])
+
+    if z < 3 or y < 10:
+        # version 0.10.2 patch notes
+        print(config.UPDATES["0.10.3"])
 
     confirm = ""
 
