@@ -42,7 +42,7 @@ import json
 from . import chatter
 from . import config
 
-FEED = os.path.join(config.VAR_WWW, "index.html")
+FEED = os.path.join("/home", "endorphant", "public_html", "ttbp", "index.html")
 SETTINGS = {}
 
 HEADER = ""
