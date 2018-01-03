@@ -820,23 +820,24 @@ def list_nopubs(user):
                 pub = "(nopub)"
             entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-        return set_nopubs(metas, entries, "publishing status of your feels:")
+        return set_nopubs(metas, entries, user, "publishing status of your feels:")
     else:
         redraw("no feels recorded by ~"+user)
 
-def set_nopubs(metas, entries, prompt):
+def set_nopubs(metas, entries, user, prompt):
     """displays a list of entries for pub/nopub toggling.
     """
+
 
     choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
 
     if choice is not False:
         target = os.path.basename(metas[choice][0])
-        core.toggle_nopub(target)
+        action = core.toggle_nopub(target)
         redraw(prompt)
-        print("setting {entry}".format(entry=target))
+        #print("{action} {entry}".format(action=action, entry=target))
 
-        return set_nopubs(metas, entries, prompt)
+        return list_nopubs(user)
 
     else:
         redraw()
