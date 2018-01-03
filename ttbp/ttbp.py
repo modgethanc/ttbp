@@ -713,7 +713,7 @@ def generate_feels_list(user):
         if core.publishing():
             showpub = True
     else:
-        owner = "~"+townie+"'s"
+        owner = "~"+user+"'s"
         entryDir = os.path.join("/home", user, ".ttbp", "entries")
 
     for entry in os.listdir(entryDir):
