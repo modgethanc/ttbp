@@ -83,7 +83,6 @@ SETTINGS = {
         "rainbows": False
         }
 
-
 ## ttbp specific utilities
 
 def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
@@ -103,13 +102,12 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
     if optCount % pagify == 0:
         total = total - 1
 
-    if total < 2:
+    if total < 1:
         util.print_menu(options, SETTINGS.get("rainbows", False))
         return util.list_select(options, prompt)
 
     else:
         return page_helper(options, prompt, pagify, rainbow, page, total, top)
-
 
 def page_helper(options, prompt, pagify, rainbow, page, total, top):
     '''
@@ -190,7 +188,6 @@ just keep in mind that you might lose anything you've started here.\
         print(stop())
         return
 
-    ##
     redraw()
 
     while 1:
@@ -206,16 +203,14 @@ just keep in mind that you might lose anything you've started here.\
 
 def stop():
     '''
-    closer
-
-    * prints ending text
+    returns an exit message.
     '''
 
     return "\n\n\t"+chatter.say("bye")+"\n\n"
 
 def check_init():
     '''
-    user handler
+    user environment validation
 
     * checks for presence of ttbprc
     * checks for last run version
@@ -243,12 +238,8 @@ def check_init():
         return init()
 
 def init():
-    '''
-    new user creation
-
-    * introduces user
-    * calls setup functinos
-    '''
+    """Initializes new user by setting up ~/.ttbp directory and config file.
+    """
 
     try:
         raw_input("""
