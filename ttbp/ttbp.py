@@ -614,7 +614,7 @@ def review_menu(intro=""):
             view_feels(config.USER)
         elif choice == 1:
             redraw("here's your current nopub status:")
-            set_nopubs()
+            set_nopubs(config.USER)
     else:
         redraw()
         return
@@ -691,30 +691,13 @@ def view_neighbors(users, prompt):
 def view_feels(townie):
     '''
     generates a list of all feels by given townie and displays in
-    date order
+    date order; allows selection of one feel to read.
 
-    * calls list_entries() to select feel to read
     '''
 
-    filenames = []
-    showpub = False
+    metas, owner = generate_feels_list(townie)
 
-    if townie == config.USER:
-        entryDir = config.USER_DATA
-        owner = "your"
-        if core.publishing():
-            showpub = True
-    else:
-        owner = "~"+townie+"'s"
-        entryDir = os.path.join("/home", townie, ".ttbp", "entries")
-
-    for entry in os.listdir(entryDir):
-        filenames.append(os.path.join(entryDir, entry))
-    metas = core.meta(filenames)
-    metas.sort(key = lambda entry:entry[4])
-    metas.reverse()
-
-    if len(filenames) > 0:
+    if len(metas) > 0:
         entries = []
         for entry in metas:
             pub = ""
@@ -725,6 +708,30 @@ def view_feels(townie):
         return list_entries(metas, entries, owner+" recorded feels, listed by date: ")
     else:
         redraw("no feels recorded by ~"+townie)
+
+def generate_feels_list(user):
+    """create a list of feels for display from the named user.
+    """
+
+    filenames = []
+    showpub = False
+
+    if user == config.USER:
+        entryDir = config.USER_DATA
+        owner = "your"
+        if core.publishing():
+            showpub = True
+    else:
+        owner = "~"+townie+"'s"
+        entryDir = os.path.join("/home", user, ".ttbp", "entries")
+
+    for entry in os.listdir(entryDir):
+        filenames.append(os.path.join(entryDir, entry))
+    metas = core.meta(filenames)
+    metas.sort(key = lambda entry:entry[4])
+    metas.reverse()
+
+    return metas, owner
 
 def show_credits():
     '''
@@ -798,12 +805,40 @@ editor.
 
     return
 
-def set_nopubs():
+def set_nopubs(user):
     '''
     handler for toggling nopub on individual entries
     '''
 
-    raw_input(DUST)
+    metas, owner = generate_feels_list(user)
+
+    if len(metas) > 0:
+        entries = []
+        for entry in metas:
+            pub = ""
+            if core.nopub(entry[0]):
+                pub = "(nopub)"
+            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
+
+        return toggle_nopubs(metas, entries, "publishing status of your feels:")
+    else:
+        redraw("no feels recorded by ~"+user)
+
+def toggle_nopubs(metas, entries, prompt):
+    """displays a list of entries for pub/nopub toggling.
+    """
+
+    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
+
+    if choice is not False:
+        redraw(prompt)
+        print("setting {entry}".format(entry=choice))
+
+        return list_entries(metas, entries, prompt)
+
+    else:
+        redraw()
+        return
 
 def send_feedback(entered, subject="none"):
     '''
@@ -844,7 +879,8 @@ running through the feedback option again!\
 
 def list_entries(metas, entries, prompt):
     '''
-    displays a list of entries for reading selection
+    displays a list of entries for reading selection, allowing user to select
+    one for display.
     '''
 
     choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
