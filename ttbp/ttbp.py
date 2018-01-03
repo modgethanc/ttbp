@@ -826,6 +826,10 @@ def set_nopubs(metas, user, prompt):
         action = core.toggle_nopub(target)
         redraw(prompt)
 
+        core.write("index.html")
+        if SETTINGS["gopher"]:
+            gopher.publish_gopher('feels', core.get_files())
+
         return set_nopubs(metas, user, prompt)
 
     else:
@@ -1140,6 +1144,9 @@ def update_gopher():
     # there is demand for this to be configurable we can expose that.
     if SETTINGS.get("gopher"):
         gopher.setup_gopher('feels')
+        gopher.publish_gopher("feels", core.get_files())
+    else:
+        subprocess.call(["rm", config.GOPHER_PATH])
     redraw("gopher publishing set to {gopher}".format(gopher=SETTINGS.get("gopher")))
 
 ##### PATCHING UTILITIES

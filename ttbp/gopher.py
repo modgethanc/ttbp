@@ -51,7 +51,6 @@ entries:
 def select_gopher():
     return util.input_yn(GOPHER_PROMPT)
 
-
 def publish_gopher(gopher_path, entry_filenames):
     """This function (re)generates a user's list of feels posts in their gopher
     directory and their gophermap."""
@@ -103,8 +102,8 @@ def setup_gopher(gopher_path):
         print("\n\tERROR: gopher path is already set up. quitting so we don't overwrite anything.")
         return
 
-    #os.makedirs(ttbp_gopher)
-
     gopher_entries = os.path.join(os.path.expanduser("~/.ttbp"), "gopher")
-    os.makedirs(gopher_entries)
+    if not os.path.isdir(gopher_entries):
+        os.makedirs(gopher_entries)
+
     subprocess.call(["ln", "-s", gopher_entries, ttbp_gopher])

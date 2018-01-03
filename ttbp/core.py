@@ -447,16 +447,16 @@ def toggle_nopub(filename):
     action = "unpublishing"
 
     if nopub(filename):
+        action = "publishing"
         NOPUBS.remove(filename)
+    else:
+        NOPUBS.append(filename)
         live_html = os.path.join(config.WWW, filename.split(".")[0]+".html")
         if os.path.exists(live_html):
             subprocess.call(["rm", live_html])
         live_gopher = os.path.join(config.GOPHER_PATH, filename)
         if os.path.exists(live_gopher):
             subprocess.call(["rm", live_gopher])
-    else:
-        action = "publishing"
-        NOPUBS.append(filename)
 
     nopub_file = open(config.NOPUB, 'w')
     nopub_file.write("""\
@@ -469,7 +469,6 @@ def toggle_nopub(filename):
     nopub_file.close()
 
     load_files()
-    write("index.html")
 
     return action
 
