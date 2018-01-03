@@ -813,21 +813,21 @@ def list_nopubs(user):
     metas, owner = generate_feels_list(user)
 
     if len(metas) > 0:
-        entries = []
-        for entry in metas:
-            pub = ""
-            if core.nopub(entry[0]):
-                pub = "(nopub)"
-            entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-        return set_nopubs(metas, entries, user, "publishing status of your feels:")
+        return set_nopubs(metas, user, "publishing status of your feels:")
     else:
         redraw("no feels recorded by ~"+user)
 
-def set_nopubs(metas, entries, user, prompt):
+def set_nopubs(metas, user, prompt):
     """displays a list of entries for pub/nopub toggling.
     """
 
+    entries = []
+    for entry in metas:
+        pub = ""
+        if core.nopub(entry[0]):
+            pub = "(nopub)"
+        entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
     choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
 
@@ -837,7 +837,8 @@ def set_nopubs(metas, entries, user, prompt):
         redraw(prompt)
         #print("{action} {entry}".format(action=action, entry=target))
 
-        return list_nopubs(user)
+        return set_nopubs(metas, user, prompt)
+        #return list_nopubs(user)
 
     else:
         redraw()
