@@ -1,9 +1,10 @@
 TO-DO:
-	(goals for stable release)
+  (near future features)
 
-	-set pub/nopub on entries
+	-cw feature
+	-account deletion/export
 
-	(goals for version two)
+  (possible/far future features)
 
 	-stylesheet selector
 		-and make a couple more custom stylesheets
@@ -11,18 +12,30 @@ TO-DO:
 		-direct mail to author
 	-make a nicer entry view wrapper
 		-maybe with a box? and a nicer feed view?
-
-	(flair)
-
-	-command line flags
-		*maybe; not sure i want this to be a feature at all
-		-shortcut to most recent feels, writing entry, seeing own entry
 	-#hashtags
-	-rainbow menu selection
+	-command line flags
+		-shortcut to most recent feels, writing entry, seeing own entry
+  -motd
+	-rss
+	-multiple posts per day
 
 ------
 
 CHANGELOG:
+ver 0.11.0
+  -added rainbow menus
+	-added pub/nopub selector
+	-fixed pagination for 2 page lists
+
+ver 0.10.2
+  -fixing a bunch of things that broke in settings update
+	-announcing centralfeels
+	-general code cleanup pass
+
+ver 0.10.1
+  -gopher support (with help from ~vilmibm)
+	-fixed settings menu
+
 ver 0.9.3 (by ~vilmibm)
 	-packaging
 	-easier to contribute to

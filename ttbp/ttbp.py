@@ -49,7 +49,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.10.3"
+__version__ = "0.11.0"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -1246,8 +1246,8 @@ def update_user_version():
             else:
                 print("okay, passing on gopher for now. this option is available in settings if you change\nyour mind!")
 
-        if z < 3 or y < 10:
-            # set rainbow menu for 0.10.3
+        if y < 11:
+            # set rainbow menu for 0.11.0
             print("[ NEW FEATURE ]")
             SETTINGS.update({"rainbows": toggle_rainbows()})
 
@@ -1264,9 +1264,9 @@ something strange happened to you during this update.
         # version 0.10.2 patch notes
         print(config.UPDATES["0.10.2"])
 
-    if z < 3 or y < 10:
-        # version 0.10.2 patch notes
-        print(config.UPDATES["0.10.3"])
+    if y < 11:
+        # version 0.11.1 patch notes
+        print(config.UPDATES["0.11.0"])
 
     confirm = ""
 

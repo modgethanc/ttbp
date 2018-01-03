@@ -82,7 +82,7 @@ __________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                                    ver 0.10.3 (rainbows) |
+|                                    ver 0.11.0 (rainbows) |
 |__________________________________________________________|
 '''.lstrip()
 
@@ -130,8 +130,8 @@ version 0.9.3 features:
         * ~login created centralfeels, which is an opt-in collection of
             html-published feels; create a blank file called '.centralfeels' in
             your home directory if you'd like to be included!""",
-        "0.10.3": """
-~[version 0.10.3 update]~
+        "0.11.0": """
+~[version 0.11.0 update]~
 
     * rainbow menus are now an option! please message ~endorphant (with
         screencaps, if possible) if rainbow menus are unreadable with your
