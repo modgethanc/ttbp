@@ -51,9 +51,8 @@ FILES = []
 NOPUBS = []
 
 def load(ttbprc={}):
-    '''
-    get all them globals set up!!
-    '''
+    """Set up globals, including loading files and nopub list.
+    """
 
     global HEADER
     global FOOTER
@@ -67,20 +66,26 @@ def load(ttbprc={}):
     load_files()
 
 def reload_ttbprc(ttbprc={}):
-    '''
-    reloads new ttbprc into current session
-    '''
+    """Loads a given ttbprc into session.
+    """
 
     global SETTINGS
 
     SETTINGS = ttbprc
 
-
 def get_files():
-    """Returns a list of user's feels."""
+    """Returns a list of user's feels, sorted in reverse chronological order.
+
+    As a secondary function, this checks if a file is listed as a nopub and
+    removes it from published directories, in case it wasn't caught in a
+    previous unpublishing pass.
+    """
+
     files = []
     for filename in os.listdir(config.USER_DATA):
         if nopub(filename):
+            ## TODO: include check for gopher unpublishin
+
             link = os.path.join(config.WWW,
                                 os.path.splitext(
                                     os.path.basename(filename))[0]+".html")
@@ -96,14 +101,9 @@ def get_files():
 
     return files
 
-
 def load_files():
-    '''
-    file loader
-
-    * reads user's nopub file
-    * loads all valid filenames that are not excluded in nopub to global files list
-    '''
+    """Loads files into session.
+    """
 
     global FILES
 
@@ -111,7 +111,7 @@ def load_files():
     FILES = get_files()
 
 def load_nopubs():
-    """Load a list of the user's nopub entries.
+    """Load a list of the user's nopub entries into session.
     """
 
     global NOPUBS
@@ -128,13 +128,12 @@ def load_nopubs():
 ## html outputting
 
 def write(outurl="default.html"):
-    '''
-    main page renderer
+    """Main page renderer
 
     * takes everything currently in FILES and writes a single non-paginated html
-    file
-    * calls write_page() on each file to make permalinks
-    '''
+        file
+    * calls write_page() on each file to make individual permalink files
+    """
 
     outfile = open(os.path.join(config.WWW, outurl), "w")
 
@@ -160,12 +159,11 @@ def write(outurl="default.html"):
     return os.path.join(config.LIVE+config.USER,os.path.basename(os.path.realpath(config.WWW)),outurl)
 
 def write_page(filename):
-    '''
-    permalink generator
+    """Individual page generator.
 
     * makes a page out of a single entry for permalinking, using filename/date as
     url
-    '''
+    """
 
     outurl = os.path.join(config.WWW, "".join(parse_date(filename))+".html")
     outfile = open(outurl, "w")
@@ -190,12 +188,8 @@ def write_page(filename):
     return outurl
 
 def write_entry(filename):
-    '''
-    entry text generator
-
-    * dump given file into entry format by parsing file as markdown
-    * return as list of strings
-    '''
+    """Returns a string list of the specified entry's htmlified text.
+    """
 
     date = parse_date(filename)
 
@@ -215,25 +209,18 @@ def write_entry(filename):
 
     entry.append("\t\t\t"+mistune.markdown("".join(raw), escape=False, hard_wrap=False))
 
-    #for line in raw:
-        #entry.append(line+"\t\t\t")
-        #if line == "\n":
-        #    entry.append("</p>\n\t\t\t<p>")
-
-    #entry.append("</p>\n")
     entry.append("\t\t\t<p style=\"font-size:.6em; font-color:#808080; text-align: right;\"><a href=\""+"".join(date)+".html\">permalink</a></p>\n")
     entry.append("\n\t\t</div>\n")
 
     return entry
 
 def write_global_feed(blogList):
-    '''
-    main ttbp index printer
+    """Main ttbp index printer
 
     * sources README.md for documentation
     * takes incoming list of formatted blog links for all publishing blogs and
       prints to blog feed
-    '''
+    """
 
     outfile = open(FEED, "w")
 
@@ -285,13 +272,11 @@ def write_global_feed(blogList):
 """)
 
     outfile.close()
-    #subprocess.call(['chmod', 'a+w', FEED])
 
 ## misc helpers
 
 def meta(entries = FILES):
-    '''
-    metadata generator
+    """metadata generator
 
     * takes a list of filenames and returns a 2d list:
       [0] absolute path
@@ -302,7 +287,7 @@ def meta(entries = FILES):
       [5] author
 
     * sorted in reverse date order by [4]
-    '''
+    """
 
     meta = []
 
@@ -430,14 +415,13 @@ def www_neighbors():
     write_global_feed(sortedUsers)
 
 def nopub(filename):
-    '''
-    checks to see if given filename is in user's NOPUB
-    '''
+    """Checks to see if given filename is in user's NOPUB
+    """
 
     return os.path.basename(filename) in NOPUBS
 
 def toggle_nopub(filename):
-    """toggles pub/nopub status for the given filename
+    """Toggles pub/nopub status for the given filename
 
     if the file is to be unpublished, delete it from published locations
     """
