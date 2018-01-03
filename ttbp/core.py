@@ -425,6 +425,12 @@ def nopub(filename):
 
     return os.path.basename(filename) in exclude
 
+def toggle_nopub(filename):
+    """toggles pub/nopub status for the given filename
+    """
+
+    pass
+
 #############
 #############
 #############

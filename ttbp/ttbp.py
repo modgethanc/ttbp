@@ -614,7 +614,7 @@ def review_menu(intro=""):
             view_feels(config.USER)
         elif choice == 1:
             redraw("here's your current nopub status:")
-            set_nopubs(config.USER)
+            list_nopubs(config.USER)
     else:
         redraw()
         return
@@ -805,7 +805,7 @@ editor.
 
     return
 
-def set_nopubs(user):
+def list_nopubs(user):
     '''
     handler for toggling nopub on individual entries
     '''
@@ -820,21 +820,23 @@ def set_nopubs(user):
                 pub = "(nopub)"
             entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-        return toggle_nopubs(metas, entries, "publishing status of your feels:")
+        return set_nopubs(metas, entries, "publishing status of your feels:")
     else:
         redraw("no feels recorded by ~"+user)
 
-def toggle_nopubs(metas, entries, prompt):
+def set_nopubs(metas, entries, prompt):
     """displays a list of entries for pub/nopub toggling.
     """
 
     choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
 
     if choice is not False:
+        target = os.path.basename(metas[choice][0])
+        core.toggle_nopub(target)
         redraw(prompt)
-        print("setting {entry}".format(entry=choice))
+        print("setting {entry}".format(entry=target))
 
-        return list_entries(metas, entries, prompt)
+        return set_nopubs(metas, entries, prompt)
 
     else:
         redraw()
