@@ -613,7 +613,7 @@ def review_menu(intro=""):
             redraw("your recorded feels, listed by date:")
             view_feels(config.USER)
         elif choice == 1:
-            redraw("here's your current nopub status:")
+            redraw("publishing status of your feels:")
             list_nopubs(config.USER)
     else:
         redraw()
@@ -813,7 +813,6 @@ def list_nopubs(user):
     metas, owner = generate_feels_list(user)
 
     if len(metas) > 0:
-
         return set_nopubs(metas, user, "publishing status of your feels:")
     else:
         redraw("no feels recorded by ~"+user)
@@ -835,10 +834,8 @@ def set_nopubs(metas, user, prompt):
         target = os.path.basename(metas[choice][0])
         action = core.toggle_nopub(target)
         redraw(prompt)
-        #print("{action} {entry}".format(action=action, entry=target))
 
         return set_nopubs(metas, user, prompt)
-        #return list_nopubs(user)
 
     else:
         redraw()
