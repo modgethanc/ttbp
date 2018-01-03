@@ -135,5 +135,11 @@ version 0.9.3 features:
 
     * rainbow menus are now an option! please message ~endorphant (with
         screencaps, if possible) if rainbow menus are unreadable with your
-        terminal settings, so adjustments can be made for future updates"""
+        terminal settings, so adjustments can be made for future updates
+    * you can now set individual posts to be published or not published; this
+        option is listed under 'review your feels' as 'modify feels publishing',
+        and is only available if you have publishing turned on. if you toggle
+        your publishing state, this list will persist. unpublished posts will
+        be removed from html/gopher, but will still be accessible from within
+        the feels engine."""
         }
