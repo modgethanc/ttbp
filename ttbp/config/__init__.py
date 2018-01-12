@@ -116,20 +116,6 @@ version 0.9.3 features:
         * if you don't know what gopher is, it's fine to opt-out; ask around on
             irc if you'd like to learn more!
         * the settings menu has been reworked to be less clunky""",
-        "0.10.2": """
-~[version 0.10.2 update]~
-
-    * some errors in selecting and validating settings and creating publishing
-        directories have been corrected
-    * please send mail to ~endorphant or ask for help on IRC if you're still
-        having issues with getting your settings sorted out!
-
-    general PSA:
-        * join #ttbp on the local irc network for help and discussion about the
-            feels engine!
-        * ~login created centralfeels, which is an opt-in collection of
-            html-published feels; create a blank file called '.centralfeels' in
-            your home directory if you'd like to be included!""",
         "0.11.0": """
 ~[version 0.11.0 update]~
 
@@ -141,5 +127,16 @@ version 0.9.3 features:
         and is only available if you have publishing turned on. if you toggle
         your publishing state, this list will persist. unpublished posts will
         be removed from html/gopher, but will still be accessible from within
-        the feels engine."""
+        the feels engine.
+    * some errors in selecting and validating settings and creating publishing
+        directories have been corrected
+    * please send mail to ~endorphant or ask for help on IRC if you're still
+        having issues with getting your settings sorted out!
+
+    general PSA:
+        * join #ttbp on the local irc network for help and discussion about the
+            feels engine!
+        * ~login created centralfeels, which is an opt-in collection of
+            html-published feels; create a blank file called '.centralfeels' in
+            your home directory if you'd like to be included!""",
         }

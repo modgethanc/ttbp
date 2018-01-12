@@ -1267,10 +1267,6 @@ something strange happened to you during this update.
         # version 0.10.1 patch notes
         print(config.UPDATES["0.10.1"])
 
-    if z < 2 or y < 10:
-        # version 0.10.2 patch notes
-        print(config.UPDATES["0.10.2"])
-
     if y < 11:
         # version 0.11.1 patch notes
         print(config.UPDATES["0.11.0"])
