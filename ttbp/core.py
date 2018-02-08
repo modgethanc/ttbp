@@ -221,7 +221,7 @@ def write_entry(filename):
         #    entry.append("</p>\n\t\t\t<p>")
 
     #entry.append("</p>\n")
-    entry.append("\t\t\t<p style=\"font-size:.6em; font-color:#808080; text-align: right;\"><a href=\""+"".join(date)+".html\">permalink</a></p>\n")
+    entry.append("\t\t\t<p class=\"permalink\"><a href=\""+"".join(date)+".html\">permalink</a></p>\n")
     entry.append("\n\t\t</div>\n")
 
     return entry
