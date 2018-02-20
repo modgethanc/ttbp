@@ -220,8 +220,11 @@ def check_init():
 
     print("\n\n")
     if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
-        print("{greeting}, {user}".format(greeting=chatter.say("greet"),
-            user=config.USER))
+        if config.USER == "endorphant":
+            print("hey boss! :D\n")
+        else:
+            print("{greeting}, {user}".format(greeting=chatter.say("greet"),
+                user=config.USER))
 
         ## ttbp env validation
         if not user_up_to_date():
@@ -229,6 +232,7 @@ def check_init():
         elif not valid_setup():
             setup_repair()
         else:
+
             raw_input("press <enter> to explore your feels.\n\n")
 
         core.load(SETTINGS)
