@@ -40,6 +40,7 @@ import time
 import json
 from email.mime.text import MIMEText
 import datetime
+from six.moves import input
 
 import inflect
 
@@ -233,7 +234,7 @@ def check_init():
             setup_repair()
         else:
 
-            raw_input("press <enter> to explore your feels.\n\n")
+            input("press <enter> to explore your feels.\n\n")
 
         core.load(SETTINGS)
 
@@ -246,7 +247,7 @@ def init():
     """
 
     try:
-        raw_input("""
+        input("""
 i don't recognize you, stranger. let's make friends.
 
 press <enter> to begin, or <ctrl-c> to get out of here.""")
@@ -296,7 +297,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.""")
     setup()
     core.load(SETTINGS)
 
-    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
     return ""
 
 def gen_header():
@@ -396,7 +397,7 @@ def setup_repair():
 
     print("...")
     time.sleep(1)
-    raw_input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
 
 def setup():
     '''
@@ -420,7 +421,7 @@ def setup():
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     try:
-        choice = raw_input("\npick a setting to change (or type 'q' to exit): ")
+        choice = input("\npick a setting to change (or type 'q' to exit): ")
     except KeyboardInterrupt:
         redraw(EJECT)
         return SETTINGS
@@ -475,7 +476,7 @@ def setup():
         save_settings()
         return setup()
 
-    raw_input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
+    input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
     redraw()
 
     return SETTINGS
@@ -511,7 +512,7 @@ def main_menu():
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     try:
-        choice = raw_input("\ntell me about your feels (or type 'q' to exit): ")
+        choice = input("\ntell me about your feels (or type 'q' to exit): ")
     except KeyboardInterrupt:
         redraw(EJECT)
         return main_menu()
@@ -571,12 +572,12 @@ def feedback_menu():
     '''
 
     util.print_menu(SUBJECTS, SETTINGS.get("rainbows", False))
-    choice = raw_input("\npick a category for your feedback: ")
+    choice = input("\npick a category for your feedback: ")
 
     cat = ""
     if choice in ['0', '1', '2', '3']:
         cat = SUBJECTS[int(choice)]
-        entered = raw_input("""
+        entered = input("""
 composing a {mail_category} to ~endorphant.
 
 press <enter> to open an external text editor. mail will be sent once you save and quit.
@@ -751,7 +752,7 @@ i'd love to hear about your ideas and brainstorm about new features!
 thanks to everyone who reads, listens, writes, and feels.\
         """)
 
-    raw_input("\n\npress <enter> to go back home.\n\n")
+    input("\n\npress <enter> to go back home.\n\n")
     redraw()
 
     return
@@ -763,7 +764,7 @@ def write_entry(entry=os.path.join(config.USER_DATA, "test.txt")):
     main feels-recording handler
     '''
 
-    entered = raw_input("""
+    entered = input("""
 feels will be recorded for today, {today}.
 
 if you've already started recording feels for this day, you
@@ -972,7 +973,7 @@ wall will be recorded if you save the file, and you can cancel
 your changes by exiting without saving.
 
 """)
-        raw_input("press <enter> to visit the wall\n\n")
+        input("press <enter> to visit the wall\n\n")
         subprocess.call([SETTINGS.get("editor"), config.WALL])
         subprocess.call(["rm", config.WALL_LOCK])
         redraw("thanks for visiting the graffiti wall!")
@@ -1033,13 +1034,13 @@ def select_publish_dir():
         print("\ncurrent publish dir:\t"+os.path.join(config.PUBLIC, SETTINGS["publish dir"]))
         republish = True
 
-    choice = raw_input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
+    choice = input("\nwhere do you want your blog published? (leave blank to use default \"blog\") ")
     if not choice:
         choice = "blog"
 
     publishDir = os.path.join(config.PUBLIC, choice)
     while os.path.exists(publishDir):
-        second = raw_input("\n"+publishDir+"""\
+        second = input("\n"+publishDir+"""\
  already exists!
 
 setting this as your publishing directory means this program may
@@ -1278,7 +1279,7 @@ something strange happened to you during this update.
     confirm = ""
 
     while confirm not in ("x", "<x>", "X", "<X>"):
-        confirm = raw_input("\nplease type <x> when you've finished reading about the updates! ")
+        confirm = input("\nplease type <x> when you've finished reading about the updates! ")
 
     open(versionFile, "w").write(__version__)
 
