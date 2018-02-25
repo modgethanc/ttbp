@@ -76,13 +76,13 @@ NOPUB = os.path.join(USER_CONFIG, "nopub")
 ## UI
 
 BANNER = '''
-__________________________________________________________
+___________________________________________________________
 |                                                          |
 |  the tilde.town                                          |
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                                    ver 0.11.0 (rainbows) |
+|                                    ver 0.11.1 (rainbows) |
 |__________________________________________________________|
 '''.lstrip()
 
@@ -139,4 +139,11 @@ version 0.9.3 features:
         * ~login created centralfeels, which is an opt-in collection of
             html-published feels; create a blank file called '.centralfeels' in
             your home directory if you'd like to be included!""",
+        "0.11.1": """
+~[version 0.11.1 update]~
+
+    * a quick patch to correct a directory listing error, nothing too
+      exciting
+    * general PSA: feel free to use the github repo for bugs/feature requests:
+            https://github.com/modgethanc/ttbp/issues""",
         }

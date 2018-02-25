@@ -49,7 +49,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.11.0"
+__version__ = "0.11.1"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -216,8 +216,6 @@ def check_init():
     * checks for last run version
     '''
 
-    global SETTINGS
-
     print("\n\n")
     if os.path.exists(os.path.join(os.path.expanduser("~"),".ttbp")):
         if config.USER == "endorphant":
@@ -229,10 +227,10 @@ def check_init():
         ## ttbp env validation
         if not user_up_to_date():
             update_user_version()
-        elif not valid_setup():
+
+        if not valid_setup():
             setup_repair()
         else:
-
             raw_input("press <enter> to explore your feels.\n\n")
 
         core.load(SETTINGS)
@@ -636,7 +634,10 @@ def view_neighbors(users, prompt):
             url = config.LIVE+user+"/"+userRC.get("publish dir")
 
         ## find last entry
-        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        try:
+            files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        except OSError:
+            files = []
         files.sort()
         lastfile = ""
         for filename in files:
@@ -917,7 +918,10 @@ def view_feed():
 
     for townie in core.find_ttbps():
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
-        filenames = os.listdir(entryDir)
+        try:
+            filenames = os.listdir(entryDir)
+        except OSError:
+            filenames = []
 
         for entry in filenames:
             ## hardcoded display cutoff at 30 days
@@ -1267,18 +1271,24 @@ you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant
 something strange happened to you during this update.
 """)
 
-    if z < 1 or y < 10:
+    if y < 10:
         # version 0.10.1 patch notes
         print(config.UPDATES["0.10.1"])
 
     if y < 11:
-        # version 0.11.1 patch notes
+        # version 0.11.0 patch notes
         print(config.UPDATES["0.11.0"])
+
+    if y < 11 or z < 1:
+        # version 0.11.1 patch notes
+        print(config.UPDATES["0.11.1"])
 
     confirm = ""
 
     while confirm not in ("x", "<x>", "X", "<X>"):
         confirm = raw_input("\nplease type <x> when you've finished reading about the updates! ")
+
+    print("\n\n")
 
     open(versionFile, "w").write(__version__)
 
