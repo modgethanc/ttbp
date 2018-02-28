@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name='ttbp',
-    version='0.10.2',
+    version='0.11.2',
     description='command line social blogging tool used on tilde.town',
     url='https://github.com/modgethanc/ttbp',
     author='~endorphant',
@@ -20,6 +20,7 @@ setup(
         'inflect==0.2.5',
         'mistune==0.8.1',
         'colorama==0.3.9',
+        'six'
     ],
     include_package_data = True,
     entry_points = {
