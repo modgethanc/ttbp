@@ -50,7 +50,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.11.1"
+__version__ = "0.11.2"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -225,11 +225,13 @@ def check_init():
             print("{greeting}, {user}".format(greeting=chatter.say("greet"),
                 user=config.USER))
 
+        load_settings = load_user_settings()
+
         ## ttbp env validation
         if not user_up_to_date():
             update_user_version()
 
-        if not valid_setup():
+        if not valid_setup(load_settings):
             setup_repair()
         else:
             input("press <enter> to explore your feels.\n\n")
@@ -327,22 +329,13 @@ def gen_header():
     """
     return header
 
-def valid_setup():
+def valid_setup(load_settings):
     '''
     Checks to see if user has a valid ttbp environment.
     '''
 
-    global SETTINGS
-
-    if not os.path.isfile(config.TTBPRC):
+    if not load_settings:
         return False
-
-    try:
-        SETTINGS = json.load(open(config.TTBPRC))
-    except ValueError:
-        return False
-
-    core.load(SETTINGS)
 
     for option in iter(DEFAULT_SETTINGS):
         if option != "publish dir" and SETTINGS.get(option, None) is None:
@@ -361,6 +354,24 @@ def valid_setup():
             update_publishing()
 
     return True
+
+def load_user_settings():
+    """attempts to load user's ttbprc; returns settings dict if valie, otherwise
+    returns false"""
+
+    global SETTINGS
+
+    if not os.path.isfile(config.TTBPRC):
+        return False
+
+    try:
+        SETTINGS = json.load(open(config.TTBPRC))
+    except ValueError:
+        return False
+
+    core.load(SETTINGS)
+
+    return SETTINGS
 
 def setup_repair():
     '''
@@ -381,7 +392,8 @@ def setup_repair():
             "publishing": select_publishing,
             "publish dir": select_publish_dir,
             "gopher": gopher.select_gopher,
-            "rainbows": toggle_rainbows
+            "rainbows": toggle_rainbows,
+            "post as nopub": toggle_pub_default
             }
 
     for option in iter(settings_map):
@@ -475,9 +487,9 @@ def setup():
         return setup()
 
     #nopub toggling
-    elif settingList[int(choice)] == "nopub":
-        SETTINGS.update({"nopub": toggle_pub_default()})
-        redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("nopub")))
+    elif settingList[int(choice)] == "post as nopub":
+        SETTINGS.update({"post as nopub": toggle_pub_default()})
+        redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("post as nopub")))
         save_settings()
         return setup()
 
@@ -794,7 +806,7 @@ editor.
 
     left = ""
 
-    if SETTINGS.get("nopub"):
+    if SETTINGS.get("post as nopub"):
         core.toggle_nopub(os.path.basename(entry))
     else:
         if core.publishing():
@@ -1000,7 +1012,7 @@ def toggle_pub_default():
     """setup helper for setting default publish privacy (does not apply
     retroactively).  """
 
-    if SETTINGS.get("nopub", False) is True:
+    if SETTINGS.get("post as nopub", False) is True:
         (nopub, will) = ("(nopub)", "won't")
     else:
         (nopub, will) = ("public", "will")
@@ -1032,9 +1044,9 @@ would you like to change this behavior?
 please enter""")
 
     if ans:
-        return not SETTINGS.get("nopub")
+        return not SETTINGS.get("post as nopub")
     else:
-        return SETTINGS.get("nopub")
+        return SETTINGS.get("post as nopub")
 
 def toggle_rainbows():
     """setup helper for rainbow toggling
@@ -1296,7 +1308,6 @@ def update_user_version():
             ttbprc.close()
 
         # from earlier than 0.10.1
-
         if y < 10:
             #  select gopher
             print("[ NEW FEATURE ]")
@@ -1318,6 +1329,12 @@ def update_user_version():
             print("[ NEW FEATURE ]")
             SETTINGS.update({"rainbows": toggle_rainbows()})
 
+        if z < 2:
+            # set default option for 0.11.2
+            # print("default nopub: false")
+            SETTINGS.update({"post as nopub": False})
+            save_settings()
+
     print("""
 you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
 something strange happened to you during this update.
@@ -1334,6 +1351,10 @@ something strange happened to you during this update.
     if y < 11 or z < 1:
         # version 0.11.1 patch notes
         print(config.UPDATES["0.11.1"])
+
+    if y < 11 or z < 2:
+        # version 0.11.2 patch notes
+        print(config.UPDATES["0.11.2"])
 
     confirm = ""
 
