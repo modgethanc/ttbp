@@ -108,7 +108,7 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
         return util.list_select(options, prompt)
 
     else:
-        return page_helper(options, prompt, pagify, rainbow, page, total, top)
+        return page_helper(options, prompt, pagify, rainbow, page, int(total), top)
 
 def page_helper(options, prompt, pagify, rainbow, page, total, top):
     '''
@@ -126,7 +126,7 @@ def page_helper(options, prompt, pagify, rainbow, page, total, top):
     optPage = options[x:y]
 
     util.print_menu(optPage, SETTINGS.get("rainbows", False))
-    print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down )").format(page=page+1, total=total+1)
+    print("\n\t( page {page} of {total}; type 'u' or 'd' to scroll up and down)".format(page=page+1, total=total+1))
 
     ans = util.list_select(optPage, prompt)
 
@@ -794,17 +794,21 @@ editor.
 
     left = ""
 
-    if core.publishing():
-        core.load_files()
-        core.write("index.html")
-        left = "posted to {url}/index.html\n\n>".format(
-            url="/".join(
-                [config.LIVE+config.USER,
-                    str(SETTINGS.get("publish dir"))]))
+    if SETTINGS.get("nopub"):
+        core.toggle_nopub(os.path.basename(entry))
+    else:
+        if core.publishing():
+            core.write("index.html")
+            left = "posted to {url}/index.html\n\n>".format(
+                url="/".join(
+                    [config.LIVE+config.USER,
+                        str(SETTINGS.get("publish dir"))]))
 
-    if SETTINGS.get('gopher'):
-        gopher.publish_gopher('feels', core.get_files())
-        left += " also posted to your ~/public_gopher!\n"
+        if SETTINGS.get('gopher'):
+            gopher.publish_gopher('feels', core.get_files())
+            left += " also posted to your ~/public_gopher!\n"
+
+    core.load_files()
     redraw(left + " thanks for sharing your feels!")
 
     return

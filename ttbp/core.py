@@ -235,57 +235,60 @@ def write_global_feed(blogList):
       prints to blog feed
     '''
 
-    outfile = open(FEED, "w")
+    try: 
+        outfile = open(FEED, "w")
 
-    ## header
-    outfile.write("""\
-<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
-<html>
-    <head>
-        <title>tilde.town feels engine</title>
-        <link rel=\"stylesheet\" href=\"style.css\" />
-    </head>
-    <body>
-        <div class="meta">
-        <h1>tilde.town feels engine</h1>
+        ## header
+        outfile.write("""\
+    <!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 3.2//EN\">
+    <html>
+        <head>
+            <title>tilde.town feels engine</title>
+            <link rel=\"stylesheet\" href=\"style.css\" />
+        </head>
+        <body>
+            <div class="meta">
+            <h1>tilde.town feels engine</h1>
 
-        <h2><a href="https://github.com/modgethanc/ttbp">github
-        repo</a> | <a
-        href="http://tilde.town/~endorphant/blog/20160510.html">state
-        of the ttbp</a></h2>
-        <!--<p>curious? run <b>~endorphant/bin/ttbp</b> while logged in to tilde.town.</p>
-        <p>it's still a little volatile. let me know if anything breaks.</p>---></div>
-        <p>&nbsp;</p>
-""")
+            <h2><a href="https://github.com/modgethanc/ttbp">github
+            repo</a> | <a
+            href="http://tilde.town/~endorphant/blog/20160510.html">state
+            of the ttbp</a></h2>
+            <!--<p>curious? run <b>~endorphant/bin/ttbp</b> while logged in to tilde.town.</p>
+            <p>it's still a little volatile. let me know if anything breaks.</p>---></div>
+            <p>&nbsp;</p>
+    """)
 
-    ## docs
-    outfile.write("""\
-        <div class="docs">""")
-    outfile.write(mistune.markdown(open(os.path.join(config.INSTALL_PATH, "..", "README.md"), "r").read()))
-    outfile.write("""\
-        </div>""")
+        ## docs
+        outfile.write("""\
+            <div class="docs">""")
+        outfile.write(mistune.markdown(open(os.path.join(config.INSTALL_PATH, "..", "README.md"), "r").read()))
+        outfile.write("""\
+            </div>""")
 
-    ## feed
-    outfile.write("""\
-        <p>&nbsp;</p>
-        <div class=\"feed\">
-        <h3>live feels-sharing:</h3>
-            <ul>""")
-    for blog in blogList:
+        ## feed
+        outfile.write("""\
+            <p>&nbsp;</p>
+            <div class=\"feed\">
+            <h3>live feels-sharing:</h3>
+                <ul>""")
+        for blog in blogList:
+            outfile.write("""
+                    <li>"""+blog+"""</li>\
+                        """)
+
+        ## footer
         outfile.write("""
-                <li>"""+blog+"""</li>\
-                    """)
+                </ul>
+            </div>
+      </body>
+    </html>
+    """)
 
-    ## footer
-    outfile.write("""
-            </ul>
-        </div>
-  </body>
-</html>
-""")
-
-    outfile.close()
-    #subprocess.call(['chmod', 'a+w', FEED])
+        outfile.close()
+        #subprocess.call(['chmod', 'a+w', FEED])
+    except FileNotFoundError:
+        pass
 
 ## misc helpers
 
@@ -309,7 +312,7 @@ def meta(entries = FILES):
     for filename in entries:
       mtime = os.path.getmtime(filename)
       try:
-        wc = subprocess.check_output(["wc","-w",filename], stderr=subprocess.STDOUT).split()[0]
+        wc = int(subprocess.check_output(["wc","-w",filename], stderr=subprocess.STDOUT).split()[0])
       except subprocess.CalledProcessError:
         wc = "???"
       timestamp = time.strftime("%Y-%m-%d at %H:%M", time.localtime(mtime))
