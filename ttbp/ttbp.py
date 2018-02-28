@@ -474,6 +474,13 @@ def setup():
         save_settings()
         return setup()
 
+    #nopub toggling
+    elif settingList[int(choice)] == "nopub":
+        SETTINGS.update({"nopub": toggle_pub_default()})
+        redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("nopub")))
+        save_settings()
+        return setup()
+
     input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
     redraw()
 
@@ -984,6 +991,46 @@ your changes by exiting without saving.
 
 
 ## misc helpers
+
+def toggle_pub_default():
+    """setup helper for setting default publish privacy (does not apply
+    retroactively).  """
+
+    if SETTINGS.get("nopub", False) is True:
+        (nopub, will) = ("(nopub)", "won't")
+    else:
+        (nopub, will) = ("public", "will")
+
+    if SETTINGS.get("publishing", False) is True:
+        publishing = ""
+    else:
+        publishing = """\
+since you're currently not publishing your posts to html/gopher, this setting
+won't affect the visibility of your posts.  however, the option is still here if
+you'd like to change it.
+"""
+
+    print("""
+
+DEFAULT POST PRIVACY
+
+your entries are set to automatically post as {nopub}. this means they {will} be
+posted to your world-visible pages at first (which you can always change after
+the fact.)
+
+this setting only affects subsequent posts; it does not apply retroactively.
+
+{publishing}""".format(nopub=nopub, will=will, publishing=publishing))
+
+    ans = util.input_yn("""\
+would you like to change this behavior?
+
+please enter""")
+
+    if ans:
+        return not SETTINGS.get("nopub")
+    else:
+        return SETTINGS.get("nopub")
 
 def toggle_rainbows():
     """setup helper for rainbow toggling
