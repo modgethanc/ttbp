@@ -405,7 +405,10 @@ def www_neighbors():
             url = config.LIVE+user+"/"+userRC["publish dir"]
 
         lastfile = ""
-        files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        try:
+            files = os.listdir(os.path.join("/home", user, ".ttbp", "entries"))
+        except OSError:
+            files = []
         files.sort()
         for filename in files:
             if valid(filename):
