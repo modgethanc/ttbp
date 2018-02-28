@@ -25,6 +25,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 '''
 import random
 import time
+from six.moves import input
 
 import colorama
 import inflect
@@ -179,7 +180,7 @@ def list_select(options, prompt):
     ans = ""
     invalid = True
 
-    choice = raw_input("\n"+prompt)
+    choice = input("\n"+prompt)
 
     if choice in BACKS:
         return False
@@ -205,11 +206,11 @@ def input_yn(query):
     '''
 
     try:
-        ans = raw_input(query+" [y/n] ")
+        ans = input(query+" [y/n] ")
     except KeyboardInterrupt:
         input_yn(query)
 
     while ans not in ["y", "n"]:
-        ans = raw_input("'y' or 'n' please: ")
+        ans = input("'y' or 'n' please: ")
 
     return ans == "y"

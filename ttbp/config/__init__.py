@@ -82,7 +82,7 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                                    ver 0.11.1 (rainbows) |
+|                                    ver 0.11.2 (rainbows) |
 |__________________________________________________________|
 '''.lstrip()
 
@@ -146,4 +146,12 @@ version 0.9.3 features:
       exciting
     * general PSA: feel free to use the github repo for bugs/feature requests:
             https://github.com/modgethanc/ttbp/issues""",
-        }
+        "0.11.2": """
+~[version 0.11.2 update]~
+
+    * added a new option to allow setting entries to default to either public or
+      non-public on posting; this option only really makes sense if you're
+      already publishing to html/gopher, but is available either way!
+      
+      you can find this option under 'settings' as 'post as nopub'."""
+}
