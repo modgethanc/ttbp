@@ -28,6 +28,12 @@ body {
   padding: 1em;
 }
 
+.entry p.permalink {
+  font-size: .6em;
+  font-color: #808080;
+  text-align: right;
+}
+
 .entry h5 {
   text-align: right;
   margin-top: .2em;
