@@ -153,5 +153,14 @@ version 0.9.3 features:
       non-public on posting; this option only really makes sense if you're
       already publishing to html/gopher, but is available either way!
       
-      you can find this option under 'settings' as 'post as nopub'."""
+      you can find this option under 'settings' as 'post as nopub'.""",
+        "0.11.3": """
+~[version 0.11.3 update]~
+
+    * thanks to ~sinacutie, you can now set custom css for the permalink text
+      styling on your html page. the default permalink style has been added to
+      your current css file, and shouldn't change the appearance of your page.
+      
+      if you're not using custom css, don't worry about this!"""
+
 }

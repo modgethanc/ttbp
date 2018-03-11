@@ -50,7 +50,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.11.2"
+__version__ = "0.11.3"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -761,6 +761,7 @@ publicly available on github at https://github.com/modgethanc/ttbp
 other contributors:
     ~vilmibm, packaging help and gopher support
     ~sanqui, the bug swatter
+    ~sinacutie, for css updates
 
 if you have ideas for ttbp, you are welcome to contact me to discuss them;
 please send me tildemail or open a github issue. i am not a very experienced
@@ -1335,6 +1336,19 @@ def update_user_version():
             SETTINGS.update({"post as nopub": False})
             save_settings()
 
+        if z < 3:
+            # update permalink css
+            style = open(os.path.join(config.USER_CONFIG, 'style.css'), 'r').read()
+            if "permalink" not in style:
+                print("adding new css...")
+                with open(os.path.join(config.USER_CONFIG, 'style.css'), 'a') as f:
+                    f.write("""
+.entry p.permalink {
+  font-size: .6em;
+  font-color: #808080;
+  text-align: right;
+}""")
+
     print("""
 you're all good to go, """+chatter.say("friend")+"""! please contact ~endorphant if
 something strange happened to you during this update.
@@ -1355,6 +1369,10 @@ something strange happened to you during this update.
     if y < 11 or z < 2:
         # version 0.11.2 patch notes
         print(config.UPDATES["0.11.2"])
+
+    if y < 11 or z < 3:
+        # version 0.11.3 patch notes
+        print(config.UPDATES["0.11.3"])
 
     confirm = ""
 
