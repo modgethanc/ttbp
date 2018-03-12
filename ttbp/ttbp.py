@@ -516,7 +516,7 @@ def main_menu():
 
     menuOptions = [
             "record your feels",
-            "review your feels",
+            "manage your feels",
             "check out your neighbors",
             "browse global feels",
             "scribble some graffiti",
@@ -540,7 +540,7 @@ def main_menu():
         write_entry(os.path.join(config.USER_DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        intro = "here are some options for reviewing your feels:"
+        intro = "here are some options for managing your feels:"
         redraw(intro)
         review_menu(intro)
         core.load_files()
@@ -630,7 +630,8 @@ def review_menu(intro=""):
             redraw("publishing status of your feels:")
             list_nopubs(config.USER)
         elif choice == 2:
-            top = DUST
+            redraw("FEELS BACKUP")
+            backup_feels()
         elif choice == 3:
             top = DUST
         elif choice == 4:
@@ -754,6 +755,43 @@ def generate_feels_list(user):
     metas.reverse()
 
     return metas, owner
+
+def backup_feels():
+    """creates a tar.gz of user's entries directory"""
+
+    backupfile = os.path.join(os.path.expanduser('~'), "feels-backup-"+time.strftime("%Y%m%d%H%M%S")+".tar.gz")
+
+    print("""\
+i'm preparing all of your entries for backup.""")
+
+    print("...")
+    time.sleep(1)
+
+    print("""
+ready to go! a backup file will be saved to your home directory at:
+{backuploc}""".format(backuploc=backupfile))
+
+    ans = util.input_yn("""\
+
+would you like to create this backup?
+
+please enter""")
+
+    if ans:
+        if not subprocess.call(["tar", "-C", config.PATH, "-czf", backupfile, "entries"]):
+            print("\nbackup saved!")
+        else:
+            print("""
+sorry, something went wrong! please try to address the error and try again.
+if you need help, ask in IRC or send mail to ~endorphant and we'll try to
+figure it out!""")
+    else:
+        print("no problem, {friend}; come back whenever if you want a backup!".format(friend=chatter.say("friend")))
+
+    input("\n\npress <enter> to go back home.\n\n")
+    redraw()
+
+    return
 
 def show_credits():
     '''
