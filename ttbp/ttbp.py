@@ -516,7 +516,7 @@ def main_menu():
 
     menuOptions = [
             "record your feels",
-            "review your feels",
+            "manage your feels",
             "check out your neighbors",
             "browse global feels",
             "scribble some graffiti",
@@ -540,15 +540,11 @@ def main_menu():
         write_entry(os.path.join(config.USER_DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        if core.publishing():
-            intro = "here are some options for reviewing your feels:"
-            redraw(intro)
-            review_menu(intro)
-            core.load_files()
-            core.write("index.html")
-        else:
-            redraw("your recorded feels, listed by date:")
-            view_feels(config.USER)
+        intro = "here are some options for managing your feels:"
+        redraw(intro)
+        review_menu(intro)
+        core.load_files()
+        core.write("index.html")
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(
@@ -614,12 +610,17 @@ def review_menu(intro=""):
 
     menuOptions = [
             "read over feels",
-            "modify feels publishing"
+            "modify feels publishing",
+            "backup your feels",
+            "delete feels by day",
+            "delete all feels"
             ]
 
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
     choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
+
+    top = ""
 
     if choice is not False:
         if choice == 0:
@@ -628,12 +629,19 @@ def review_menu(intro=""):
         elif choice == 1:
             redraw("publishing status of your feels:")
             list_nopubs(config.USER)
+        elif choice == 2:
+            redraw("FEELS BACKUP")
+            backup_feels()
+        elif choice == 3:
+            top = DUST
+        elif choice == 4:
+            top = DUST
     else:
         redraw()
         return
 
-    redraw(intro)
-    return review_menu()
+    redraw(top+intro)
+    return review_menu(intro)
 
 def view_neighbors(users, prompt):
     '''
@@ -708,7 +716,6 @@ def view_feels(townie):
     '''
     generates a list of all feels by given townie and displays in
     date order; allows selection of one feel to read.
-
     '''
 
     metas, owner = generate_feels_list(townie)
@@ -748,6 +755,43 @@ def generate_feels_list(user):
     metas.reverse()
 
     return metas, owner
+
+def backup_feels():
+    """creates a tar.gz of user's entries directory"""
+
+    backupfile = os.path.join(os.path.expanduser('~'), "feels-backup-"+time.strftime("%Y%m%d%H%M%S")+".tar.gz")
+
+    print("""\
+i'm preparing all of your entries for backup.""")
+
+    print("...")
+    time.sleep(1)
+
+    print("""
+ready to go! a backup file will be saved to your home directory at:
+{backuploc}""".format(backuploc=backupfile))
+
+    ans = util.input_yn("""\
+
+would you like to create this backup?
+
+please enter""")
+
+    if ans:
+        if not subprocess.call(["tar", "-C", config.PATH, "-czf", backupfile, "entries"]):
+            print("\nbackup saved!")
+        else:
+            print("""
+sorry, something went wrong! please try to address the error and try again.
+if you need help, ask in IRC or send mail to ~endorphant and we'll try to
+figure it out!""")
+    else:
+        print("no problem, {friend}; come back whenever if you want a backup!".format(friend=chatter.say("friend")))
+
+    input("\n\npress <enter> to go back home.\n\n")
+    redraw()
+
+    return
 
 def show_credits():
     '''
@@ -814,6 +858,14 @@ def set_nopubs(metas, user, prompt):
     """displays a list of entries for pub/nopub toggling.
     """
 
+    if core.publishing():
+        nopub_note = ""
+    else:
+        nopub_note = """\
+(since you're not publishing your entries, these settings don't really matter;
+none of your feels will be viewable outside of this server)"""
+        print(nopub_note + "\n")
+
     entries = []
     for entry in metas:
         pub = ""
@@ -821,7 +873,7 @@ def set_nopubs(metas, user, prompt):
             pub = "(nopub)"
         entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
+    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt+"\n\n"+nopub_note)
 
     if choice is not False:
         target = os.path.basename(metas[choice][0])
