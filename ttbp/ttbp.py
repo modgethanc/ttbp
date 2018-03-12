@@ -1087,7 +1087,7 @@ setting this as your publishing directory means this program may
 delete or overwrite file there!
 
 if you're sure you want to use it, hit <enter> to confirm.
-otherwise, pick another location: """.format(pDir=publishDir)
+otherwise, pick another location: """.format(pDir=publishDir))
 
         if second == "":
             break
