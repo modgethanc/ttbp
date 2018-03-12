@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import sys
+import time
 
 from .. import util
 
@@ -82,9 +83,43 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                                    ver 0.11.2 (rainbows) |
+|                                    ver 0.11.3 (rainbows) |
 |__________________________________________________________|
 '''.lstrip()
+
+## page texts
+
+credits = """
+ttbp was written for tilde.town by ~endorphant in python. the codebase is
+publicly available on github at https://github.com/modgethanc/ttbp
+
+other contributors:
+    ~vilmibm, packaging help and gopher support
+    ~sanqui, the bug swatter
+    ~sinacutie, for css updates
+
+if you have ideas for ttbp, you are welcome to contact me to discuss them;
+please send me tildemail or open a github issue. i am not a very experienced
+developer, and ttbp is one of my first public-facing projects, so i appreciate
+your patience while i learn how to be a better developer!
+
+i'd love to hear about your ideas and brainstorm about new features!
+
+thanks to everyone who reads, listens, writes, and feels."""
+
+recording = """
+feels will be recorded for today, {today}.
+
+if you've already started recording feels for this day, you
+can pick up where you left off.
+
+you can write your feels in plaintext, markdown, html, or a mixture of
+these.
+
+press <enter> to begin recording your feels in your chosen text
+editor.
+
+""".format(today=time.strftime("%d %B %Y"))
 
 ## update announcements
 

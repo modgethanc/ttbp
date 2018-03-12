@@ -754,25 +754,7 @@ def show_credits():
     prints author acknowledgements and commentary
     '''
 
-    print("""
-ttbp was written for tilde.town by ~endorphant in python. the codebase is
-publicly available on github at https://github.com/modgethanc/ttbp
-
-other contributors:
-    ~vilmibm, packaging help and gopher support
-    ~sanqui, the bug swatter
-    ~sinacutie, for css updates
-
-if you have ideas for ttbp, you are welcome to contact me to discuss them;
-please send me tildemail or open a github issue. i am not a very experienced
-developer, and ttbp is one of my first public-facing projects, so i appreciate
-your patience while i learn how to be a better developer!
-
-i'd love to hear about your ideas and brainstorm about new features!
-
-thanks to everyone who reads, listens, writes, and feels.\
-        """)
-
+    print(config.credits)
     input("\n\npress <enter> to go back home.\n\n")
     redraw()
 
@@ -785,19 +767,7 @@ def write_entry(entry=os.path.join(config.USER_DATA, "test.txt")):
     main feels-recording handler
     '''
 
-    entered = input("""
-feels will be recorded for today, {today}.
-
-if you've already started recording feels for this day, you
-can pick up where you left off.
-
-you can write your feels in plaintext, markdown, html, or a mixture of
-these.
-
-press <enter> to begin recording your feels in your chosen text
-editor.
-
-""".format(today=time.strftime("%d %B %Y")))
+    entered = input(config.recording)
 
     if entered:
         entryFile = open(entry, "a")
@@ -806,6 +776,8 @@ editor.
     subprocess.call([SETTINGS.get("editor"), entry])
 
     left = ""
+
+    core.load_files()
 
     if SETTINGS.get("post as nopub"):
         core.toggle_nopub(os.path.basename(entry))
@@ -821,7 +793,7 @@ editor.
             gopher.publish_gopher('feels', core.get_files())
             left += " also posted to your ~/public_gopher!\n"
 
-    core.load_files()
+    #core.load_files()
     redraw(left + " thanks for sharing your feels!")
 
     return
@@ -1108,14 +1080,14 @@ def select_publish_dir():
 
     publishDir = os.path.join(config.PUBLIC, choice)
     while os.path.exists(publishDir):
-        second = input("\n"+publishDir+"""\
- already exists!
+        second = input("""
+{pDir} already exists!
 
 setting this as your publishing directory means this program may
 delete or overwrite file there!
 
 if you're sure you want to use it, hit <enter> to confirm.
-otherwise, pick another location: """)
+otherwise, pick another location: """.format(pDir=publishDir)
 
         if second == "":
             break
