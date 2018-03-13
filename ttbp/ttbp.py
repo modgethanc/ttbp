@@ -540,11 +540,14 @@ def main_menu():
         write_entry(os.path.join(config.USER_DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        intro = "here are some options for managing your feels:"
-        redraw(intro)
-        review_menu(intro)
-        core.load_files()
-        core.write("index.html")
+        if len(os.listdir(config.USER_DATA)) > 0:
+            intro = "here are some options for managing your feels:"
+            redraw(intro)
+            review_menu(intro)
+            core.load_files()
+            core.write("index.html")
+        else:
+            redraw("you don't have any feels to manage, "+chatter.say("friend"))
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(
@@ -813,26 +816,39 @@ just in case a future version of you still wants to look them over.
     time.sleep(1)
     print("...")
 
-    purgecode = util.genID(5)
+    feelscount = len(os.listdir(config.USER_DATA))
 
-    print("""
+    if feelscount > 0:
+        purgecode = util.genID(5)
 
-i've loaded up all of your feels for purging. if you're ready, carefully type
+        print("""
+
+i've loaded up all {count} of your feels for purging. if you're ready, carefully type
 the following purge code: 
          _________
          |       |
          | {purgecode} |
          |_______|
-""".format(purgecode=purgecode))
+""".format(purgecode=purgecode, count=feelscount))
 
-    ans = input("(leave blank or type anything else to cancel) > ")
+        ans = input("(leave blank or type anything else to cancel) > ")
 
-    if ans == purgecode:
-        print("...")
-        time.sleep(1)
-        print("ALL FEELS PURGED! you're ready to start fresh!")
+        if ans == purgecode:
+            print("...")
+            time.sleep(1)
+            unpublish()
+            if not subprocess.call(["rm", "-rf", config.USER_DATA]):
+                subprocess.call(["mkdir", config.USER_DATA])
+                print("ALL FEELS PURGED! you're ready to start fresh!")
+            else:
+                print("""
+sorry, something went wrong! please try to address the error and try again.
+if you need help, ask in IRC or send mail to ~endorphant and we'll try to
+figure it out!""")
+        else:
+            print("\nfeels purge canceled! you're welcome to come back again.")
     else:
-        print("\nfeels purge canceled! please feel free to come back again.")
+        print("you don't have any feels to purge, "+chatter.say("friend"))
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
     redraw()
