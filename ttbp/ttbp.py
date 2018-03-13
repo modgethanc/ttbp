@@ -540,14 +540,11 @@ def main_menu():
         write_entry(os.path.join(config.USER_DATA, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
-        if len(os.listdir(config.USER_DATA)) > 0:
-            intro = "here are some options for managing your feels:"
-            redraw(intro)
-            review_menu(intro)
-            core.load_files()
-            core.write("index.html")
-        else:
-            redraw("you don't have any feels to manage, "+chatter.say("friend"))
+        intro = "here are some options for managing your feels:"
+        redraw(intro)
+        review_menu(intro)
+        core.load_files()
+        core.write("index.html")
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(
@@ -616,7 +613,8 @@ def review_menu(intro=""):
             "modify feels publishing",
             "backup your feels",
             "delete feels by day",
-            "purge all feels"
+            "purge all feels",
+            "import a feels backup",
             ]
 
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
@@ -624,22 +622,38 @@ def review_menu(intro=""):
     choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
 
     top = ""
+    hasfeels = len(os.listdir(config.USER_DATA)) > 0
+    nofeels = "you don't have any feels to work with, "+chatter.say("friend")+"\n\n> "
 
     if choice is not False:
         if choice == 0:
-            redraw("your recorded feels, listed by date:")
-            view_feels(config.USER)
+            if hasfeels:
+                redraw("your recorded feels, listed by date:")
+                view_feels(config.USER)
+            else:
+                top = nofeels
         elif choice == 1:
-            redraw("publishing status of your feels:")
-            list_nopubs(config.USER)
+            if hasfeels:
+                redraw("publishing status of your feels:")
+                list_nopubs(config.USER)
+            else:
+                top = nofeels
         elif choice == 2:
-            redraw("FEELS BACKUP")
-            backup_feels()
+            if hasfeels:
+                redraw("FEELS BACKUP")
+                backup_feels()
+            else:
+                top = nofeels
         elif choice == 3:
             top = DUST
         elif choice == 4:
-            redraw("!!!PURGING ALL FEELS!!!")
-            purge_feels()
+            if hasfeels:
+                redraw("!!!PURGING ALL FEELS!!!")
+                purge_feels()
+            else:
+                top = nofeels
+        elif choice == 5:
+            top = DUST
     else:
         redraw()
         return
