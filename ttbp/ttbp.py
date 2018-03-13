@@ -613,7 +613,7 @@ def review_menu(intro=""):
             "modify feels publishing",
             "backup your feels",
             "delete feels by day",
-            "delete all feels"
+            "purge all feels"
             ]
 
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
@@ -635,7 +635,8 @@ def review_menu(intro=""):
         elif choice == 3:
             top = DUST
         elif choice == 4:
-            top = DUST
+            redraw("!!!PURGING ALL FEELS!!!")
+            purge_feels()
     else:
         redraw()
         return
@@ -788,7 +789,52 @@ figure it out!""")
     else:
         print("no problem, {friend}; come back whenever if you want a backup!".format(friend=chatter.say("friend")))
 
-    input("\n\npress <enter> to go back home.\n\n")
+    input("\n\npress <enter> to go back to managing your feels.\n\n")
+    redraw()
+
+    return
+
+def purge_feels():
+    """handles deleting all feels"""
+
+    print("""\
+warning! ! ! this action is irreversible!!!
+
+there is no way for me to help you recover your feels if you purge them all. i
+respect your need to do this from time to time, so please be sure you're ready!
+
+i recommend that you make a backup of your feels and stash them somewhere safe,
+just in case a future version of you still wants to look them over.
+""")
+
+    print("...")
+    time.sleep(1)
+    print("...loading feels...")
+    time.sleep(1)
+    print("...")
+
+    purgecode = util.genID(5)
+
+    print("""
+
+i've loaded up all of your feels for purging. if you're ready, carefully type
+the following purge code: 
+         _________
+         |       |
+         | {purgecode} |
+         |_______|
+""".format(purgecode=purgecode))
+
+    ans = input("(leave blank or type anything else to cancel) > ")
+
+    if ans == purgecode:
+        print("...")
+        time.sleep(1)
+        print("ALL FEELS PURGED! you're ready to start fresh!")
+    else:
+        print("\nfeels purge canceled! please feel free to come back again.")
+
+    input("\n\npress <enter> to go back to managing your feels.\n\n")
     redraw()
 
     return
