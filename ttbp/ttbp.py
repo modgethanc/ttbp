@@ -612,6 +612,7 @@ def review_menu(intro=""):
             "read over feels",
             "modify feels publishing",
             "backup your feels",
+            "bury some feels",
             "delete feels by day",
             "purge all feels",
             "import a feels backup",
@@ -645,18 +646,20 @@ def review_menu(intro=""):
             else:
                 top = nofeels
         elif choice == 3:
+            top = DUST
+        elif choice == 4:
             if hasfeels:
                 redraw("deleting feels")
                 delete_feels()
             else:
                 top = nofeels
-        elif choice == 4:
+        elif choice == 5:
             if hasfeels:
                 redraw("!!!PURGING ALL FEELS!!!")
                 purge_feels()
             else:
                 top = nofeels
-        elif choice == 5:
+        elif choice == 6:
             top = DUST
     else:
         redraw()
