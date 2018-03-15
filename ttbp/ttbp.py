@@ -645,7 +645,11 @@ def review_menu(intro=""):
             else:
                 top = nofeels
         elif choice == 3:
-            top = DUST
+            if hasfeels:
+                redraw("deleting feels")
+                delete_feels()
+            else:
+                top = nofeels
         elif choice == 4:
             if hasfeels:
                 redraw("!!!PURGING ALL FEELS!!!")
@@ -810,6 +814,58 @@ figure it out!""")
     redraw()
 
     return
+
+def delete_feels():
+    """handles deleting feels one at a time"""
+
+    feel = input("""which day's feels do you want to load for deletion?
+
+YYYYMMDD: """)
+
+    if feel in util.BACKS:
+        return
+
+    print("...")
+    time.sleep(1)
+    print("""\
+here's a preview of that feel. press <q> when you're done reviewing!
+-------------------------------------------------------------""")
+
+    if subprocess.call(["less", os.path.join(config.USER_DATA, feel+".txt")]):
+        redraw("deleting feels")
+        print("""\
+sorry, i couldn't find feels for {date}!
+
+please try again, or type <q> to cancel.""".format(date=feel))
+        return delete_feels()
+
+    print("""
+-------------------------------------------------------------
+
+feels deletion is irreversible! if you're sure you want to delete this feel,
+type the date again to confirm, or q to cancel.""")
+
+    confirm = input("[{feeldate}]> ".format(feeldate=feel))
+
+    if confirm == feel:
+        print("...")
+        time.sleep(1)
+        print("feels deleted!")
+    else:
+        print("deletion canceled!")
+
+    ans = util.input_yn("""do you want to delete a different feel?
+please enter""")
+
+    if ans:
+        redraw("deleting feels")
+        return delete_feels()
+    else:
+        print("okay! please come back any time if you want to delete old feels!")
+        input("\n\npress <enter> to go back to managing your feels.\n\n")
+        redraw()
+    return
+
 
 def purge_feels():
     """handles deleting all feels"""

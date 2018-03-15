@@ -31,7 +31,7 @@ import colorama
 import inflect
 
 ## misc globals
-BACKS = ['back', 'b', 'q']
+BACKS = ['back', 'b', 'q', '<q>']
 NAVS = ['u', 'd']
 
 ## color stuff
