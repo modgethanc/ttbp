@@ -853,6 +853,7 @@ type the date again to confirm, or q to cancel.""")
     if confirm == feel:
         print("...")
         time.sleep(1)
+        core.delete_feel(feel+".txt")
         print("feels deleted!")
     else:
         print("deletion canceled!")

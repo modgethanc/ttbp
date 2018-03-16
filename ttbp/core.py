@@ -85,19 +85,10 @@ def get_files(feelsdir=config.MAIN_FEELS):
     for filename in os.listdir(feelsdir):
         if nopub(filename):
             unpublish_feel(filename)
-            continue
-            '''
-            link = os.path.join(config.WWW,
-                                os.path.splitext(
-                                    os.path.basename(filename))[0]+".html")
-            if os.path.exists(link):
-                subprocess.call(["rm", link])
-            continue
-            '''
-
-        filename = os.path.join(feelsdir, filename)
-        if os.path.isfile(filename) and valid(filename):
-            files.append(filename)
+        else:
+            filename = os.path.join(feelsdir, filename)
+            if os.path.isfile(filename) and valid(filename):
+                files.append(filename)
 
     files.sort()
     files.reverse()
@@ -110,7 +101,7 @@ def load_files(feelsdir=config.MAIN_FEELS):
 
     * reads user's nopub file
     * calls get_files() to load all files for given directory
-    * re-renders main html file
+    * re-renders main html file and/or gopher if needed
     '''
 
     global FILES
@@ -465,8 +456,6 @@ def toggle_nopub(filename):
     nopub_file.close()
 
     load_files()
-    #write_html("index.html")
-    #gopher.publish_gopher('feels', FILES)
 
     return action
 
@@ -480,7 +469,10 @@ def delete_feel(filename):
     """deletes given filename; removes the feel from publicly-readable
     locations, then deletes the original file."""
 
-    pass
+    feel = os.path.join(config.MAIN_FEELS, filename)
+    if os.path.exists(feel):
+        subprocess.call(["rm", feel])
+        load_files(config.MAIN_FEELS)
 
 def unpublish_feel(filename):
     """takes given filename and removes it from public_html and gopher_html, if
@@ -488,9 +480,7 @@ def unpublish_feel(filename):
 
     live_html = os.path.join(config.WWW,
             os.path.splitext(os.path.basename(filename))[0]+".html")
-    #live_html = os.path.join(config.WWW, filename.split(".")[0]+".html")
     if os.path.exists(live_html):
-        print(live_html)
         subprocess.call(["rm", live_html])
     live_gopher = os.path.join(config.GOPHER_PATH, filename)
     if os.path.exists(live_gopher):
