@@ -26,6 +26,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import random
 import time
 from six.moves import input
+import os
 
 import colorama
 import inflect
@@ -214,3 +215,21 @@ def input_yn(query):
         ans = input("'y' or 'n' please: ")
 
     return ans == "y"
+
+def parse_date(file):
+    '''
+    parses date out of pre-validated filename
+
+    * assumes a filename of YYYYMMDD.txt
+    * returns a list:
+      [0] 'YYYY'
+      [1] 'MM'
+      [2] 'DD'
+    '''
+
+    rawdate = os.path.splitext(os.path.basename(file))[0]
+
+    date = [rawdate[0:4], rawdate[4:6], rawdate[6:]]
+
+    return date
+

@@ -7,7 +7,7 @@ import time
 import subprocess
 
 from . import util
-from .core import parse_date
+#from .core import parse_date
 
 GOPHER_PROMPT = """
 
@@ -73,7 +73,7 @@ def publish_gopher(gopher_path, entry_filenames):
             if not os.path.exists(gopher_entry_symlink):
                 subprocess.call(["ln", "-s", entry_filename, gopher_entry_symlink])
 
-            label = "-".join(parse_date(entry_filename))
+            label = "-".join(util.parse_date(entry_filename))
             gophermap.write('0{file_label}\t{filename}\n'.format(
                 file_label=label,
                 filename=filename))

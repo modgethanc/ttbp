@@ -71,7 +71,8 @@ WWW = os.path.join(PATH, 'www')
 GOPHER_PATH = os.path.join(USER_HOME, 'public_gopher', 'feels')
 USER_CONFIG = os.path.join(PATH, 'config')
 TTBPRC = os.path.join(USER_CONFIG, 'ttbprc')
-USER_DATA = os.path.join(PATH, 'entries')
+MAIN_FEELS = os.path.join(PATH, 'entries')
+BURIED_FEELS = os.path.join(MAIN_FEELS, 'buried')
 NOPUB = os.path.join(USER_CONFIG, "nopub")
 
 ## UI

@@ -272,7 +272,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.""")
     print("\ngenerating feels at {path}...".format(path=config.PATH).rstrip())
     subprocess.call(["mkdir", config.PATH])
     subprocess.call(["mkdir", config.USER_CONFIG])
-    subprocess.call(["mkdir", config.USER_DATA])
+    subprocess.call(["mkdir", config.MAIN_FEELS])
 
     versionFile = os.path.join(config.PATH, "version")
     open(versionFile, "w").write(__version__)
@@ -537,14 +537,14 @@ def main_menu():
     if choice == '0':
         redraw()
         today = time.strftime("%Y%m%d")
-        write_entry(os.path.join(config.USER_DATA, today+".txt"))
+        write_entry(os.path.join(config.MAIN_FEELS, today+".txt"))
         core.www_neighbors()
     elif choice == '1':
         intro = "here are some options for managing your feels:"
         redraw(intro)
         review_menu(intro)
         core.load_files()
-        core.write("index.html")
+        core.write_html("index.html")
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(
@@ -620,10 +620,10 @@ def review_menu(intro=""):
 
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
 
-    choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'back' to return home) ")
+    choice = util.list_select(menuOptions, "what would you like to do with your feels? (or 'q' to return home) ")
 
     top = ""
-    hasfeels = len(os.listdir(config.USER_DATA)) > 0
+    hasfeels = len(os.listdir(config.MAIN_FEELS)) > 0
     nofeels = "you don't have any feels to work with, "+chatter.say("friend")+"\n\n> "
 
     if choice is not False:
@@ -727,7 +727,7 @@ def view_neighbors(users, prompt):
         sortedUsers.append(user[0])
         userIndex.append(user[2])
 
-    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'back' or 'q' to go home: ", 15, SETTINGS.get("rainbows", False), prompt)
+    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'q' to go home: ", 15, SETTINGS.get("rainbows", False), prompt)
 
     if choice is not False:
         redraw("~{user}'s recorded feels, listed by date: \n".format(user=userIndex[choice]))
@@ -765,7 +765,7 @@ def generate_feels_list(user):
     showpub = False
 
     if user == config.USER:
-        entryDir = config.USER_DATA
+        entryDir = config.MAIN_FEELS
         owner = "your"
         if core.publishing():
             showpub = True
@@ -834,7 +834,7 @@ YYYYMMDD: """)
 here's a preview of that feel. press <q> when you're done reviewing!
 -------------------------------------------------------------""")
 
-    if subprocess.call(["less", os.path.join(config.USER_DATA, feel+".txt")]):
+    if subprocess.call(["less", os.path.join(config.MAIN_FEELS, feel+".txt")]):
         redraw("deleting feels")
         print("""\
 sorry, i couldn't find feels for {date}!
@@ -889,7 +889,7 @@ just in case a future version of you still wants to look them over.
     time.sleep(1)
     print("...")
 
-    feelscount = len(os.listdir(config.USER_DATA))
+    feelscount = len(os.listdir(config.MAIN_FEELS))
 
     if feelscount > 0:
         purgecode = util.genID(5)
@@ -910,8 +910,8 @@ the following purge code:
             print("...")
             time.sleep(1)
             unpublish()
-            if not subprocess.call(["rm", "-rf", config.USER_DATA]):
-                subprocess.call(["mkdir", config.USER_DATA])
+            if not subprocess.call(["rm", "-rf", config.MAIN_FEELS]):
+                subprocess.call(["mkdir", config.MAIN_FEELS])
                 print("ALL FEELS PURGED! you're ready to start fresh!")
             else:
                 print("""
@@ -941,7 +941,7 @@ def show_credits():
 
 ## handlers
 
-def write_entry(entry=os.path.join(config.USER_DATA, "test.txt")):
+def write_entry(entry=os.path.join(config.MAIN_FEELS, "test.txt")):
     '''
     main feels-recording handler
     '''
@@ -962,18 +962,18 @@ def write_entry(entry=os.path.join(config.USER_DATA, "test.txt")):
         core.toggle_nopub(os.path.basename(entry))
     else:
         if core.publishing():
-            core.write("index.html")
-            left = "posted to {url}/index.html\n\n>".format(
+            core.write_html("index.html")
+            left = "posted to {url}/index.html\n\n> ".format(
                 url="/".join(
                     [config.LIVE+config.USER,
                         str(SETTINGS.get("publish dir"))]))
 
         if SETTINGS.get('gopher'):
-            gopher.publish_gopher('feels', core.get_files())
-            left += " also posted to your ~/public_gopher!\n"
+            gopher.publish_gopher('feels', core.FILES)
+            left += "also posted to your ~/public_gopher!\n\n> "
 
     #core.load_files()
-    redraw(left + " thanks for sharing your feels!")
+    redraw(left + "thanks for sharing your feels!")
 
     return
 
@@ -1015,7 +1015,6 @@ none of your feels will be viewable outside of this server)"""
         action = core.toggle_nopub(target)
         redraw(prompt)
 
-        core.write("index.html")
         if SETTINGS["gopher"]:
             gopher.publish_gopher('feels', core.get_files())
 
@@ -1340,7 +1339,7 @@ def update_publishing():
             subprocess.call(["rm", os.path.join(config.PUBLIC, oldDir)])
         make_publish_dir(newDir)
         core.load_files()
-        core.write("index.html")
+        core.write_html("index.html")
     else:
         unpublish()
         SETTINGS.update({"publish dir": None})
@@ -1444,7 +1443,7 @@ def update_user_version():
 
             # repopulate html files
             core.load_files()
-            core.write("index.html")
+            core.write_html("index.html")
 
         # add publishing setting
         print("\nnew feature!\n")
