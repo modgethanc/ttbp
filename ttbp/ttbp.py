@@ -34,6 +34,7 @@ https://github.com/modgethanc/ttbp
 from __future__ import absolute_import
 
 import os
+import sys
 import tempfile
 import subprocess
 import time
@@ -616,6 +617,7 @@ def review_menu(intro=""):
             "delete feels by day",
             "purge all feels",
             "import a feels backup",
+            "wipe feels account"
             ]
 
     util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
@@ -661,6 +663,9 @@ def review_menu(intro=""):
                 top = nofeels
         elif choice == 6:
             top = DUST
+        elif choice == 7:
+            redraw("!!! WIPING FEELS ACCOUNT !!!")
+            wipe_account()
     else:
         redraw()
         return
@@ -923,6 +928,65 @@ figure it out!""")
             print("\nfeels purge canceled! you're welcome to come back again.")
     else:
         print("you don't have any feels to purge, "+chatter.say("friend"))
+
+    input("\n\npress <enter> to go back to managing your feels.\n\n")
+    redraw()
+
+    return
+
+def wipe_account():
+    """handles wiping feels account"""
+
+    print("""\
+warning! ! ! this action is irreversible!!!
+
+this tool will remove your entire presence from the feels engine. this includes
+all posts, settings, and published html/gopher feels. you will no longer be
+listed anywhere as a user here.
+
+there is no way for me to help you recover any part of your feels acccount. i
+respect your need to do this from time to time, so please be sure you're ready!
+
+i recommend that you make a backup of your feels and stash them somewhere safe,
+just in case a future version of you still wants to look them over.
+""")
+
+    print("...")
+    time.sleep(1)
+    print("...loading feels...")
+    time.sleep(1)
+    print("...")
+    purgecode = util.genID(5)
+
+    print("""
+if you're ready, carefully type the following purge code: 
+         _________
+         |       |
+         | {purgecode} |
+         |_______|
+""".format(purgecode=purgecode))
+
+    ans = input("(leave blank or type anything else to cancel) > ")
+
+    if ans == purgecode:
+        print("...")
+        time.sleep(1)
+        unpublish()
+        if not subprocess.call(["rm", "-rf", config.PATH]):
+            print("""
+account deleted! if you ever want to come back, you're always welcome to start
+fresh :)
+
+thank you for sharing your feels!""")
+            input("\n\npress <enter> to exit the feels engine.\n\n")
+            sys.exit(stop())
+        else:
+            print("""
+sorry, something went wrong! please try to address the error and try again.
+if you need help, ask in IRC or send mail to ~endorphant and we'll try to
+figure it out!""")
+    else:
+        print("\naccount deletion canceled! you're welcome to come back again.")
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
     redraw()
