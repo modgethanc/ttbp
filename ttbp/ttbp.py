@@ -544,7 +544,7 @@ def main_menu():
         redraw(intro)
         review_menu(intro)
         core.load_files()
-        core.write_html("index.html")
+        #core.write_html("index.html")
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(

@@ -42,6 +42,7 @@ import json
 from . import chatter
 from . import config
 from . import gopher
+from . import util
 
 FEED = os.path.join("/home", "endorphant", "public_html", "ttbp", "index.html")
 SETTINGS = {}
@@ -84,6 +85,7 @@ def get_files(feelsdir=config.MAIN_FEELS):
     for filename in os.listdir(feelsdir):
         if nopub(filename):
             unpublish_feel(filename)
+            continue
             '''
             link = os.path.join(config.WWW,
                                 os.path.splitext(
@@ -108,12 +110,17 @@ def load_files(feelsdir=config.MAIN_FEELS):
 
     * reads user's nopub file
     * calls get_files() to load all files for given directory
+    * re-renders main html file
     '''
 
     global FILES
 
     load_nopubs()
     FILES = get_files(feelsdir)
+    if publishing():
+        write_html("index.html")
+        if SETTINGS.get('gopher'):
+            gopher.publish_gopher('feels', FILES)
 
 def load_nopubs():
     """Load a list of the user's nopub entries.
@@ -458,8 +465,8 @@ def toggle_nopub(filename):
     nopub_file.close()
 
     load_files()
-    write_html("index.html")
-    gopher.publish_gopher('feels', FILES)
+    #write_html("index.html")
+    #gopher.publish_gopher('feels', FILES)
 
     return action
 
@@ -483,6 +490,7 @@ def unpublish_feel(filename):
             os.path.splitext(os.path.basename(filename))[0]+".html")
     #live_html = os.path.join(config.WWW, filename.split(".")[0]+".html")
     if os.path.exists(live_html):
+        print(live_html)
         subprocess.call(["rm", live_html])
     live_gopher = os.path.join(config.GOPHER_PATH, filename)
     if os.path.exists(live_gopher):
