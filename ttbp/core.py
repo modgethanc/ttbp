@@ -486,6 +486,29 @@ def unpublish_feel(filename):
     if os.path.exists(live_gopher):
         subprocess.call(["rm", live_gopher])
 
+def process_backup(filename):
+    """takes given filename and loads the archive into current main feels.
+
+    ignores any invalidly named files or files that already exist, to avoid
+    clobbering current feels. ignored files are left in the archive directory
+    for the user to manually sort out."""
+
+    backup_dir = os.path.splitext(os.path.splitext(os.path.basename(filename))[0])[0]
+    backup_path = os.path.join(config.BACKUPS, backup_dir)
+    subprocess.call(["mkdir", backup_path])
+    subprocess.call(["tar", "-C", backup_path, "-xf", filename])
+
+    backup_entries = os.path.join(backup_path, "entries")
+
+    backups = os.path.listdir(backup_entries)
+    current = os.path.listdir(config.MAIN_FEELS)
+
+    for feel in backups:
+        if os.path.basename(backups) not in current:
+            print(feel)
+
+
+
 #############
 #############
 #############

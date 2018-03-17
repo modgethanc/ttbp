@@ -612,10 +612,10 @@ def review_menu(intro=""):
             "read over feels",
             "modify feels publishing",
             "backup your feels",
+            "import a feels backup",
             "bury some feels",
             "delete feels by day",
             "purge all feels",
-            "import a feels backup",
             "wipe feels account"
             ]
 
@@ -647,22 +647,22 @@ def review_menu(intro=""):
             else:
                 top = nofeels
         elif choice == 3:
-            top = DUST
+            redraw("loading feels backup")
+            load_backup()
         elif choice == 4:
+            top = DUST
+        elif choice == 5:
             if hasfeels:
                 redraw("deleting feels")
                 delete_feels()
             else:
                 top = nofeels
-        elif choice == 5:
+        elif choice == 6:
             if hasfeels:
                 redraw("!!!PURGING ALL FEELS!!!")
                 purge_feels()
             else:
                 top = nofeels
-        elif choice == 6:
-            redraw("loading feels backup")
-            load_backup()
         elif choice == 7:
             redraw("!!! WIPING FEELS ACCOUNT !!!")
             wipe_account()
@@ -1026,6 +1026,18 @@ move it to {directory} and try running this tool again.""".format(directory=conf
     else:
         print("backup files found:\n")
         choice = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "backup files found:")
+
+        left = core.process_backup(os.path.join(config.BACKUPS, backups[choice]))
+
+        if not left:
+            print("congrats! your feels archive has been unloaded.")
+        else:
+            print("""\
+i've unloaded as much as i can, but there's still some feels i didn't copy over.
+this is probably because you have current feels on the same days, and i didn't
+want to overwrite them.
+
+you can check out the leftover feels yourself at {directory}!""".format(directory=os.path.join(config.BACKUPS, left)))
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
 
