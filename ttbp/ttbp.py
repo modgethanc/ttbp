@@ -545,7 +545,6 @@ def main_menu():
         redraw(intro)
         review_menu(intro)
         core.load_files()
-        #core.write_html("index.html")
     elif choice == '2':
         users = core.find_ttbps()
         prompt = "the following {usercount} {are} recording feels on ttbp:".format(
@@ -662,7 +661,8 @@ def review_menu(intro=""):
             else:
                 top = nofeels
         elif choice == 6:
-            top = DUST
+            redraw("loading feels backup")
+            load_backup()
         elif choice == 7:
             redraw("!!! WIPING FEELS ACCOUNT !!!")
             wipe_account()
@@ -789,7 +789,7 @@ def generate_feels_list(user):
 def backup_feels():
     """creates a tar.gz of user's entries directory"""
 
-    backupfile = os.path.join(os.path.expanduser('~'), "feels-backup-"+time.strftime("%Y%m%d%H%M%S")+".tar.gz")
+    backupfile = os.path.join(os.path.expanduser('~'), "feels-backup-"+time.strftime("%Y%m%d-%H%M%S")+".tar.gz")
 
     print("""\
 i'm preparing all of your entries for backup.""")
@@ -809,6 +809,10 @@ please enter""")
 
     if ans:
         if not subprocess.call(["tar", "-C", config.PATH, "-czf", backupfile, "entries"]):
+            subprocess.call(["chmod", "600", backupfile])
+            if not os.path.exists(config.BACKUPS):
+                subprocess.call(["mkdir", config.BACKUPS])
+            subprocess.call(["cp", backupfile, config.BACKUPS])
             print("\nbackup saved!")
         else:
             print("""
@@ -828,7 +832,7 @@ def delete_feels():
 
     feel = input("""which day's feels do you want to load for deletion?
 
-YYYYMMDD: """)
+YYYYMMDD (or 'q' to cancel)> """)
 
     if feel in util.BACKS:
         return
@@ -844,14 +848,15 @@ here's a preview of that feel. press <q> when you're done reviewing!
         print("""\
 sorry, i couldn't find feels for {date}!
 
-please try again, or type <q> to cancel.""".format(date=feel))
+please try again, or type <q> to cancel.
+""".format(date=feel))
         return delete_feels()
 
     print("""
 -------------------------------------------------------------
 
 feels deletion is irreversible! if you're sure you want to delete this feel,
-type the date again to confirm, or q to cancel.""")
+type the date again to confirm, or 'q' to cancel.""")
 
     confirm = input("[{feeldate}]> ".format(feeldate=feel))
 
@@ -873,6 +878,7 @@ please enter""")
         print("okay! please come back any time if you want to delete old feels!")
         input("\n\npress <enter> to go back to managing your feels.\n\n")
         redraw()
+
     return
 
 
@@ -990,6 +996,38 @@ figure it out!""")
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
     redraw()
+
+    return
+
+def load_backup():
+    """
+    scans for archive files (prompting for a file location if not found), opens,
+    copies files to main feels directory (skipping ones that already exist)
+    """
+
+    print("scanning backup directory at {directory}...".format(directory=config.BACKUPS))
+
+    time.sleep(1)
+    print("...\n")
+
+    backups = []
+
+    try:
+        for filename in os.listdir(config.BACKUPS):
+            if "feels-backup" in filename:
+                backups.append(filename)
+    except FileNotFoundError:
+        subprocess.call(["mkdir", config.BACKUPS])
+
+    if len(backups) < 1:
+        print(""""
+sorry, i didn't find any feels backups! if you have a backup file handy, please
+move it to {directory} and try running this tool again.""".format(directory=config.BACKUPS))
+    else:
+        print("backup files found:\n")
+        choice = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "backup files found:")
+
+    input("\n\npress <enter> to go back to managing your feels.\n\n")
 
     return
 
