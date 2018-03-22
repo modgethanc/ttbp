@@ -260,7 +260,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.""")
 
     time.sleep(1)
     print("...")
-    time.sleep(1)
+    time.sleep(.5)
 
     ## record user in source list
     users = open(config.USERFILE, 'a')
@@ -292,7 +292,7 @@ press <enter> to begin, or <ctrl-c> to get out of here.""")
         f.write(config.DEFAULT_STYLE)
 
     ## run user-interactive setup and load core engine
-    time.sleep(1)
+    time.sleep(0.5)
     print("done setting up feels!")
     print("\nthese are the default settings. you can change any of them now, or change them later at any time!!")
     setup()
@@ -407,7 +407,7 @@ def setup_repair():
     save_settings()
 
     print("...")
-    time.sleep(1)
+    time.sleep(0.5)
     input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
 
 def setup():
@@ -838,7 +838,7 @@ YYYYMMDD (or 'q' to cancel)> """)
         return
 
     print("...")
-    time.sleep(1)
+    time.sleep(0.1)
     print("""\
 here's a preview of that feel. press <q> when you're done reviewing!
 -------------------------------------------------------------""")
@@ -862,7 +862,7 @@ type the date again to confirm, or 'q' to cancel.""")
 
     if confirm == feel:
         print("...")
-        time.sleep(1)
+        time.sleep(0.5)
         core.delete_feel(feel+".txt")
         print("feels deleted!")
     else:
@@ -896,9 +896,9 @@ just in case a future version of you still wants to look them over.
 """)
 
     print("...")
-    time.sleep(1)
+    time.sleep(0.1)
     print("...loading feels...")
-    time.sleep(1)
+    time.sleep(0.5)
     print("...")
 
     feelscount = len(os.listdir(config.MAIN_FEELS))
@@ -920,7 +920,7 @@ the following purge code:
 
         if ans == purgecode:
             print("...")
-            time.sleep(1)
+            time.sleep(0.5)
             unpublish()
             if not subprocess.call(["rm", "-rf", config.MAIN_FEELS]):
                 subprocess.call(["mkdir", config.MAIN_FEELS])
@@ -958,9 +958,9 @@ just in case a future version of you still wants to look them over.
 """)
 
     print("...")
-    time.sleep(1)
+    time.sleep(0.1)
     print("...loading feels...")
-    time.sleep(1)
+    time.sleep(0.5)
     print("...")
     purgecode = util.genID(5)
 
@@ -976,7 +976,7 @@ if you're ready, carefully type the following purge code:
 
     if ans == purgecode:
         print("...")
-        time.sleep(1)
+        time.sleep(0.5)
         unpublish()
         if not subprocess.call(["rm", "-rf", config.PATH]):
             print("""
@@ -1007,7 +1007,7 @@ def load_backup():
 
     print("scanning backup directory at {directory}...".format(directory=config.BACKUPS))
 
-    time.sleep(1)
+    time.sleep(.5)
     print("...\n")
 
     backups = []
@@ -1020,7 +1020,7 @@ def load_backup():
         subprocess.call(["mkdir", config.BACKUPS])
 
     if len(backups) < 1:
-        print(""""
+        print("""
 sorry, i didn't find any feels backups! if you have a backup file handy, please
 move it to {directory} and try running this tool again.\
 """.format(directory=config.BACKUPS))
@@ -1037,7 +1037,11 @@ move it to {directory} and try running this tool again.\
 
             tempdir = os.path.join(config.BACKUPS, os.path.splitext(os.path.splitext(os.path.basename(backups[choice]))[0])[0], "entries")
 
+            time.sleep(.5)
+            print("...\n")
+
             if len(os.listdir(tempdir)) == 0:
+                os.rmdir(tempdir)
                 print("congrats! your feels archive has been unloaded.")
             else:
                 print("""\
@@ -1445,9 +1449,10 @@ def unpublish():
     if directory:
         publishDir = os.path.join(config.PUBLIC, directory)
         subprocess.call(["rm", publishDir])
+        os.mkdir(publishDir)
 
     if SETTINGS.get("gopher"):
-        SETTINGS.update({"gopher": False})
+        #SETTINGS.update({"gopher": False})
         subprocess.call(["rm", config.GOPHER_PATH])
 
 def update_publishing():
@@ -1540,7 +1545,7 @@ def update_user_version():
 
     time.sleep(1)
     print("...")
-    time.sleep(1)
+    time.sleep(0.5)
 
     userVersion = ""
     (x, y, z) = [0, 0, 0]
