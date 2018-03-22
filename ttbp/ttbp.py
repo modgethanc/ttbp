@@ -1022,7 +1022,8 @@ def load_backup():
     if len(backups) < 1:
         print(""""
 sorry, i didn't find any feels backups! if you have a backup file handy, please
-move it to {directory} and try running this tool again.""".format(directory=config.BACKUPS))
+move it to {directory} and try running this tool again.\
+""".format(directory=config.BACKUPS))
     else:
         print("backup files found:\n")
         choice = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "backup files found:")
@@ -1030,12 +1031,13 @@ move it to {directory} and try running this tool again.""".format(directory=conf
         if choice is not False:
             imports = core.process_backup(os.path.join(config.BACKUPS, backups[choice]))
             for feel in imports:
-                print("importing {feel}".format(feel="-".join(util.parse_date(feel))))
+                print("importing {entry}".format(entry="-".join(util.parse_date(feel))))
+                subprocess.call(["mv", feel, config.MAIN_FEELS])
                 time.sleep(.01)
 
             tempdir = os.path.join(config.BACKUPS, os.path.splitext(os.path.splitext(os.path.basename(backups[choice]))[0])[0], "entries")
 
-            if len(imports) == len(os.listdir(tempdir)):
+            if len(os.listdir(tempdir)) == 0:
                 print("congrats! your feels archive has been unloaded.")
             else:
                 print("""\

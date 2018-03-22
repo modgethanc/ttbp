@@ -487,7 +487,8 @@ def unpublish_feel(filename):
         subprocess.call(["rm", live_gopher])
 
 def process_backup(filename):
-    """takes given filename and loads the archive into current main feels.
+    """takes given filename and unpacks it into a temp directory, then returns a
+    list of filenames with collisions filtered out.
 
     ignores any invalidly named files or files that already exist, to avoid
     clobbering current feels. ignored files are left in the archive directory
@@ -509,8 +510,9 @@ def process_backup(filename):
 
     for feel in backups:
         if os.path.basename(feel) not in current:
-            imported.append(feel)
+            imported.append(os.path.join(backup_entries, feel))
 
+    imported.sort()
     return imported
 
 def import_feels(backups):
