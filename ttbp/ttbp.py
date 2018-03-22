@@ -928,6 +928,7 @@ type the following purge code:
             unpublish()
             if not subprocess.call(["rm", "-rf", config.MAIN_FEELS]):
                 subprocess.call(["mkdir", config.MAIN_FEELS])
+                core.load_files()
                 print("ALL FEELS PURGED! you're ready to start fresh!")
             else:
                 print("""
@@ -1043,6 +1044,8 @@ move it to {directory} and try running this tool again.\
                 print("importing {entry}".format(entry="-".join(util.parse_date(feel))))
                 subprocess.call(["mv", feel, config.MAIN_FEELS])
                 time.sleep(.01)
+
+            core.load_files()
 
             tempdir = os.path.join(config.BACKUPS, os.path.splitext(os.path.splitext(os.path.basename(backups[choice]))[0])[0], "entries")
 
@@ -1522,7 +1525,8 @@ def unpublish():
         publishDir = os.path.join(config.PUBLIC, directory)
         if os.path.exists(publishDir):
             subprocess.call(["rm", "-rf", publishDir])
-        os.mkdir(publishDir)
+        #make_publish_dir(directory)
+        #SETTINGS.update({"publish dir": None})
 
     if SETTINGS.get("gopher"):
         #SETTINGS.update({"gopher": False})
@@ -1543,10 +1547,9 @@ def update_publishing():
             subprocess.call(["rm", os.path.join(config.PUBLIC, oldDir)])
         make_publish_dir(newDir)
         core.load_files()
-        core.write_html("index.html")
+        #core.write_html("index.html")
     else:
         unpublish()
-        SETTINGS.update({"publish dir": None})
 
     core.load(SETTINGS)
 
@@ -1647,7 +1650,7 @@ def update_user_version():
 
             # repopulate html files
             core.load_files()
-            core.write_html("index.html")
+            #core.write_html("index.html")
 
         # add publishing setting
         print("\nnew feature!\n")
