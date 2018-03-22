@@ -1071,9 +1071,63 @@ def bury_feels():
     """queries for a feel to bury, then calls the feels burying handler.
     """
 
-    print(DUST)
+    feel = input("""\
+burying a feel removes it from view, including your own. buried feels are
+stashed in a private directory at {buried_dir}; you can visit your feels there
+from the command line, but no one else can view those files.
 
-    input("\n\npress <enter> to go back to managing your feels.\n\n")
+(a buried feels browser is in the works; for now, you'll have to use the
+command line to view your buried feels)
+
+which day's feels do you want to bury?
+
+YYYYMMDD (or 'q' to cancel)> """.format(buried_dir=""))
+
+    if feel in util.BACKS:
+        return
+
+    print("...")
+    time.sleep(0.1)
+    print("""\
+here's a preview of that feel. press <q> when you're done reviewing!
+-------------------------------------------------------------""")
+
+    if subprocess.call(["less", os.path.join(config.MAIN_FEELS, feel+".txt")]):
+        redraw("burying feels")
+        print("""\
+sorry, i couldn't find feels for {date}!
+
+please try again, or type <q> to cancel.
+""".format(date=feel))
+        return delete_feels()
+
+    print("""
+-------------------------------------------------------------
+
+feels burying is irreversible! if you're sure you want to bury this feel,
+type the date again to confirm, or 'q' to cancel.
+""")
+
+    confirm = input("[{feeldate}]> ".format(feeldate=feel))
+
+    if confirm == feel:
+        print("...")
+        time.sleep(0.5)
+        core.bury_feel(feel+".txt")
+        print("feels buried!")
+    else:
+        print("burying canceled!")
+
+    ans = util.input_yn("""do you want to bury a different feel?  please enter""")
+
+    if ans:
+        redraw("burying feels")
+        return bury_feels()
+    else:
+        print("okay! please come back any time if you want to bury your feels!")
+        input("\n\npress <enter> to go back to managing your feels.\n\n")
+        redraw()
+
     return
 
 def show_credits():

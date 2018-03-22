@@ -108,6 +108,7 @@ def load_files(feelsdir=config.MAIN_FEELS):
 
     load_nopubs()
     FILES = get_files(feelsdir)
+
     if publishing():
         write_html("index.html")
         if SETTINGS.get('gopher'):
@@ -461,9 +462,30 @@ def toggle_nopub(filename):
 
 def bury_feel(filename):
     """buries given filename; this removes the feel from any publicly-readable
-    location, and moves the textfile to user's private feels directory"""
+    location, and moves the textfile to user's private feels directory.
+    
+    timestring will be added to the filename to disambiguate and prevent
+    filename collisions.
+    
+    creates buried feels dir if it doesn't exist.
+    
+    regenerates feels list and republishes."""
 
-    pass
+    if not os.path.exists(config.BURIED_FEELS):
+        os.mkdir(config.BURIED_FEELS)
+        subprocess.call(["chmod", "700", config.BURIED_FEELS])
+
+    buryname = os.path.splitext(os.path.basename(filename))[0]+"-"+str(int(time.time()))+".txt"
+
+    subprocess.call(["mv", os.path.join(config.MAIN_FEELS, filename), os.path.join(config.BURIED_FEELS, buryname)])
+    subprocess.call(["chmod", "600", os.path.join(config.BURIED_FEELS, buryname)])
+
+    if publishing():
+        unpublish_feel(filename)
+
+    load_files()
+
+    return os.path.join(config.BURIED_FEELS, buryname)
 
 def delete_feel(filename):
     """deletes given filename; removes the feel from publicly-readable
@@ -472,6 +494,7 @@ def delete_feel(filename):
     feel = os.path.join(config.MAIN_FEELS, filename)
     if os.path.exists(feel):
         subprocess.call(["rm", feel])
+        unpublish_feel(filename)
         load_files(config.MAIN_FEELS)
 
 def unpublish_feel(filename):
