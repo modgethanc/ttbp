@@ -495,18 +495,31 @@ def process_backup(filename):
 
     backup_dir = os.path.splitext(os.path.splitext(os.path.basename(filename))[0])[0]
     backup_path = os.path.join(config.BACKUPS, backup_dir)
-    subprocess.call(["mkdir", backup_path])
-    subprocess.call(["tar", "-C", backup_path, "-xf", filename])
 
+    if not os.path.exists(backup_path):
+        subprocess.call(["mkdir", backup_path])
+
+    subprocess.call(["tar", "-C", backup_path, "-xf", filename])
     backup_entries = os.path.join(backup_path, "entries")
 
-    backups = os.path.listdir(backup_entries)
-    current = os.path.listdir(config.MAIN_FEELS)
+    backups = os.listdir(backup_entries)
+    current = os.listdir(config.MAIN_FEELS)
+
+    imported = []
 
     for feel in backups:
-        if os.path.basename(backups) not in current:
-            print(feel)
+        if os.path.basename(feel) not in current:
+            imported.append(feel)
 
+    return imported
+
+def import_feels(backups):
+    """takes a list of filepaths and copies those to current main feels.
+
+    this does not check for collisions.
+    """
+
+    pass
 
 
 #############

@@ -1014,7 +1014,7 @@ def load_backup():
 
     try:
         for filename in os.listdir(config.BACKUPS):
-            if "feels-backup" in filename:
+            if "feels-backup" in filename and ".tar" in filename:
                 backups.append(filename)
     except FileNotFoundError:
         subprocess.call(["mkdir", config.BACKUPS])
@@ -1027,20 +1027,29 @@ move it to {directory} and try running this tool again.""".format(directory=conf
         print("backup files found:\n")
         choice = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "backup files found:")
 
-        left = core.process_backup(os.path.join(config.BACKUPS, backups[choice]))
+        if choice is not False:
+            imports = core.process_backup(os.path.join(config.BACKUPS, backups[choice]))
+            for feel in imports:
+                print("importing {feel}".format(feel="-".join(util.parse_date(feel))))
+                time.sleep(.01)
 
-        if not left:
-            print("congrats! your feels archive has been unloaded.")
+            tempdir = os.path.join(config.BACKUPS, os.path.splitext(os.path.splitext(os.path.basename(backups[choice]))[0])[0], "entries")
+
+            if len(imports) == len(os.listdir(tempdir)):
+                print("congrats! your feels archive has been unloaded.")
+            else:
+                print("""\
+i've unloaded as much as i can, but there are still some feels i didn't copy
+over.  this is probably because you have current feels on the same days, and i
+didn't want to overwrite them.
+
+you can check out the leftover feels yourself at:
+
+{directory}""".format(directory=tempdir))
         else:
-            print("""\
-i've unloaded as much as i can, but there's still some feels i didn't copy over.
-this is probably because you have current feels on the same days, and i didn't
-want to overwrite them.
-
-you can check out the leftover feels yourself at {directory}!""".format(directory=os.path.join(config.BACKUPS, left)))
+            return
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
-
     return
 
 def show_credits():
