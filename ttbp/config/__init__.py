@@ -85,7 +85,7 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                            ver 0.12.2b (bury your feels) |
+|                        ver 0.12.3b (delete your account) |
 |__________________________________________________________|
   ~ u n s t a b l e  e x p e r i m e n t a l  b r a n c h ~
 '''.lstrip()
@@ -190,7 +190,7 @@ version 0.9.3 features:
     * added a new option to allow setting entries to default to either public or
       non-public on posting; this option only really makes sense if you're
       already publishing to html/gopher, but is available either way!
-      
+
       you can find this option under 'settings' as 'post as nopub'.""",
         "0.11.3": """
 ~[version 0.11.3 update]~
@@ -198,7 +198,7 @@ version 0.9.3 features:
     * thanks to ~sinacutie, you can now set custom css for the permalink text
       styling on your html page. the default permalink style has been added to
       your current css file, and shouldn't change the appearance of your page.
-      
+
       if you're not using custom css, don't worry about this!"""
 
 }

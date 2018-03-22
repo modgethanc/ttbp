@@ -650,7 +650,11 @@ def review_menu(intro=""):
             redraw("loading feels backup")
             load_backup()
         elif choice == 4:
-            top = DUST
+            if hasfeels:
+                redraw("burying feels")
+                bury_feels()
+            else:
+                top = nofeels
         elif choice == 5:
             if hasfeels:
                 redraw("deleting feels")
@@ -1059,6 +1063,15 @@ you can check out the leftover feels yourself at:
 {directory}""".format(directory=tempdir))
         else:
             return
+
+    input("\n\npress <enter> to go back to managing your feels.\n\n")
+    return
+
+def bury_feels():
+    """queries for a feel to bury, then calls the feels burying handler.
+    """
+
+    print(DUST)
 
     input("\n\npress <enter> to go back to managing your feels.\n\n")
     return
