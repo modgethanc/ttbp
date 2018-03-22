@@ -500,6 +500,7 @@ def process_backup(filename):
     if not os.path.exists(backup_path):
         subprocess.call(["mkdir", backup_path])
 
+    subprocess.call(["chmod", "700", backup_path])
     subprocess.call(["tar", "-C", backup_path, "-xf", filename])
     backup_entries = os.path.join(backup_path, "entries")
 

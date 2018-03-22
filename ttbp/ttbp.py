@@ -817,7 +817,7 @@ please enter""")
             if not os.path.exists(config.BACKUPS):
                 subprocess.call(["mkdir", config.BACKUPS])
             subprocess.call(["cp", backupfile, config.BACKUPS])
-            print("\nbackup saved!")
+            print("\nbackup saved! i also put a copy at {backup_dir} for you.".format(backup_dir = config.BACKUPS))
         else:
             print("""
 sorry, something went wrong! please try to address the error and try again.
