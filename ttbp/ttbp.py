@@ -896,9 +896,9 @@ just in case a future version of you still wants to look them over.
 """)
 
     print("...")
-    time.sleep(0.1)
-    print("...loading feels...")
     time.sleep(0.5)
+    print("...loading feels...")
+    time.sleep(1)
     print("...")
 
     feelscount = len(os.listdir(config.MAIN_FEELS))
@@ -908,8 +908,8 @@ just in case a future version of you still wants to look them over.
 
         print("""
 
-i've loaded up all {count} of your feels for purging. if you're ready, carefully type
-the following purge code: 
+i've loaded up all {count} of your feels for purging. if you're ready, carefully
+type the following purge code: 
          _________
          |       |
          | {purgecode} |
@@ -958,14 +958,15 @@ just in case a future version of you still wants to look them over.
 """)
 
     print("...")
-    time.sleep(0.1)
-    print("...loading feels...")
     time.sleep(0.5)
+    print("...packaging up all your feels...")
+    time.sleep(1)
     print("...")
     purgecode = util.genID(5)
 
     print("""
-if you're ready, carefully type the following purge code: 
+your account is all packed up! if you're ready, carefully type the following
+purge code: 
          _________
          |       |
          | {purgecode} |
@@ -978,6 +979,10 @@ if you're ready, carefully type the following purge code:
         print("...")
         time.sleep(0.5)
         unpublish()
+        publishDir = os.path.join(config.PUBLIC, SETTINGS.get("publish dir"))
+        if os.path.exists(publishDir):
+            subprocess.call(["rm", "-rf", publishDir])
+            
         if not subprocess.call(["rm", "-rf", config.PATH]):
             print("""
 account deleted! if you ever want to come back, you're always welcome to start
@@ -1448,7 +1453,8 @@ def unpublish():
 
     if directory:
         publishDir = os.path.join(config.PUBLIC, directory)
-        subprocess.call(["rm", publishDir])
+        if os.path.exists(publishDir):
+            subprocess.call(["rm", "-rf", publishDir])
         os.mkdir(publishDir)
 
     if SETTINGS.get("gopher"):
