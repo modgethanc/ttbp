@@ -1210,7 +1210,7 @@ none of your feels will be viewable outside of this server)"""
             pub = "(nopub)"
         entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt+"\n\n"+nopub_note)
+    choice = menu_handler(entries, "pick an entry from the list to toggle nopub status, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt+"\n\n"+nopub_note)
 
     if choice is not False:
         target = os.path.basename(metas[choice][0])
@@ -1735,6 +1735,10 @@ something strange happened to you during this update.
     if y < 11 or z < 3:
         # version 0.11.3 patch notes
         print(config.UPDATES["0.11.3"])
+
+    if y < 12:
+        # version 0.12.0 patch notes
+        print(config.UPDATES["0.12.0"])
 
     confirm = ""
 

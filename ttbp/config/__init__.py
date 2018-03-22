@@ -85,7 +85,7 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                        ver 0.12.3b (delete your account) |
+|                                  ver 0.12.4b (purgatory) |
 |__________________________________________________________|
   ~ u n s t a b l e  e x p e r i m e n t a l  b r a n c h ~
 '''.lstrip()
@@ -95,6 +95,8 @@ ___________________________________________________________
 credits = """
 ttbp was written for tilde.town by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
+
+tips for development are accepted at https://liberapay.com/modgethanc/
 
 other contributors:
     ~vilmibm, packaging help and gopher support
@@ -199,6 +201,33 @@ version 0.9.3 features:
       styling on your html page. the default permalink style has been added to
       your current css file, and shouldn't change the appearance of your page.
 
-      if you're not using custom css, don't worry about this!"""
+      if you're not using custom css, don't worry about this!""",
+        "0.12.0": """
+~[version 0.12.0 update]~
 
+    a lot of new stuff this time! from the main menu, option (1) is now called
+    "manage your feels", which contains an expanded set of tools for organizing
+    your feels:
+        * read over feels (a list of all your entries)
+        * modify feels publishing (toggle privacy on individual entries)
+        * backup your feels (makes a .tar.gz of all your entries)
+        * import a feels backup (unpacks a backup into your feels)
+        * bury some feels (hide individual entries from view)
+        * delete feels by day (permanently remove individual entries)
+        * purge all feels (permanently remove all entries)
+        * wipe feels account (permanently remove everything associated with
+          ttbp)
+
+    each of these tools has expanded descriptions and instructions from the
+    menu, so check them out if you're curious! all of the data management
+    actions have confirmation actions, so it's easy to cancel if you
+    accidentally access a tool.
+
+    also, i've updated the documentation file to reflect recent feature changes,
+    including some more details about how things work under the hood.
+
+    lastly, i just wanted to mention that i do accept tips for my dev work at
+    https://liberapay.com/modgethanc/, but please don't feel pressured to donate
+    unless it's financially viable to you!
+"""
 }
