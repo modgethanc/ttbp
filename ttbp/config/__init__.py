@@ -86,10 +86,12 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                                  ver 0.12.4b (purgatory) |
+|                                        ver 0.12.0 (感觉) |
+|                                        <gǎnjué; to feel> |
 |__________________________________________________________|
-  ~ u n s t a b l e  e x p e r i m e n t a l  b r a n c h ~
 '''.lstrip()
+#  ~ u n s t a b l e  e x p e r i m e n t a l  b r a n c h ~
+#'''.lstrip()
 
 ## page texts
 
@@ -286,7 +288,9 @@ version 0.9.3 features:
     improve!
 
     lastly, i just wanted to mention that i do accept tips for my dev work at
-    https://liberapay.com/modgethanc/, but please don't feel pressured to donate
-    unless it's financially viable to you!
+    https://liberapay.com/modgethanc/ but there's no pressure to donate at all,
+    i'm just making this option available for anyone whose financially stable
+    and wants to kick some spare change my way; this is a labor of love, and i'm
+    happy to work on it regardless :)
 """
 }

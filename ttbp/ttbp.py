@@ -51,7 +51,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.11.3"
+__version__ = "0.12.0"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
