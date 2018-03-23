@@ -567,7 +567,7 @@ def main_menu():
         redraw()
         show_credits()
     elif choice == '8':
-        subprocess.call(["lynx", os.path.join(config.INSTALL_PATH, "..", "README.html")])
+        subprocess.call(["lynx", os.path.join(config.INSTALL_PATH, "..", "doc", "manual.html")])
         redraw()
     elif choice in QUITS:
         return stop()

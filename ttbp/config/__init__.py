@@ -220,12 +220,15 @@ version 0.9.3 features:
           ttbp)
 
     each of these tools has expanded descriptions and instructions from the
-    menu, so check them out if you're curious! all of the data management
-    actions have confirmation actions, so it's easy to cancel if you
+    menu, so check them out if you're curious! all of the irreversibl data
+    management actions have confirmation actions, so it's easy to cancel if you
     accidentally access a tool.
 
     also, i've updated the documentation file to reflect recent feature changes,
-    including some more details about how things work under the hood.
+    including some more details about how things work under the hood, and some
+    clarifications on how existing features work. please give it a read through
+    if you have a chance, and let me know if there's anything else i can
+    improve!
 
     lastly, i just wanted to mention that i do accept tips for my dev work at
     https://liberapay.com/modgethanc/, but please don't feel pressured to donate
