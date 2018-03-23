@@ -1,13 +1,8 @@
-*a command-line based blogging platform running on tilde.town*
+# FEELS MANUAL #
 
 `ttbp` stands for "tilde.town blogging platform", the original working name for
-this project.
-
-![ttbp main menu screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-main.png)
-
-![ttbp entries view screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-entries.png)
-
-![ttbp compose view screenshot](http://tilde.town/~endorphant/ttbp/screenshots/ttbp-compose.png)
+this project. the complete codebase is available on
+[github](https://github.com/modgethanc/ttbp).
 
 `ttbp` runs from the command line, providing a hub for writing personal blog
 posts and reading posts written by other users of tilde.town. it's a little bit
@@ -15,26 +10,11 @@ like livejournal or dreamwidth or tumblr. you can opt to publish your posts to a
 public html file hosted on your tilde page, to tilde.town's gopher server, or
 keep all your entries private to the tilde.town server.
 
-to use, run `feels` while logged in to tilde.town
-
 this is a project that runs on tilde.town, so all users of this program are
 expected to operate under the tilde.town [code of
 conduct](http://tilde.town/wiki/conduct.html). content/personal issues should be
 worked out according to the CoC, with support from the [administrative
 team](http://tilde.town/wiki/administration/index.html) if needed.
-
-
-### QUICK START
-
-no coding or html experience is necessary to get started. just log in to your
-tilde.town account and enter:
-
-`feels`
-
-ttbp will ask you a few questions to get you started. after that, writing and
-reading entries all happen within the program.
-
-that's it!
 
 ### support
 
@@ -73,8 +53,8 @@ by creating files with any date you want.)*
 * you can use [markdown](https://daringfireball.net/projects/markdown/syntax)
 * you can use html
 * you can also put things between `<!-- comments -->` to have them show up
-  in the feed but not render in a browser (but people can still read
-  them with view-source)
+  in the feed but not render in a browser (but people can still read them with
+  view-source)
 
 ### reading other feels
 
@@ -199,34 +179,3 @@ these are a few ideas being kicked around, or under active development:
 
 other ideas are listed on github as
 [upcoming features](https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A"upcoming+features") or [feature requests](https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A"feature+request")!
-
-### dependencies
-
-(this section is only relevant if you plan on forking the repo and running an
-instance of this yourself)
-
-* [mistune](https://pypi.python.org/pypi/mistune)
-* [inflect](https://pypi.python.org/pypi/inflect)
-* [six](https://pypi.python.org/pypi/six)
-
-### contributing
-
-please check out my [contributor
-guidelines](https://github.com/modgethanc/ttbp/blob/master/.github/CONTRIBUTING.md)
-on github if you'd like to get involved with development!
-
-if you find any bugs or strange behavior, please message me locally on tildemail
-or open a github issue and i'll get back to you as soon as i can.
-
-if you're interested in helping with the code, please drop me some tildemail!
-
-i accept tips for development work on
-[liberapay](https://liberapay.com/modgethanc)
-
-### contributor shout-outs
-
-thanks to:
-
-* ~vilmibm, packaging help and gopher support
-* ~sanqui, the bug swatter
-* ~sinacutie, for css updates
