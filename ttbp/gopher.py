@@ -7,6 +7,7 @@ import time
 import subprocess
 
 from . import util
+from . import config
 #from .core import parse_date
 
 GOPHER_PROMPT = """
@@ -107,3 +108,11 @@ def setup_gopher(gopher_path):
         os.makedirs(gopher_entries)
 
     subprocess.call(["ln", "-s", gopher_entries, ttbp_gopher])
+
+def unpublish():
+    """blanks all gopher things and recreates the directories."""
+
+    subprocess.call(["rm", "-rf", config.GOPHER_PATH])
+    subprocess.call(["rm", "-rf", config.GOPHER_ENTRIES])
+    os.mkdir(config.GOPHER_ENTRIES)
+    subprocess.call(["ln", "-s", config.GOPHER_ENTRIES, config.GOPHER_PATH])

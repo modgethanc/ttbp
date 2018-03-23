@@ -926,6 +926,7 @@ type the following purge code:
             print("...")
             time.sleep(0.5)
             unpublish()
+
             if not subprocess.call(["rm", "-rf", config.MAIN_FEELS]):
                 subprocess.call(["mkdir", config.MAIN_FEELS])
                 core.load_files()
@@ -984,10 +985,12 @@ purge code:
         print("...")
         time.sleep(0.5)
         unpublish()
-        publishDir = os.path.join(config.PUBLIC, SETTINGS.get("publish dir"))
-        if os.path.exists(publishDir):
-            subprocess.call(["rm", "-rf", publishDir])
-            
+
+        if core.publishing():
+            publishDir = os.path.join(config.PUBLIC, SETTINGS.get("publish dir"))
+            make_publish_dir(publishDir)
+
+
         if not subprocess.call(["rm", "-rf", config.PATH]):
             print("""
 account deleted! if you ever want to come back, you're always welcome to start
@@ -1525,12 +1528,12 @@ def unpublish():
         publishDir = os.path.join(config.PUBLIC, directory)
         if os.path.exists(publishDir):
             subprocess.call(["rm", "-rf", publishDir])
-        #make_publish_dir(directory)
+        subprocess.call(["rm", "-rf", config.WWW])
+        make_publish_dir(SETTINGS.get("publish dir"))
         #SETTINGS.update({"publish dir": None})
 
     if SETTINGS.get("gopher"):
-        #SETTINGS.update({"gopher": False})
-        subprocess.call(["rm", config.GOPHER_PATH])
+        gopher.unpublish()
 
 def update_publishing():
     '''
@@ -1553,7 +1556,7 @@ def update_publishing():
 
     core.load(SETTINGS)
 
-def make_publish_dir(dir):
+def make_publish_dir(publish_dir):
     '''
     setup helper to create publishing directory
     '''
@@ -1566,13 +1569,18 @@ def make_publish_dir(dir):
         index.write("<h1>ttbp blog placeholder</h1>")
         index.close()
 
-    publishDir = os.path.join(config.PUBLIC, dir)
-    if os.path.exists(publishDir):
-        subprocess.call(["rm", publishDir])
+    if core.publishing():
+        live = os.path.join(config.PUBLIC, publish_dir)
+        if os.path.exists(live):
+            subprocess.call(["rm", live])
 
-    subprocess.call(["ln", "-s", config.WWW, publishDir])
+        subprocess.call(["ln", "-s", config.WWW, live])
 
-    print("\n\tpublishing to "+config.LIVE+config.USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
+        return "\n\tpublishing to "+config.LIVE+config.USER+"/"+SETTINGS.get("publish dir")+"/\n\n"
+
+    else:
+        return ""
+    #print("\n\tpublishing to "+config.LIVE+config.USER+"/"+SETTINGS.get("publish dir")+"/\n\n")
 
 def update_gopher():
     '''
