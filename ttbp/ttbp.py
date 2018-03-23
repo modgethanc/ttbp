@@ -444,67 +444,73 @@ def setup():
         redraw(EJECT)
         return SETTINGS
 
-    if choice in QUITS:
+    if choice is not "":
+
+        if choice in QUITS:
+            redraw()
+            return SETTINGS
+
+        # editor selection
+        if settingList[int(choice)] == "editor":
+            SETTINGS.update({"editor": select_editor()})
+            redraw("text editor set to: {editor}".format(editor=SETTINGS["editor"]))
+            save_settings()
+            return setup()
+
+        # publishing selection
+        elif settingList[int(choice)] == "publishing":
+            SETTINGS.update({"publishing":select_publishing()})
+            core.reload_ttbprc(SETTINGS)
+            update_publishing()
+            redraw("publishing set to {publishing}".format(publishing=SETTINGS.get("publishing")))
+            save_settings()
+            return setup()
+
+        # publish dir selection
+        elif settingList[int(choice)] == "publish dir":
+            publish_dir = select_publish_dir()
+            SETTINGS.update({"publish dir": publish_dir})
+            #update_publishing()
+
+            if publish_dir is None:
+                redraw("sorry, i can't set a publish directory for you if you don't have html publishing enabled. please enable publishing to continue.")
+            else:
+                redraw("publishing your entries to {url}/index.html".format(
+                    url="/".join([config.LIVE+config.USER,
+                            str(SETTINGS.get("publish dir"))])))
+            save_settings()
+            return setup()
+
+        # gopher opt-in
+        elif settingList[int(choice)] == "gopher":
+            SETTINGS.update({'gopher': gopher.select_gopher()})
+            redraw('gopher publishing set to: {gopher}'.format(gopher=SETTINGS['gopher']))
+            update_gopher()
+            save_settings()
+            return setup()
+
+        # rainbow menu selection
+        elif settingList[int(choice)] == "rainbows":
+            SETTINGS.update({"rainbows": toggle_rainbows()})
+            redraw("rainbow menus set to {rainbow}".format(rainbow=SETTINGS.get("rainbows")))
+            save_settings()
+            return setup()
+
+        #nopub toggling
+        elif settingList[int(choice)] == "post as nopub":
+            SETTINGS.update({"post as nopub": toggle_pub_default()})
+            redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("post as nopub")))
+            save_settings()
+            return setup()
+
+        input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
         redraw()
+
         return SETTINGS
 
-    # editor selection
-    if settingList[int(choice)] == "editor":
-        SETTINGS.update({"editor": select_editor()})
-        redraw("text editor set to: {editor}".format(editor=SETTINGS["editor"]))
-        save_settings()
+    else:
+        redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         return setup()
-
-    # publishing selection
-    elif settingList[int(choice)] == "publishing":
-        SETTINGS.update({"publishing":select_publishing()})
-        core.reload_ttbprc(SETTINGS)
-        update_publishing()
-        redraw("publishing set to {publishing}".format(publishing=SETTINGS.get("publishing")))
-        save_settings()
-        return setup()
-
-    # publish dir selection
-    elif settingList[int(choice)] == "publish dir":
-        publish_dir = select_publish_dir()
-        SETTINGS.update({"publish dir": publish_dir})
-        #update_publishing()
-
-        if publish_dir is None:
-            redraw("sorry, i can't set a publish directory for you if you don't have html publishing enabled. please enable publishing to continue.")
-        else:
-            redraw("publishing your entries to {url}/index.html".format(
-                url="/".join([config.LIVE+config.USER,
-                        str(SETTINGS.get("publish dir"))])))
-        save_settings()
-        return setup()
-
-    # gopher opt-in
-    elif settingList[int(choice)] == "gopher":
-        SETTINGS.update({'gopher': gopher.select_gopher()})
-        redraw('gopher publishing set to: {gopher}'.format(gopher=SETTINGS['gopher']))
-        update_gopher()
-        save_settings()
-        return setup()
-
-    # rainbow menu selection
-    elif settingList[int(choice)] == "rainbows":
-        SETTINGS.update({"rainbows": toggle_rainbows()})
-        redraw("rainbow menus set to {rainbow}".format(rainbow=SETTINGS.get("rainbows")))
-        save_settings()
-        return setup()
-
-    #nopub toggling
-    elif settingList[int(choice)] == "post as nopub":
-        SETTINGS.update({"post as nopub": toggle_pub_default()})
-        redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("post as nopub")))
-        save_settings()
-        return setup()
-
-    input("\nyou're all good to go, {friend}! hit <enter> to continue.\n\n".format(friend=chatter.say("friend")))
-    redraw()
-
-    return SETTINGS
 
 def save_settings():
     """
