@@ -74,6 +74,7 @@ DEFAULT_SETTINGS = {
         "gopher": False,
         "publishing": False,
         "rainbows": False,
+        "post as nopub": False,
     }
 
 ## user globals
@@ -82,7 +83,8 @@ SETTINGS = {
         "publish dir": None,
         "gopher": False,
         "publishing": False,
-        "rainbows": False
+        "rainbows": False,
+        "post as nopub": False,
         }
 
 ## ttbp specific utilities
@@ -248,10 +250,7 @@ def init():
     """
 
     try:
-        input("""
-i don't recognize you, stranger. let's make friends.
-
-press <enter> to begin, or <ctrl-c> to get out of here.""")
+        input(config.intro_prompt)
     except KeyboardInterrupt:
         print("\n\nthanks for checking in! i'll always be here.\n\n")
         quit()
@@ -298,7 +297,15 @@ press <enter> to begin, or <ctrl-c> to get out of here.""")
     setup()
     core.load(SETTINGS)
 
-    input("\nyou're all good to go, "+chatter.say("friend")+"! hit <enter> to continue.\n\n")
+    input("""
+
+you're all good to go, {friend}! if you have any questions about how things
+work here, check out the documentation from the main menu, ask in IRC, or
+drop ~endorphant a line!
+
+hit <enter> to continue.
+""".format(friend=chatter.say("friend")))
+
     return ""
 
 def gen_header():

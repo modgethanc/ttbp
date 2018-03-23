@@ -93,6 +93,16 @@ ___________________________________________________________
 
 ## page texts
 
+intro_prompt = """
+i don't recognize you, stranger. let's make friends.
+
+the feels engine is an internal blogging platform on tilde.town. it assists you
+in recording your feels, giving you the option to publish to html or gopher, and
+read the feels of other users on tilde.town.
+
+press <enter> to set up an account, or <ctrl-c> to quit.
+""".lstrip()
+
 credits = """
 ttbp was written for tilde.town by ~endorphant in python. the codebase is
 publicly available on github at https://github.com/modgethanc/ttbp
