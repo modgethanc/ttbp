@@ -816,6 +816,7 @@ please enter""")
             subprocess.call(["chmod", "600", backupfile])
             if not os.path.exists(config.BACKUPS):
                 subprocess.call(["mkdir", config.BACKUPS])
+            subprocess.call(["chmod", "700", config.BACKUPS])
             subprocess.call(["cp", backupfile, config.BACKUPS])
             print("\nbackup saved! i also put a copy at {backup_dir} for you.".format(backup_dir = config.BACKUPS))
         else:
