@@ -127,6 +127,51 @@ editor.
 
 """.format(today=time.strftime("%d %B %Y"))
 
+bury_feels_prompt = """\
+burying a feel removes it from view, including your own. buried feels are
+stashed in a private directory at:
+   
+   {buried_dir}
+
+you can visit your feels there from the command line, but no one else can view
+those files.
+
+(a buried feels browser is in the works; for now, you'll have to use the
+command line to view your buried feels)
+
+which day's feels do you want to bury?
+
+YYYYMMDD (or 'q' to cancel)> """.format(buried_dir=BURIED_FEELS)
+
+account_wipe_prompt = """\
+warning! ! ! this action is irreversible!!!
+
+this tool will remove your entire presence from the feels engine. this includes
+all posts, settings, and published html/gopher feels. you will no longer be
+listed anywhere as a user here.
+
+there is no way for me to help you recover any part of your feels acccount. i
+respect your need to do this from time to time, so please be sure you're ready!
+
+i recommend that you make a backup of your feels and stash them somewhere safe,
+just in case a future version of you still wants to look them over."""
+
+feels_purge_prompt = """\
+warning! ! ! this action is irreversible!!!
+
+there is no way for me to help you recover your feels if you purge them all. i
+respect your need to do this from time to time, so please be sure you're ready!
+
+i recommend that you make a backup of your feels and stash them somewhere safe,
+just in case a future version of you still wants to look them over.
+"""
+
+mystery_error = """\
+sorry, something went wrong! please try to address the error and try again.
+if you need help, ask in IRC or send mail to ~endorphant and we'll try to
+figure it out!
+""".lstrip()
+
 ## update announcements
 
 UPDATES = {

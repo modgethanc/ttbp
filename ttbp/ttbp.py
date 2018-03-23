@@ -819,10 +819,7 @@ please enter""")
             subprocess.call(["cp", backupfile, config.BACKUPS])
             print("\nbackup saved! i also put a copy at {backup_dir} for you.".format(backup_dir = config.BACKUPS))
         else:
-            print("""
-sorry, something went wrong! please try to address the error and try again.
-if you need help, ask in IRC or send mail to ~endorphant and we'll try to
-figure it out!""")
+            print(config.mystery_error)
     else:
         print("no problem, {friend}; come back whenever if you want a backup!".format(friend=chatter.say("friend")))
 
@@ -889,15 +886,7 @@ please enter""")
 def purge_feels():
     """handles deleting all feels"""
 
-    print("""\
-warning! ! ! this action is irreversible!!!
-
-there is no way for me to help you recover your feels if you purge them all. i
-respect your need to do this from time to time, so please be sure you're ready!
-
-i recommend that you make a backup of your feels and stash them somewhere safe,
-just in case a future version of you still wants to look them over.
-""")
+    print(config.feels_purge_prompt)
 
     print("...")
     time.sleep(0.5)
@@ -932,10 +921,7 @@ type the following purge code:
                 core.load_files()
                 print("ALL FEELS PURGED! you're ready to start fresh!")
             else:
-                print("""
-sorry, something went wrong! please try to address the error and try again.
-if you need help, ask in IRC or send mail to ~endorphant and we'll try to
-figure it out!""")
+                print(config.mystery_error)
         else:
             print("\nfeels purge canceled! you're welcome to come back again.")
     else:
@@ -949,19 +935,7 @@ figure it out!""")
 def wipe_account():
     """handles wiping feels account"""
 
-    print("""\
-warning! ! ! this action is irreversible!!!
-
-this tool will remove your entire presence from the feels engine. this includes
-all posts, settings, and published html/gopher feels. you will no longer be
-listed anywhere as a user here.
-
-there is no way for me to help you recover any part of your feels acccount. i
-respect your need to do this from time to time, so please be sure you're ready!
-
-i recommend that you make a backup of your feels and stash them somewhere safe,
-just in case a future version of you still wants to look them over.
-""")
+    print(config.account_wipe_prompt)
 
     print("...")
     time.sleep(0.5)
@@ -1000,10 +974,7 @@ thank you for sharing your feels!""")
             input("\n\npress <enter> to exit the feels engine.\n\n")
             sys.exit(stop())
         else:
-            print("""
-sorry, something went wrong! please try to address the error and try again.
-if you need help, ask in IRC or send mail to ~endorphant and we'll try to
-figure it out!""")
+            print(config.mystery_error)
     else:
         print("\naccount deletion canceled! you're welcome to come back again.")
 
@@ -1077,17 +1048,7 @@ def bury_feels():
     """queries for a feel to bury, then calls the feels burying handler.
     """
 
-    feel = input("""\
-burying a feel removes it from view, including your own. buried feels are
-stashed in a private directory at {buried_dir}; you can visit your feels there
-from the command line, but no one else can view those files.
-
-(a buried feels browser is in the works; for now, you'll have to use the
-command line to view your buried feels)
-
-which day's feels do you want to bury?
-
-YYYYMMDD (or 'q' to cancel)> """.format(buried_dir=""))
+    feel = input(config.bury_feels_prompt)
 
     if feel in util.BACKS:
         return
