@@ -146,6 +146,21 @@ them from within the program can help keep your files properly linked up.
   makes a second copy for safekeeping in your home directory). you will no
   longer show up in any lists as a user.
 
+### settings
+
+the settings menu lets you change specific options for handling your feels and
+using the interface.
+
+* **editor**--set your text editor
+* **gopher**--opt in or out of automatically posting to gopher
+* **post as nopub**--set whether posts default to being published or not
+  published (if you're not publishing your feels, this doesn't matter)
+* **publish dir**--set the directory under you `public_html` where feels will be
+  published (if you're not publishing your feels, this defaults to `None`)
+* **publishing**--opt in or out of automatically publishing entries to a
+  world-readable html page
+* **rainbows**--opt in or out of having multicolored menu text
+
 ### changing your page layout
 
 you can modify how your blog looks by editing the stylesheet or header and
