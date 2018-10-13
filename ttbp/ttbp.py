@@ -704,6 +704,17 @@ def subscription_handler(intro=""):
         subprocess.call(["touch", config.SUBS])
         subprocess.call(["chmod", "600", config.SUBS])
 
+    subs_raw = []
+    if os.path.isfile(config.SUBS):
+        for line in open(config.SUBS, "r"):
+            subs_raw.append(line.rstrip())
+
+    subs = []
+    all_users = core.find_ttbps()
+    for name in subs_raw:
+        if name in all_users:
+            subs.append(name)
+
     menuOptions = [
             "view subscribed feed",
             "manage subscriptions"
@@ -717,9 +728,13 @@ def subscription_handler(intro=""):
 
     if choice is not False:
         if choice == 0:
-            print(DUST)
+            if len(subs) > 0:
+                redraw("recent entries from your subscribed pals:")
+                view_subscribed_feed(subs)
+            else:
+                intro = "it doesn't look like you have any subscriptions to see! add pals with 'manage subscriptions' here."
         elif choice == 1:
-            print(DUST)
+            intro = DUST
     else:
         redraw()
         return
@@ -1323,10 +1338,13 @@ def view_global_feed():
 
     return
 
-def view_subscribed_feed():
+def view_subscribed_feed(subs):
     '''
     display list of most recent entries on user's subscribed list.
     '''
+    (entries, metas)= feed_list(subs)
+    list_entries(metas, entries, "recent entries from your subscribed pals:")
+    redraw()
 
     return
 
