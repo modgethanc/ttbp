@@ -1306,7 +1306,7 @@ def view_feed():
     metas.reverse()
 
     entries = []
-    for entry in metas[0:10]:
+    for entry in metas[0:50]:
         pad = ""
         if len(entry[5]) < 8:
             pad = "\t"
@@ -1315,7 +1315,7 @@ def view_feed():
                 user=entry[5], pad=pad, date=entry[3], 
                 wordcount=p.no("word", entry[2])))
 
-    list_entries(metas, entries, "most recent global entries:")
+    list_entries(metas, entries, "recent global entries:")
 
     redraw()
 
