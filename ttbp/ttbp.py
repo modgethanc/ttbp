@@ -529,10 +529,11 @@ def main_menu():
     '''
 
     menuOptions = [
-            "record your feels",
+            "record some feels",
             "manage your feels",
             "check out your neighbors",
             "browse global feels",
+            "visit your subscriptions",
             "scribble some graffiti",
             "change your settings",
             "send some feedback",
@@ -569,17 +570,21 @@ def main_menu():
         redraw("most recent global entries")
         view_global_feed()
     elif choice == '4':
-        graffiti_handler()
+        intro = "here are some options for managing your subscriptions"
+        redraw(intro)
+        subscription_handler(intro)
     elif choice == '5':
+        graffiti_handler()
+    elif choice == '6':
         redraw("now changing your settings. press <ctrl-c> if you didn't mean to do this.")
         core.load(setup()) # reload settings to core
-    elif choice == '6':
+    elif choice == '7':
         redraw("you're about to send mail to ~endorphant about ttbp")
         feedback_menu()
-    elif choice == '7':
+    elif choice == '8':
         redraw()
         show_credits()
-    elif choice == '8':
+    elif choice == '9':
         subprocess.call(["lynx", os.path.join(config.INSTALL_PATH, "..", "doc", "manual.html")])
         redraw()
     elif choice in QUITS:
@@ -689,6 +694,34 @@ def review_menu(intro=""):
 
     redraw(top+intro)
     return review_menu(intro)
+
+def subscription_handler(intro=""):
+    '''
+    submenu for managing subscriptions
+    '''
+
+    menuOptions = [
+            "view subscribed feed",
+            "manage subscriptions"
+            ]
+
+    util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
+
+    choice = util.list_select(menuOptions, "what would you like to do with your subscriptions? (or 'q' to return home) ")
+
+    top = ""
+
+    if choice is not False:
+        if choice == 0:
+            print(DUST)
+        elif choice == 1:
+            print(DUST)
+    else:
+        redraw()
+        return
+
+    redraw(top+intro)
+    return subscription_handler(intro)
 
 def view_neighbors(users, prompt):
     '''
