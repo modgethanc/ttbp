@@ -76,6 +76,7 @@ MAIN_FEELS = os.path.join(PATH, 'entries')
 BURIED_FEELS = os.path.join(PATH, 'buried')
 NOPUB = os.path.join(USER_CONFIG, 'nopub')
 BACKUPS = os.path.join(PATH, 'backups')
+SUBS = os.path.join(USER_CONFIG, 'subs')
 
 ## UI
 

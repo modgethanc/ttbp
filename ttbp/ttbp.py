@@ -700,6 +700,10 @@ def subscription_handler(intro=""):
     submenu for managing subscriptions
     '''
 
+    if not os.path.exists(config.SUBS):
+        subprocess.call(["touch", config.SUBS])
+        subprocess.call(["chmod", "600", config.SUBS])
+
     menuOptions = [
             "view subscribed feed",
             "manage subscriptions"
