@@ -567,7 +567,7 @@ def main_menu():
         view_neighbors(users, prompt)
     elif choice == '3':
         redraw("most recent global entries")
-        view_feed()
+        view_global_feed()
     elif choice == '4':
         graffiti_handler()
     elif choice == '5':
@@ -1275,14 +1275,39 @@ def show_entry(filename):
 
     return
 
-def view_feed():
+def view_global_feed():
     '''
-    generate and display list of most recent global entries
+    display list of most recent global entries
+    '''
+
+    (entries, metas)= feed_list(core.find_ttbps())
+    list_entries(metas, entries, "recent global entries:")
+    redraw()
+
+    return
+
+def view_subscribed_feed():
+    '''
+    display list of most recent entries on user's subscribed list.
+    '''
+
+    return
+
+def feed_list(townies):
+    '''
+    given a list of townies, generate a list of 50 most recent entries within
+    the last 30 days. validates against townies with ttbp config files.
+
+    returns a tuple of (entries, metas)
     '''
 
     feedList = []
+    all_users = core.find_ttbps()
 
-    for townie in core.find_ttbps():
+    for townie in townies:
+        if townie not in all_users:
+            continue
+
         entryDir = os.path.join("/home", townie, ".ttbp", "entries")
         try:
             filenames = os.listdir(entryDir)
@@ -1312,14 +1337,10 @@ def view_feed():
             pad = "\t"
 
         entries.append("~{user}{pad}\ton {date} ({wordcount})".format(
-                user=entry[5], pad=pad, date=entry[3], 
+                user=entry[5], pad=pad, date=entry[3],
                 wordcount=p.no("word", entry[2])))
 
-    list_entries(metas, entries, "recent global entries:")
-
-    redraw()
-
-    return
+    return entries, metas
 
 def graffiti_handler():
     '''
