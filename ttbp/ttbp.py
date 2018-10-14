@@ -570,7 +570,7 @@ def main_menu():
         redraw("most recent global entries")
         view_global_feed()
     elif choice == '4':
-        intro = "here are some options for managing your subscriptions"
+        intro = "your subscriptions list is private; no one but you will know who you're following.\n\n> here are some options for your subscriptions:"
         redraw(intro)
         subscription_handler(intro)
     elif choice == '5':
@@ -1423,8 +1423,9 @@ def subscription_manager(subs, intro=""):
             redraw(prompt)
             subs = subscribe_handler(subs, prompt)
         elif choice == 1:
-            redraw("list of townies you're subscribed to:")
-            subs = unsubscribe_handler(subs)
+            prompt = "list of townies you're subscribed to:"
+            redraw(prompt)
+            subs = unsubscribe_handler(subs, prompt)
     else:
         redraw()
         return
@@ -1432,12 +1433,24 @@ def subscription_manager(subs, intro=""):
     redraw(top+intro)
     return subscription_manager(subs, intro)
 
-def unsubscribe_handler(subs):
+def unsubscribe_handler(subs, prompt):
     '''
     displays a list of currently subscribed users and toggles deletion.
     '''
 
-    return subs
+    subs.sort()
+
+    choice = menu_handler(subs, "pick a pal to unsubscribe (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "list of townies recording feels:")
+
+    if choice is not False:
+        townie = subs[choice]
+        subs.remove(townie)
+        save_subs(subs)
+        redraw("{townie} removed! \n\n> {prompt}".format(townie=townie, prompt=prompt))
+        return unsubscribe_handler(subs, prompt)
+    else:
+        redraw()
+        return subs
 
 def subscribe_handler(subs, prompt):
     '''
