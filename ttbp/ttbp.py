@@ -1493,10 +1493,12 @@ def save_subs(subs):
 
 def graffiti_handler():
     '''
-    Main graffiti handler.
+    Main graffiti handler; checks for lockfile from another editing sesison
+    (overwriting by default if the lock is more than three days old.
     '''
 
-    if os.path.isfile(config.WALL_LOCK):
+    if os.path.isfile(config.WALL_LOCK) and \
+            time.time() - os.path.getmtime(config.WALL_LOCK) < 60*60*24*3:
         redraw("sorry, {friend}, but someone's there right now. try again in a few!".format(friend=chatter.say("friend")))
     else:
         subprocess.call(["touch", config.WALL_LOCK])
