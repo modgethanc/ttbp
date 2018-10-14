@@ -51,7 +51,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.12.0"
+__version__ = "0.12.1"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -1880,21 +1880,25 @@ something strange happened to you during this update.
         # version 0.11.0 patch notes
         print(config.UPDATES["0.11.0"])
 
-    if y < 11 or z < 1:
+    if y < 11 and z < 1:
         # version 0.11.1 patch notes
         print(config.UPDATES["0.11.1"])
 
-    if y < 11 or z < 2:
+    if y < 11 and z < 2:
         # version 0.11.2 patch notes
         print(config.UPDATES["0.11.2"])
 
-    if y < 11 or z < 3:
+    if y < 11 and z < 3:
         # version 0.11.3 patch notes
         print(config.UPDATES["0.11.3"])
 
     if y < 12:
         # version 0.12.0 patch notes
         print(config.UPDATES["0.12.0"])
+
+    if z < 1:
+        # version 0.12.1 patch notes
+        print(config.UPDATES["0.12.1"])
 
     confirm = ""
 
