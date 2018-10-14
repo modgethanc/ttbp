@@ -94,6 +94,19 @@ feels, and do not copy/repeat any information without getting their explicit
 permission. tilde.town operates on a high level of mutual trust, and `ttbp` is
 designed to give individuals control over their content.
 
+### subscribing to users
+
+the `visit your subscriptions` feature lets you view recent entries from a list
+of users you've subscribed to, as well as manage your subscription list. your
+list is saved to `~/.ttbp/config/subs`, which gets automatically updated when
+you add or remove subscriptions from ttbp.
+
+your subscription list is private; this means no one other than you can see who
+you're following. subscription view only shows the 50 most recent entries from
+your subscribe list; if you want to see more entries from an individual, you
+can navigate to their entries in `check out your neighbors   from the main
+menu.
+
 ### privacy
 
 when you start your ttbp, you have the option of publishing or not publishing

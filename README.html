@@ -1,204 +1,287 @@
 <p><em>a command-line based blogging platform running on tilde.town</em></p>
-<p><code>ttbp</code> stands for "tilde.town blogging platform", the original working name for
+
+<p><code>ttbp</code> stands for &ldquo;tilde.town blogging platform&rdquo;, the original working name for
 this project.</p>
-<p><img alt="ttbp main menu screenshot" src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-main.png" /></p>
-<p><img alt="ttbp entries view screenshot" src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-entries.png" /></p>
-<p><img alt="ttbp compose view screenshot" src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-compose.png" /></p>
+
+<p><img src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-main.png" alt="ttbp main menu screenshot" /></p>
+
+<p><img src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-entries.png" alt="ttbp entries view screenshot" /></p>
+
+<p><img src="http://tilde.town/~endorphant/ttbp/screenshots/ttbp-compose.png" alt="ttbp compose view screenshot" /></p>
+
 <p><code>ttbp</code> runs from the command line, providing a hub for writing personal blog
-posts and reading posts written by other users of tilde.town. it's a little bit
+posts and reading posts written by other users of tilde.town. it&rsquo;s a little bit
 like livejournal or dreamwidth or tumblr. you can opt to publish your posts to a
-public html file hosted on your tilde page, to tilde.town's gopher server, or
+public html file hosted on your tilde page, to tilde.town&rsquo;s gopher server, or
 keep all your entries private to the tilde.town server.</p>
+
 <p>to use, run <code>feels</code> while logged in to tilde.town</p>
+
 <p>this is a project that runs on tilde.town, so all users of this program are
 expected to operate under the tilde.town <a href="http://tilde.town/wiki/conduct.html">code of
 conduct</a>. content/personal issues should be
 worked out according to the CoC, with support from the <a href="http://tilde.town/wiki/administration/index.html">administrative
 team</a> if needed.</p>
+
 <h3>QUICK START</h3>
+
 <p>no coding or html experience is necessary to get started. just log in to your
 tilde.town account and enter:</p>
+
 <p><code>feels</code></p>
+
 <p>ttbp will ask you a few questions to get you started. after that, writing and
 reading entries all happen within the program.</p>
-<p>that's it!</p>
+
+<p>that&rsquo;s it!</p>
+
 <h3>support</h3>
-<p>if you're having trouble getting started, or run into program errors or strange
-behavior, please send internal tilde.town mail to ~endorphant and i'll try to
+
+<p>if you&rsquo;re having trouble getting started, or run into program errors or strange
+behavior, please send internal tilde.town mail to ~endorphant and i&rsquo;ll try to
 sort things out!</p>
-<p>there's also a function from the main menu that lets you send feedback/inquiries
-to me directly; this uses internal tilde.town mail, which is what i'll respond
+
+<p>there&rsquo;s also a function from the main menu that lets you send feedback/inquiries
+to me directly; this uses internal tilde.town mail, which is what i&rsquo;ll respond
 to.</p>
+
 <h3>writing entries</h3>
+
 <p>entries are recorded as plaintext files in your <code>~/.ttbp/entries</code> directory.
 <code>ttbp</code> will use your selected editor to open and write files; each day is its
-own entry, like a diary page. at midnight for whatever timezone you've set for
-your user account on tilde.town, you'll get a fresh entry. if you don't write
+own entry, like a diary page. at midnight for whatever timezone you&rsquo;ve set for
+your user account on tilde.town, you&rsquo;ll get a fresh entry. if you don&rsquo;t write
 any feels on a particular day, no entries will show up there.</p>
+
 <p>when you save and quit the text editor, your entry will automatically propagate
-to the global feels list; if you've opted to publish your feels to html/gopher,
-those files will update immediately. you can always go back to the current day's
-entry and edit/add as you'd like, but older entries will not be available for
+to the global feels list; if you&rsquo;ve opted to publish your feels to html/gopher,
+those files will update immediately. you can always go back to the current day&rsquo;s
+entry and edit/add as you&rsquo;d like, but older entries will not be available for
 editing from <code>ttbp</code>.</p>
-<p><em>(since files are just stored as plaintext in your directory, it's possible to
+
+<p><em>(since files are just stored as plaintext in your directory, it&rsquo;s possible to
 edit and move old entries directly from the command line. however, changing old
 entries might cause strange things to happen with timestamps. the main program
 looks at the filename first for setting the date, then the last modified time to
-sort recent posts. it expects YYYMMDD.txt as the filename; anything else won't
+sort recent posts. it expects YYYMMDD.txt as the filename; anything else won&rsquo;t
 show up as a valid entry. yes, this means you can post things out of date order
 by creating files with any date you want.)</em></p>
+
 <h4>general entry-writing notes</h4>
+
 <ul>
 <li>you can use <a href="https://daringfireball.net/projects/markdown/syntax">markdown</a></li>
 <li>you can use html</li>
 <li>you can also put things between <code>&lt;!-- comments --&gt;</code> to have them show up
-  in the feed but not render in a browser (but people can still read
-  them with view-source)</li>
+in the feed but not render in a browser (but people can still read
+them with view-source)</li>
 </ul>
+
+
 <h3>reading other feels</h3>
+
 <p>the <code>browse global feels</code> feature shows the ten most recent entries that anyone
 has written on ttbp. this list is only accessible from within tilde.town,
 although individual entries may be posted to html or gopher.</p>
-<p>you can also pull up a list of a single user's feels through <code>check out your
+
+<p>you can also pull up a list of a single user&rsquo;s feels through <code>check out your
 neighbors</code>, which displays all users who are writing on <code>ttbp</code> based on their
-most recently updated entry, and a link to their public html blog if they've
+most recently updated entry, and a link to their public html blog if they&rsquo;ve
 opted to publish their posts.</p>
+
 <p><strong>please note!</strong> entries written on <code>ttbp</code> should be considered sensitive,
 private information, even if a particular user is publishing entries in a
-world-viewable way! please be respectful about having access to other people's
+world-viewable way! please be respectful about having access to other people&rsquo;s
 feels, and do not copy/repeat any information without getting their explicit
 permission. tilde.town operates on a high level of mutual trust, and <code>ttbp</code> is
 designed to give individuals control over their content.</p>
+
+<h3>subscribing to users</h3>
+
+<p>the <code>visit your subscriptions</code> feature lets you view recent entries from a list
+of users you&rsquo;ve subscribed to, as well as manage your subscription list. your
+list is saved to <code>~/.ttbp/config/subs</code>, which gets automatically updated when
+you add or remove subscriptions from ttbp.</p>
+
+<p>your subscription list is private; this means no one other than you can see who
+you&rsquo;re following. subscription view only shows the 50 most recent entries from
+your subscribe list; if you want to see more entries from an individual, you
+can navigate to their entries in `check out your neighbors   from the main
+menu.</p>
+
 <h3>privacy</h3>
+
 <p>when you start your ttbp, you have the option of publishing or not publishing
 your blog.</p>
+
 <p>if you opt to not publish, your entires will never be accessible from outside of
 the tilde.town network; other tilde.town users will still be able to read your
 entries through the ttbp interface, or by directly accessing your
 <code>~/.ttbp/entries</code> directory.</p>
+
 <p>if you want to further protect your entries, you can <code>chmod 700</code> your entries
 directory.</p>
+
 <p>if you opt to publish, the program creates a directory <code>~/.ttbp/www</code> where it
 stores all html files it generates, and symlinks this from your <code>~/public_html</code>
 with your chosen blog directory. your blog will also be listed on the <a href="https://tilde.town/~endorphant/ttbp">main ttbp
 page</a>.</p>
+
 <p>you can also opt to publish to gopher, and the program will automatically
 generate a gophermap of your feels.</p>
+
 <p>you can set publishing status on individual entries, or bury individual feels;
-see "data management" below for details.</p>
+see &ldquo;data management&rdquo; below for details.</p>
+
 <h3>data management</h3>
+
 <p>the <code>manage your feels</code> menu provides several tools for organizing your feels.
 these are all actions you can perform manually from the command line, but doing
 them from within the program can help keep your files properly linked up.</p>
+
 <ul>
-<li><strong>read over feels</strong>--a list of all your entries, which you can open and
-  read like any other feel</li>
-<li><strong>modify feels publishing</strong>--this lets you toggle privacy on individual
-  posts. entries marked <code>(nopub)</code> will not get written to html or gopher,
-  and toggling them from this menu will immediately publish or unpublish
-  that entry (if you're not publishing your posts at all, these settings
-  won't matter, since your feels will never show up outside of tilde.town)</li>
-<li><strong>backup your feels</strong>--makes a .tar.gz of all your entries, saving one
-  copy to <code>~/.ttbp/backups/</code> with the current date, and a second copy to
-  your home directory for safekeeping.</li>
-<li><strong>import a feels backup</strong>--unpacks a backup file into your current feels
-  list. this tool checks the <code>~/.ttbp/backups</code> directory for archives, and
-  expects a file created by the above backup utility. if it detects any file
-  collisions, it will preserve your current live copy and leave the backup
-  verison in a temp directory, and notify you that this happened. also, any
-  entries that were previously marked as <code>(nopub)</code> will retain their nopub
-  status.</li>
-<li><strong>bury some feels</strong>--hides individual feels from viewing; entries are
-  moved to <code>~/.ttbp/buried</code> (and marked with a unique timestamp to prevent
-  file collision) with permissions set to 600, meaning no one except you
-  will be able to open that file. these entries are also hidden from your
-  own view from <code>read over feels</code>, and you'll have to open the files from
-  the command line if you want to see them. this is intended to be a
-  permament action, so you'll be asked to type the entry date once to load
-  the feel, then shown a preview of that feel, and then type the date again
-  to confirm burying.</li>
-<li><strong>delete feels by day</strong>--<em>permanently removes individual entries</em>,
-  including deleting published html/gopher files if needed. this action is
-  not recoverable, unless you have a backup to restore; you'll be asked to
-  type the entry date once to load the feel, then shown a preview of that
-  feel, and then type the date again to confirm deletion.</li>
-<li><strong>purge all feels</strong>--<em>permanently removes all feels</em>, including deleting
-  all published html/gopher files if needed. this action is not recoverable,
-  unless you have a backup to restore. you'll be asked to type a
-  one-time-use purge code to confirm this action.</li>
-<li><strong>wipe feels account</strong>--<em>permanently removes all data associated with
-  feels</em>, including deleting any published hmtl/gopher files and removing
-  your <code>~/.ttbp</code> directory. any backups that you have in <code>~/.ttbp/backups</code>
-  will also be deleted with this action (which is why the backup function
-  makes a second copy for safekeeping in your home directory). you will no
-  longer show up in any lists as a user.</li>
+<li><strong>read over feels</strong>&ndash;a list of all your entries, which you can open and
+read like any other feel</li>
+<li><strong>modify feels publishing</strong>&ndash;this lets you toggle privacy on individual
+posts. entries marked <code>(nopub)</code> will not get written to html or gopher,
+and toggling them from this menu will immediately publish or unpublish
+that entry (if you&rsquo;re not publishing your posts at all, these settings
+won&rsquo;t matter, since your feels will never show up outside of tilde.town)</li>
+<li><strong>backup your feels</strong>&ndash;makes a .tar.gz of all your entries, saving one
+copy to <code>~/.ttbp/backups/</code> with the current date, and a second copy to
+your home directory for safekeeping.</li>
+<li><strong>import a feels backup</strong>&ndash;unpacks a backup file into your current feels
+list. this tool checks the <code>~/.ttbp/backups</code> directory for archives, and
+expects a file created by the above backup utility. if it detects any file
+collisions, it will preserve your current live copy and leave the backup
+verison in a temp directory, and notify you that this happened. also, any
+entries that were previously marked as <code>(nopub)</code> will retain their nopub
+status.</li>
+<li><strong>bury some feels</strong>&ndash;hides individual feels from viewing; entries are
+moved to <code>~/.ttbp/buried</code> (and marked with a unique timestamp to prevent
+file collision) with permissions set to 600, meaning no one except you
+will be able to open that file. these entries are also hidden from your
+own view from <code>read over feels</code>, and you&rsquo;ll have to open the files from
+the command line if you want to see them. this is intended to be a
+permament action, so you&rsquo;ll be asked to type the entry date once to load
+the feel, then shown a preview of that feel, and then type the date again
+to confirm burying.</li>
+<li><strong>delete feels by day</strong>&ndash;<em>permanently removes individual entries</em>,
+including deleting published html/gopher files if needed. this action is
+not recoverable, unless you have a backup to restore; you&rsquo;ll be asked to
+type the entry date once to load the feel, then shown a preview of that
+feel, and then type the date again to confirm deletion.</li>
+<li><strong>purge all feels</strong>&ndash;<em>permanently removes all feels</em>, including deleting
+all published html/gopher files if needed. this action is not recoverable,
+unless you have a backup to restore. you&rsquo;ll be asked to type a
+one-time-use purge code to confirm this action.</li>
+<li><strong>wipe feels account</strong>&ndash;<em>permanently removes all data associated with
+feels</em>, including deleting any published hmtl/gopher files and removing
+your <code>~/.ttbp</code> directory. any backups that you have in <code>~/.ttbp/backups</code>
+will also be deleted with this action (which is why the backup function
+makes a second copy for safekeeping in your home directory). you will no
+longer show up in any lists as a user.</li>
 </ul>
+
+
 <h3>settings</h3>
+
 <p>the settings menu lets you change specific options for handling your feels and
 using the interface.</p>
+
 <ul>
-<li><strong>editor</strong>--set your text editor</li>
-<li><strong>gopher</strong>--opt in or out of automatically posting to gopher</li>
-<li><strong>post as nopub</strong>--set whether posts default to being published or not
-  published (if you're not publishing your feels, this doesn't matter)</li>
-<li><strong>publish dir</strong>--set the directory under you <code>public_html</code> where feels will be
-  published (if you're not publishing your feels, this defaults to <code>None</code>)</li>
-<li><strong>publishing</strong>--opt in or out of automatically publishing entries to a
-  world-readable html page</li>
-<li><strong>rainbows</strong>--opt in or out of having multicolored menu text</li>
+<li><strong>editor</strong>&ndash;set your text editor</li>
+<li><strong>gopher</strong>&ndash;opt in or out of automatically posting to gopher</li>
+<li><strong>post as nopub</strong>&ndash;set whether posts default to being published or not
+published (if you&rsquo;re not publishing your feels, this doesn&rsquo;t matter)</li>
+<li><strong>publish dir</strong>&ndash;set the directory under you <code>public_html</code> where feels will be
+published (if you&rsquo;re not publishing your feels, this defaults to <code>None</code>)</li>
+<li><strong>publishing</strong>&ndash;opt in or out of automatically publishing entries to a
+world-readable html page</li>
+<li><strong>rainbows</strong>&ndash;opt in or out of having multicolored menu text</li>
 </ul>
+
+
 <h3>changing your page layout</h3>
+
 <p>you can modify how your blog looks by editing the stylesheet or header and
 footer files. the program sets you up with basic default. if you break your page
 somehow, you can force the program to regenerate your configuration by deleting
 your ~/.ttbp directory entirely.  <strong>you might want to back up your
 ~/.ttbp/entries directory before you do this.</strong></p>
+
 <ul>
 <li>to modify your stylesheet, edit your ~/.ttbp/config/style.css</li>
-<li>to modify the page header, edit your ~/.ttbp/config/header.txt</li>
-<li>there's a place marked off in the default header where you can safely put
-    custom HTML elements!</li>
+<li>to modify the page header, edit your ~/.ttbp/config/header.txt
+
+<ul>
+<li>there&rsquo;s a place marked off in the default header where you can safely put
+custom HTML elements!</li>
+</ul>
+</li>
 <li>to modify the page footer, edit your ~/.ttbp/config/footer.txt</li>
 </ul>
+
+
 <h3>general tips/troubleshooting</h3>
+
 <ul>
-<li>if the date looks like it's ahead or behind, it's because you haven't set
-  your local timezone yet.  here are some
-  <a href="http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/">timezone setting instructions</a></li>
+<li>if the date looks like it&rsquo;s ahead or behind, it&rsquo;s because you haven&rsquo;t set
+your local timezone yet.  here are some
+<a href="http://www.cyberciti.biz/faq/linux-unix-set-tz-environment-variable/">timezone setting instructions</a></li>
 <li>the feels burying tool will effectively clear your post for the day; you can
-  use this feature to start a fresh entry on a particular day by burying the
-  current day's feels and then editing a new file</li>
+use this feature to start a fresh entry on a particular day by burying the
+current day&rsquo;s feels and then editing a new file</li>
 </ul>
+
+
 <h3>future features</h3>
+
 <p>these are a few ideas being kicked around, or under active development:</p>
+
 <ul>
 <li>stylesheet/theme selector</li>
 <li>better entry display within ttbp (currently just offloads to <code>less</code>)</li>
 <li>buried feels browser</li>
 </ul>
+
+
 <p>other ideas are listed on github as
 <a href="https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A" title="upcoming+features">upcoming features</a> or <a href="https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A" title="feature+request">feature requests</a>!</p>
+
 <h3>dependencies</h3>
+
 <p>(this section is only relevant if you plan on forking the repo and running an
 instance of this yourself)</p>
+
 <ul>
 <li><a href="https://pypi.python.org/pypi/mistune">mistune</a></li>
 <li><a href="https://pypi.python.org/pypi/inflect">inflect</a></li>
 <li><a href="https://pypi.python.org/pypi/six">six</a></li>
 </ul>
+
+
 <h3>contributing</h3>
+
 <p>please check out my <a href="https://github.com/modgethanc/ttbp/blob/master/.github/CONTRIBUTING.md">contributor
 guidelines</a>
-on github if you'd like to get involved with development!</p>
+on github if you&rsquo;d like to get involved with development!</p>
+
 <p>if you find any bugs or strange behavior, please message me locally on tildemail
-or open a github issue and i'll get back to you as soon as i can.</p>
-<p>if you're interested in helping with the code, please drop me some tildemail!</p>
+or open a github issue and i&rsquo;ll get back to you as soon as i can.</p>
+
+<p>if you&rsquo;re interested in helping with the code, please drop me some tildemail!</p>
+
 <p>i accept tips for development work on
 <a href="https://liberapay.com/modgethanc">liberapay</a></p>
+
 <h3>contributor shout-outs</h3>
+
 <p>thanks to:</p>
+
 <ul>
 <li>~vilmibm, packaging help and gopher support</li>
 <li>~sanqui, the bug swatter</li>
 <li>~sinacutie, for css updates</li>
 </ul>
+

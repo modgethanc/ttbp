@@ -729,8 +729,9 @@ def subscription_handler(intro=""):
     if choice is not False:
         if choice == 0:
             if len(subs) > 0:
-                redraw("recent entries from your subscribed pals:")
-                view_subscribed_feed(subs)
+                prompt = "most recent entries from your subscribed pals:"
+                redraw(prompt)
+                view_subscribed_feed(subs, prompt)
             else:
                 intro = "it doesn't look like you have any subscriptions to see! add pals with 'manage subscriptions' here."
         elif choice == 1:
@@ -1340,12 +1341,12 @@ def view_global_feed():
 
     return
 
-def view_subscribed_feed(subs):
+def view_subscribed_feed(subs, prompt=""):
     '''
     display list of most recent entries on user's subscribed list.
     '''
     (entries, metas)= feed_list(subs, 0)
-    list_entries(metas, entries, "entries from your subscribed pals:")
+    list_entries(metas, entries, prompt)
     redraw()
 
     return

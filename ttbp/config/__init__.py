@@ -292,5 +292,21 @@ version 0.9.3 features:
     i'm just making this option available for anyone whose financially stable
     and wants to kick some spare change my way; this is a labor of love, and i'm
     happy to work on it regardless :)
+""",
+        "0.12.1":"""
+~[version 0.12.1 update]~
+
+    new feature: "visit your subscriptions"
+        * view recent entries from a list of townies you've subscribed to
+        * subscription list is private; no one else can see who you're following
+        * add/remove users from the subscription menu
+
+    minor changes:
+        * global feed now shows 50 most recent entries, which you can scroll through
+        * documentation page updated to reflect new feature
+
+    thanks for those of your who've written me with feedback!
+
+    keep feelin' together <3
 """
 }
