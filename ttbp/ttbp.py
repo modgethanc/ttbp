@@ -734,7 +734,9 @@ def subscription_handler(intro=""):
             else:
                 intro = "it doesn't look like you have any subscriptions to see! add pals with 'manage subscriptions' here."
         elif choice == 1:
-            intro = DUST
+            prompt = "options for managing your subscriptions:"
+            redraw(prompt)
+            subscription_manager(subs, prompt)
     else:
         redraw()
         return
@@ -1342,16 +1344,17 @@ def view_subscribed_feed(subs):
     '''
     display list of most recent entries on user's subscribed list.
     '''
-    (entries, metas)= feed_list(subs)
-    list_entries(metas, entries, "recent entries from your subscribed pals:")
+    (entries, metas)= feed_list(subs, 0)
+    list_entries(metas, entries, "entries from your subscribed pals:")
     redraw()
 
     return
 
-def feed_list(townies):
+def feed_list(townies, delta=30):
     '''
     given a list of townies, generate a list of 50 most recent entries within
-    the last 30 days. validates against townies with ttbp config files.
+    given interval (default 30 days; 0 days for no limit). validates against
+    townies with ttbp config files.
 
     returns a tuple of (entries, metas)
     '''
@@ -1370,16 +1373,18 @@ def feed_list(townies):
             filenames = []
 
         for entry in filenames:
-            ## hardcoded display cutoff at 30 days
-            if core.valid(entry):
-                year = int(entry[0:4])
-                month = int(entry[4:6])
-                day = int(entry[6:8])
-                datecheck = datetime.date(year, month, day)
-                displayCutoff = datetime.date.today() - datetime.timedelta(days=30)
+            if delta > 0:
+                if core.valid(entry):
+                    year = int(entry[0:4])
+                    month = int(entry[4:6])
+                    day = int(entry[6:8])
+                    datecheck = datetime.date(year, month, day)
+                    displayCutoff = datetime.date.today() - datetime.timedelta(days=delta)
 
-                if datecheck > displayCutoff:
-                    feedList.append(os.path.join(entryDir, entry))
+                    if datecheck > displayCutoff:
+                        feedList.append(os.path.join(entryDir, entry))
+            else:
+                feedList.append(os.path.join(entryDir, entry))
 
     metas = core.meta(feedList)
     metas.sort(key = lambda entry:entry[3])
@@ -1396,6 +1401,81 @@ def feed_list(townies):
                 wordcount=p.no("word", entry[2])))
 
     return entries, metas
+
+def subscription_manager(subs, intro=""):
+    '''
+    '''
+
+    menuOptions = [
+            "add pals",
+            "remove pals"
+            ]
+
+    util.print_menu(menuOptions, SETTINGS.get("rainbows", False))
+
+    choice = util.list_select(menuOptions, "what do you want to do? (enter 'q' to go back) ")
+
+    top = ""
+
+    if choice is not False:
+        if choice == 0:
+            prompt = "list of townies recording feels:"
+            redraw(prompt)
+            subs = subscribe_handler(subs, prompt)
+        elif choice == 1:
+            redraw("list of townies you're subscribed to:")
+            subs = unsubscribe_handler(subs)
+    else:
+        redraw()
+        return
+
+    redraw(top+intro)
+    return subscription_manager(subs, intro)
+
+def unsubscribe_handler(subs):
+    '''
+    displays a list of currently subscribed users and toggles deletion.
+    '''
+
+    return subs
+
+def subscribe_handler(subs, prompt):
+    '''
+    displays a list of all users not subscribed to and toggles adding,
+    returning the subs list when finished.
+    '''
+
+    candidates = []
+
+    for townie in core.find_ttbps():
+        if townie not in subs:
+            candidates.append(townie)
+
+    candidates.sort()
+
+    choice = menu_handler(candidates, "pick a townie to add to your subscriptions (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "list of townies recording feels:")
+
+    if choice is not False:
+        townie = candidates[choice]
+        subs.append(townie)
+        save_subs(subs)
+        redraw("{townie} added! \n\n> {prompt}".format(townie=townie, prompt=prompt))
+        return subscribe_handler(subs, prompt)
+    else:
+        redraw()
+        return subs
+
+def save_subs(subs):
+    '''
+    takes given subscription list and saves it into the user config,
+    overwriting whatever is already there.
+    '''
+
+    subs_file = open(config.SUBS, 'w')
+
+    for townie in subs:
+        subs_file.write(townie + "\n")
+    subs_file.close()
 
 def graffiti_handler():
     '''
