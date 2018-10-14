@@ -304,6 +304,7 @@ version 0.9.3 features:
     minor changes:
         * global feed now shows 50 most recent entries, which you can scroll through
         * documentation page updated to reflect new feature
+        * graffiti wall lock releases after 3 days
 
     thanks for those of your who've written me with feedback!
 
