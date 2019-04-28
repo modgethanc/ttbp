@@ -89,7 +89,7 @@ SETTINGS = {
 
 ## ttbp specific utilities
 
-def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
+def menu_handler(options, prompt, pagify=10, page=0, rainbow=False, top=""):
     '''
     This menu handler takes an incoming list of options, pagifies to a
     pre-set value, and queries via the prompt. Calls print_menu() and
@@ -99,7 +99,6 @@ def menu_handler(options, prompt, pagify=10, rainbow=False, top=""):
     '''
 
     optCount = len(options)
-    page = 0
     total = optCount / pagify
 
     # don't display empty pages
@@ -154,8 +153,9 @@ def page_helper(options, prompt, pagify, rainbow, page, total, top):
     else:
         # shift answer to refer to index from original list
         ans = ans + page * pagify
-
-        return ans
+        # return the (shifted) answer and the current page
+        # alternatively, we can recompute the current page at a call site
+        return (page, ans)
 
 def redraw(leftover=""):
     '''
@@ -745,7 +745,7 @@ def subscription_handler(intro=""):
     redraw(top+intro)
     return subscription_handler(intro)
 
-def view_neighbors(users, prompt):
+def view_neighbors(users, prompt, page=0):
     '''
     generates list of all users on ttbp, sorted by most recent post
 
@@ -804,12 +804,13 @@ def view_neighbors(users, prompt):
         sortedUsers.append(user[0])
         userIndex.append(user[2])
 
-    choice = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'q' to go home: ", 15, SETTINGS.get("rainbows", False), prompt)
+    ans = menu_handler(sortedUsers, "pick a townie to browse their feels, or type 'q' to go home: ", 15, page, SETTINGS.get("rainbows", False), prompt)
 
-    if choice is not False:
+    if ans is not False:
+        (page, choice) = ans
         redraw("~{user}'s recorded feels, listed by date: \n".format(user=userIndex[choice]))
         view_feels(userIndex[choice])
-        view_neighbors(users, prompt)
+        view_neighbors(users, prompt, page)
     else:
         redraw()
         return
@@ -1079,9 +1080,10 @@ move it to {directory} and try running this tool again.\
 """.format(directory=config.BACKUPS))
     else:
         print("backup files found:\n")
-        choice = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "backup files found:")
+        ans = menu_handler(backups, "pick a backup file to load (or 'q' to cancel): ", 15, 0, SETTINGS.get("rainbows", False), "backup files found:")
 
-        if choice is not False:
+        if ans is not False:
+            (page, choice) = ans
             imports = core.process_backup(os.path.join(config.BACKUPS, backups[choice]))
             for feel in imports:
                 print("importing {entry}".format(entry="-".join(util.parse_date(feel))))
@@ -1227,7 +1229,7 @@ def list_nopubs(user):
     else:
         redraw("no feels recorded by ~"+user)
 
-def set_nopubs(metas, user, prompt):
+def set_nopubs(metas, user, prompt, page=0):
     """displays a list of entries for pub/nopub toggling.
     """
 
@@ -1246,9 +1248,10 @@ none of your feels will be viewable outside of this server)"""
             pub = "(nopub)"
         entries.append(""+entry[4]+" ("+p.no("word", entry[2])+") "+"\t"+pub)
 
-    choice = menu_handler(entries, "pick an entry from the list to toggle nopub status, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt+"\n\n"+nopub_note)
+    ans = menu_handler(entries, "pick an entry from the list to toggle nopub status, or type 'q' to go back: ", 10, page, SETTINGS.get("rainbows", False), prompt+"\n\n"+nopub_note)
 
-    if choice is not False:
+    if ans is not False:
+        (page, choice) = ans
         target = os.path.basename(metas[choice][0])
         action = core.toggle_nopub(target)
         redraw(prompt)
@@ -1256,7 +1259,7 @@ none of your feels will be viewable outside of this server)"""
         if SETTINGS["gopher"]:
             gopher.publish_gopher('feels', core.get_files())
 
-        return set_nopubs(metas, user, prompt)
+        return set_nopubs(metas, user, prompt, page)
 
     else:
         redraw()
@@ -1299,23 +1302,23 @@ running through the feedback option again!\
 
     return exit
 
-def list_entries(metas, entries, prompt):
+def list_entries(metas, entries, prompt, page=0):
     '''
     displays a list of entries for reading selection, allowing user to select
     one for display.
     '''
 
-    choice = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, SETTINGS.get("rainbows", False), prompt)
+    ans = menu_handler(entries, "pick an entry from the list, or type 'q' to go back: ", 10, page, SETTINGS.get("rainbows", False), prompt)
 
-    if choice is not False:
-
+    if ans is not False:
+        (page, choice) = ans
         redraw("now reading ~{user}'s feels on {date}\n> press <q> to return to feels list.\n\n".format(user=metas[choice][5],
                     date=metas[choice][4]))
 
         show_entry(metas[choice][0])
         redraw(prompt)
 
-        return list_entries(metas, entries, prompt)
+        return list_entries(metas, entries, prompt, page)
 
     else:
         redraw()
@@ -1434,26 +1437,27 @@ def subscription_manager(subs, intro=""):
     redraw(top+intro)
     return subscription_manager(subs, intro)
 
-def unsubscribe_handler(subs, prompt):
+def unsubscribe_handler(subs, prompt, page=0):
     '''
     displays a list of currently subscribed users and toggles deletion.
     '''
 
     subs.sort()
 
-    choice = menu_handler(subs, "pick a pal to unsubscribe (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "list of townies recording feels:")
+    ans = menu_handler(subs, "pick a pal to unsubscribe (or 'q' to cancel): ", 15, page, SETTINGS.get("rainbows", False), "list of townies recording feels:")
 
-    if choice is not False:
+    if ans is not False:
+        (page,choice) = ans
         townie = subs[choice]
         subs.remove(townie)
         save_subs(subs)
         redraw("{townie} removed! \n\n> {prompt}".format(townie=townie, prompt=prompt))
-        return unsubscribe_handler(subs, prompt)
+        return unsubscribe_handler(subs, prompt, page)
     else:
         redraw()
         return subs
 
-def subscribe_handler(subs, prompt):
+def subscribe_handler(subs, prompt, page=0):
     '''
     displays a list of all users not subscribed to and toggles adding,
     returning the subs list when finished.
@@ -1467,14 +1471,15 @@ def subscribe_handler(subs, prompt):
 
     candidates.sort()
 
-    choice = menu_handler(candidates, "pick a townie to add to your subscriptions (or 'q' to cancel): ", 15, SETTINGS.get("rainbows", False), "list of townies recording feels:")
+    ans = menu_handler(candidates, "pick a townie to add to your subscriptions (or 'q' to cancel): ", 15, page, SETTINGS.get("rainbows", False), "list of townies recording feels:")
 
-    if choice is not False:
+    if ans is not False:
+        (page, choice) = ans
         townie = candidates[choice]
         subs.append(townie)
         save_subs(subs)
         redraw("{townie} added! \n\n> {prompt}".format(townie=townie, prompt=prompt))
-        return subscribe_handler(subs, prompt)
+        return subscribe_handler(subs, prompt, page)
     else:
         redraw()
         return subs
