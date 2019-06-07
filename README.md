@@ -258,3 +258,4 @@ thanks to:
 * ~vilmibm, packaging help and gopher support
 * ~sanqui, the bug swatter
 * ~sinacutie, for css updates
+* ~epicmorphism, for fixing pagination scrolling

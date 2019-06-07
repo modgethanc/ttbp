@@ -51,7 +51,7 @@ from . import chatter
 from . import gopher
 from . import util
 
-__version__ = "0.12.1"
+__version__ = "0.12.2"
 __author__ = "endorphant <endorphant@tilde.town)"
 
 p = inflect.engine()
@@ -1906,6 +1906,10 @@ something strange happened to you during this update.
     if z < 1:
         # version 0.12.1 patch notes
         print(config.UPDATES["0.12.1"])
+
+    if z < 2:
+        # version 0.12.2 patch notes
+        print(config.UPDATES["0.12.2"])
 
     confirm = ""
 

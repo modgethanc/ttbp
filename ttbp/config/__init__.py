@@ -87,7 +87,7 @@ ___________________________________________________________
 |  ____ ____ ____ _    ____    ____ _  _ ____ _ _  _ ____  |
 |  |___ |___ |___ |    [__     |___ |\ | | __ | |\ | |___  |
 |  |    |___ |___ |___ ___]    |___ | \| |__] | | \| |___  |
-|                            <gan jue; to feel> ver 0.12.1 |
+|                            <gan jue; to feel> ver 0.12.2 |
 |__________________________________________________________|
 '''.lstrip()
 #  ~ u n s t a b l e  e x p e r i m e n t a l  b r a n c h ~
@@ -309,5 +309,19 @@ version 0.9.3 features:
     thanks for those of your who've written me with feedback!
 
     keep feelin' together <3
+""",
+        "0.12.2":"""
+~[version 0.12.2 update]~
+
+    bug fix: ~epicmorphism helped out with fixing the pagination bug! now, when
+    you scroll through a list of entries, it'll correctly return you to the
+    page you were on if you open and close an item. thanks so much, friend <3
+
+    thanks to everyone writing me with feedback; i've been real busy lately,
+    and i might not get to making improvements or responding to mail for a
+    while :(
+
+    feel on!
+    ~endo
 """
 }
