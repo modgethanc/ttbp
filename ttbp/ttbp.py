@@ -105,7 +105,9 @@ def menu_handler(options, prompt, pagify=10, page=0, rainbow=False, top=""):
     if optCount % pagify == 0:
         total = total - 1
 
-    if total < 1:
+    if 0:
+    # temporary fix for menu bug when fewer than 10 entries
+    #if total < 1:
         util.print_menu(options, SETTINGS.get("rainbows", False))
         return util.list_select(options, prompt)
 
