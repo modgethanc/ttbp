@@ -45,11 +45,7 @@ from six.moves import input
 
 import inflect
 
-from . import config
-from . import core
-from . import chatter
-from . import gopher
-from . import util
+from ttbp import config, core, chatter, gopher, util
 
 __version__ = "0.12.2"
 __author__ = "endorphant <endorphant@tilde.town)"

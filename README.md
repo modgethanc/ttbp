@@ -228,6 +228,14 @@ these are a few ideas being kicked around, or under active development:
 other ideas are listed on github as
 [upcoming features](https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A"upcoming+features") or [feature requests](https://github.com/modgethanc/ttbp/issues?q=is%3Aissue+is%3Aopen+label%3A"feature+request")!
 
+### installation notes
+
+1. clone the repo
+1. if you're installing system-wide, run
+```
+sudo -H pip3 install .
+```
+
 ### dependencies
 
 (this section is only relevant if you plan on forking the repo and running an
