@@ -1,0 +1,2 @@
+include ttbp/config/defaults/*.txt
+include ttbp/config/defaults/style.css

@@ -15,7 +15,7 @@ setup(
         'License :: OSI Approved :: MIT License',
     ],
     keywords='blog',
-    packages=['ttbp'],
+    packages=setuptools.find_packages(),
     install_requires = [
         'inflect==0.2.5',
         'mistune==0.8.1',
@@ -24,9 +24,9 @@ setup(
     ],
     include_package_data = True,
     entry_points = {
-          'console_scripts': [
-              'feels = ttbp.ttbp:main',
-              'ttbp = ttbp.ttbp:main',
-          ]
+        'console_scripts': [
+            'feels = ttbp.ttbp:main',
+            'ttbp = ttbp.ttbp:main',
+        ]
     },
 )

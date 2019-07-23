@@ -39,10 +39,7 @@ import re
 import mistune
 import json
 
-from . import chatter
-from . import config
-from . import gopher
-from . import util
+from ttbp import config, chatter, gopher, util
 
 FEED = os.path.join("/home", "endorphant", "public_html", "ttbp", "index.html")
 SETTINGS = {}
