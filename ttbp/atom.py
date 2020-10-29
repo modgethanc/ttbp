@@ -37,6 +37,8 @@ from feedgen.feed import FeedGenerator
 import os
 import mistune
 import datetime
+import stat
+import time
 
 def publish_atom(entry_filenames, settings):
     fg = FeedGenerator()
@@ -66,7 +68,11 @@ def publish_atom(entry_filenames, settings):
         fe.author(name=config.USER)
         fe.content(html, type="html")
         try: # crashing because of an invalid date would be sad
-            fe.updated("-".join(date)+"T00:00:00Z")
+            fe.published("-".join(date)+"T00:00:00Z")
+            stats = os.stat(path)
+            updated = datetime.datetime.fromtimestamp(stats[stat.ST_MTIME],
+                                                      datetime.timezone.utc)
+            fe.updated(updated.strftime('%Y-%m-%dT%H:%M:%SZ'))
         except ValueError:
             pass
     outfile = os.path.join(config.WWW, 'atom.xml')
