@@ -238,6 +238,7 @@ instance of this yourself)
 * [six](https://pypi.python.org/pypi/six)
 * [colorama](https://pypi.python.org/pypi/colorama)
 * [feedgen](https://pypi.python.org/pypi/feedgen)
+* [dateutil](https://pypi.python.org/pypi/python-dateutil)
 
 ### contributing
 

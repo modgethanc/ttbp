@@ -38,7 +38,7 @@ import os
 import mistune
 import datetime
 import stat
-import time
+from dateutil import tz
 
 def publish_atom(entry_filenames, settings):
     fg = FeedGenerator()
@@ -50,6 +50,7 @@ def publish_atom(entry_filenames, settings):
     fg.link(href=url+'/', rel='alternate')
     fg.link(href=url+'/atom.xml', rel='self')
     fg.language('en') # TODO: feels language should be configurable
+    fg.updated(datetime.datetime.now(tz.tzlocal()))
 
     for filename in sorted(entry_filenames):
         date = util.parse_date(filename)
@@ -68,11 +69,13 @@ def publish_atom(entry_filenames, settings):
         fe.author(name=config.USER)
         fe.content(html, type="html")
         try: # crashing because of an invalid date would be sad
-            fe.published("-".join(date)+"T00:00:00Z")
+            year, month, day = [int(x) for x in date]
+            fe.published(datetime.datetime(year, month, day,
+                                           tzinfo=tz.tzlocal()))
             stats = os.stat(path)
             updated = datetime.datetime.fromtimestamp(stats[stat.ST_MTIME],
-                                                      datetime.timezone.utc)
-            fe.updated(updated.strftime('%Y-%m-%dT%H:%M:%SZ'))
+                                                      tz.tzlocal())
+            fe.updated(updated)
         except ValueError:
             pass
     outfile = os.path.join(config.WWW, 'atom.xml')

@@ -22,6 +22,7 @@ setup(
         'colorama',
         'six',
         'feedgen',
+        'python-dateutil',
     ],
     include_package_data = True,
     entry_points = {
