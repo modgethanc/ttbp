@@ -50,6 +50,7 @@ from . import core
 from . import chatter
 from . import gopher
 from . import util
+from . import atom
 
 __version__ = "0.12.2"
 __author__ = "endorphant <endorphant@tilde.town)"
@@ -75,6 +76,7 @@ DEFAULT_SETTINGS = {
         "publishing": False,
         "rainbows": False,
         "post as nopub": False,
+        "atom": False,
     }
 
 ## user globals
@@ -85,7 +87,8 @@ SETTINGS = {
         "publishing": False,
         "rainbows": False,
         "post as nopub": False,
-        }
+        "atom": False,
+    }
 
 ## ttbp specific utilities
 
@@ -403,7 +406,8 @@ def setup_repair():
             "publish dir": select_publish_dir,
             "gopher": gopher.select_gopher,
             "rainbows": toggle_rainbows,
-            "post as nopub": toggle_pub_default
+            "post as nopub": toggle_pub_default,
+            "atom": atom.select_atom,
             }
 
     for option in iter(settings_map):
@@ -502,6 +506,13 @@ def setup():
         elif settingList[int(choice)] == "post as nopub":
             SETTINGS.update({"post as nopub": toggle_pub_default()})
             redraw("posting default set to {nopub}".format(nopub=SETTINGS.get("post as nopub")))
+            save_settings()
+            return setup()
+
+        #atom opt-in
+        elif settingList[int(choice)] == "atom":
+            SETTINGS.update({"atom": atom.select_atom()})
+            redraw("atom set to {}".format(SETTINGS.get("atom")))
             save_settings()
             return setup()
 
@@ -1203,16 +1214,7 @@ def write_entry(entry=os.path.join(config.MAIN_FEELS, "test.txt")):
     if SETTINGS.get("post as nopub"):
         core.toggle_nopub(os.path.basename(entry))
     else:
-        if core.publishing():
-            core.write_html("index.html")
-            left = "posted to {url}/index.html\n\n> ".format(
-                url="/".join(
-                    [config.LIVE+config.USER,
-                        str(SETTINGS.get("publish dir"))]))
-
-        if SETTINGS.get('gopher'):
-            gopher.publish_gopher('feels', core.FILES)
-            left += "also posted to your ~/public_gopher!\n\n> "
+        left = core.render(core.FILES)
 
     #core.load_files()
     redraw(left + "thanks for sharing your feels!")

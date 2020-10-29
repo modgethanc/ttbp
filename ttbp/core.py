@@ -43,6 +43,7 @@ from . import chatter
 from . import config
 from . import gopher
 from . import util
+from . import atom
 
 FEED = os.path.join("/home", "endorphant", "public_html", "ttbp", "index.html")
 SETTINGS = {}
@@ -95,6 +96,23 @@ def get_files(feelsdir=config.MAIN_FEELS):
 
     return files
 
+def render(files):
+    out = ""
+    if publishing():
+        write_html("index.html")
+        out += "posted to {url}/index.html\n\n> ".format(
+            url="/".join(
+                [config.LIVE+config.USER,
+                    str(SETTINGS.get("publish dir"))]))
+        if SETTINGS.get('gopher'):
+            gopher.publish_gopher('feels', files)
+            out += "also posted to your ~/public_gopher!\n\n> "
+        if SETTINGS.get('atom'):
+            atom.publish_atom(files, SETTINGS)
+            out += "also posted to your atom feed {url}/atom.xml!\n\n> "
+    return out
+
+
 def load_files(feelsdir=config.MAIN_FEELS):
     '''
     file loader
@@ -108,11 +126,7 @@ def load_files(feelsdir=config.MAIN_FEELS):
 
     load_nopubs()
     FILES = get_files(feelsdir)
-
-    if publishing():
-        write_html("index.html")
-        if SETTINGS.get('gopher'):
-            gopher.publish_gopher('feels', FILES)
+    render(FILES)
 
 def load_nopubs():
     """Load a list of the user's nopub entries.
