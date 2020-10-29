@@ -66,9 +66,7 @@ def publish_atom(entry_filenames, settings):
         fe.author(name=config.USER)
         fe.content(html, type="html")
         try: # crashing because of an invalid date would be sad
-            year, month, day = [int(x) for x in date]
-            dt = datetime.datetime(year, month, day)
-            fe.updated(dt)
+            fe.updated("-".join(date)+"T00:00:00Z")
         except ValueError:
             pass
     outfile = os.path.join(config.WWW, 'atom.xml')
