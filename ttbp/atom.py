@@ -49,7 +49,7 @@ def publish_atom(entry_filenames, settings):
     fg.link(href=url+'/atom.xml', rel='self')
     fg.language('en') # TODO: feels language should be configurable
 
-    for filename in entry_filenames:
+    for filename in sorted(entry_filenames):
         date = util.parse_date(filename)
         title = "-".join(date)
         name = "".join(date)
@@ -59,7 +59,7 @@ def publish_atom(entry_filenames, settings):
             raw = f.read()
         html = mistune.markdown(raw)
 
-        fe = fg.add_entry()
+        fe = fg.add_entry(order='prepend')
         fe.id(url+'/'+name)
         fe.link(href=url+'/'+name+'.html', rel="alternate")
         fe.title(title)
