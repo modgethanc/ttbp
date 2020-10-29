@@ -17,10 +17,11 @@ setup(
     keywords='blog',
     packages=['ttbp'],
     install_requires = [
-        'inflect==0.2.5',
-        'mistune==0.8.1',
-        'colorama==0.3.9',
-        'six'
+        'inflect',
+        'mistune',
+        'colorama',
+        'six',
+        'feedgen',
     ],
     include_package_data = True,
     entry_points = {

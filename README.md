@@ -236,6 +236,8 @@ instance of this yourself)
 * [mistune](https://pypi.python.org/pypi/mistune)
 * [inflect](https://pypi.python.org/pypi/inflect)
 * [six](https://pypi.python.org/pypi/six)
+* [colorama](https://pypi.python.org/pypi/colorama)
+* [feedgen](https://pypi.python.org/pypi/feedgen)
 
 ### contributing
 
