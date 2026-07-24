@@ -18,7 +18,7 @@ setup(
     packages=['ttbp'],
     install_requires = [
         'inflect==0.2.5',
-        'mistune==0.8.1',
+        'mistune==3.3.0',
         'colorama==0.3.9',
         'six'
     ],
